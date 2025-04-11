@@ -1,0 +1,8 @@
+{
+  "colour": "%{BKY_LOGIC_HUE}",
+  "output": "Boolean",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "advanced"
+  }
+}

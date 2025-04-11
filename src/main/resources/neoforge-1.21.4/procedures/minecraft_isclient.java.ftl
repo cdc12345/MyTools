@@ -1,0 +1,1 @@
+(Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT)

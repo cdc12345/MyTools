@@ -1,4 +1,9 @@
-rootProject.name = 'DemoJavaPlugin'
+rootProject.name = 'MyTool'
 
 include ":MCreator"
 project(":MCreator").projectDir = file(mcreator_path)
+include 'DataGen'
+
+include ":Fountain"
+project(":Fountain").projectDir = file(fountain_path)
+

@@ -1,0 +1,37 @@
+{
+  "dependencies_provided": [
+    {
+      "name": "x",
+      "type": "number"
+    },
+    {
+      "name": "y",
+      "type": "number"
+    },
+    {
+      "name": "z",
+      "type": "number"
+    },
+    {
+      "name": "world",
+      "type": "world"
+    },
+    {
+      "name": "amount",
+      "type": "atomicnumber"
+    },
+    {
+      "name": "entity",
+      "type": "entity"
+    },
+    {
+      "name": "damagesource",
+      "type": "damagesource"
+    },
+    {
+      "name": "sourceentity",
+      "type": "entity"
+    }
+  ],
+  "cancelable": true
+}
