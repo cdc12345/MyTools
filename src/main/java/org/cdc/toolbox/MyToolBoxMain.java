@@ -1,16 +1,17 @@
 package org.cdc.toolbox;
 
 import net.mcreator.element.ModElementType;
+import net.mcreator.element.ModElementTypeLoader;
 import net.mcreator.generator.GeneratorFlavor;
 import net.mcreator.generator.GeneratorFlavor.GamePlatform;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.toolbox.element.MyEnchantment;
 import org.cdc.toolbox.ui.MyEnchantmentGUI;
+import org.cdc.toolbox.utils.PluginElementTypes;
 import org.cdc.toolbox.utils.wrap.ModElementTypeLoaderWrap;
 
 public class MyToolBoxMain extends JavaPlugin {
@@ -27,9 +28,9 @@ public class MyToolBoxMain extends JavaPlugin {
                 REGISTRY.remove(ModElementType.ENCHANTMENT);
                 var type = new ModElementType<>("enchantment", 'm', MyEnchantmentGUI::new, MyEnchantment.class);
                 ModElementType.ENCHANTMENT = type;
-                REGISTRY.add(type);
-                type.coveredOn(GeneratorFlavor.gamePlatform(GamePlatform.JAVAEDITION));
-    
+                ModElementTypeLoader.register(type).coveredOn(GeneratorFlavor.gamePlatform(GamePlatform.JAVAEDITION));
+
+                PluginElementTypes.load();
             } catch (Exception ignored){}
         });
       }

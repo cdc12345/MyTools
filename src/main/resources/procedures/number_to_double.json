@@ -6,6 +6,7 @@
       "check": "Number"
     }
   ],
+  "inputsInline": true,
   "colour": "%{BKY_MATH_HUE}",
   "output": "Number",
   "mcreator": {

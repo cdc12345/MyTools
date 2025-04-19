@@ -6,12 +6,12 @@
       "check": "AtomicNumber"
     }
   ],
+  "inputsInline": true,
   "colour": "%{BKY_MATH_HUE}",
   "output": "Number",
-  "inputsInline": true,
   "mcreator": {
-    "toolbox_id": "math",
     "group": "name",
+    "toolbox_id": "math",
     "inputs": [
       "key"
     ]

@@ -24,5 +24,6 @@
       "name": "entity",
       "type": "entity"
     }
-  ]
+  ],
+  "side": "client"
 }

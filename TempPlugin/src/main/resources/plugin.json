@@ -1,0 +1,15 @@
+{
+  "id": "tempplugins",
+  "supportedversions": [
+    202500199999,
+    2025001
+  ],
+  "weight": 0,
+  "javaplugin": "org.cdc.temp.TempPluginMain",
+  "info": {
+    "name": "TempPlugin",
+    "version": "1.0",
+    "description": "one of plugins which is in my toolbox",
+    "author": "cdc12345"
+  }
+}

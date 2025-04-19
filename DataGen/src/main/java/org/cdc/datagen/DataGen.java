@@ -20,19 +20,23 @@ public class DataGen {
         pluginFactory.createDataList().setName(BuiltInDataList.TYPES).appendElement("atomicnumber").build();
 
         var en = pluginFactory.createDefaultLanguage().appendLocalization("elementgui.enchantment.damage_bonus", "Damage Bonus");
-        var cn = pluginFactory.createLanguage(Locale.CHINA).appendLocalization("elementgui.enchantment.damage_bonus", "�˺��ӳ�");
+        var cn = pluginFactory.createLanguage(Locale.CHINA).appendLocalization("elementgui.enchantment.damage_bonus", "伤害加成");
 
         createProcedures(pluginFactory);
         createTriggers(pluginFactory);
         pluginFactory.createTrigger().setName("entity_pre_hurt_reload").appendDependency("x", BuiltInTypes.Number).appendDependency("y", BuiltInTypes.Number).appendDependency("z", BuiltInTypes.Number).appendDependency("world", BuiltInTypes.World)
                 .appendDependency("amount", VariableTypes.ATOMIC_NUMBER).appendDependency("entity", BuiltInTypes.Entity)
-                .appendDependency("damagesource", BuiltInTypes.DamageSource).appendDependency("sourceentity", BuiltInTypes.Entity).initGenerator().setLanguage(en, "Entity Pre Hurt")
-                .setLanguage(cn, "ʵ������ǰ").setCancelable(true).buildAndOutput();
+                .appendDependency("damagesource", BuiltInTypes.DamageSource).appendDependency("sourceentity", BuiltInTypes.Entity).initGenerator().setLanguage(en, "TEntity Pre Hurt")
+                .setLanguage(cn, "T实体受伤前").setCancelable(true).buildAndOutput();
         pluginFactory.createTrigger().setName("living_pre_heal").appendDependency("x", BuiltInTypes.Number).appendDependency("y", BuiltInTypes.Number).appendDependency("world", BuiltInTypes.World).appendDependency("amount", VariableTypes.ATOMIC_NUMBER)
                 .appendDependency("entity", BuiltInTypes.Entity).setLanguage(en, "Living Pre Heal").setCancelable(true).buildAndOutput();
         pluginFactory.createTrigger().setName("fov_update").appendDependency("x",BuiltInTypes.Number).appendDependency("y",BuiltInTypes.Number)
-                .appendDependency("z",BuiltInTypes.Number).appendDependency("world",BuiltInTypes.World).appendDependency("amount",VariableTypes.ATOMIC_NUMBER).appendDependency("entity",BuiltInTypes.Entity).initGenerator().setLanguage(en,"Fov Update").buildAndOutput();
+                .appendDependency("z",BuiltInTypes.Number).appendDependency("world",BuiltInTypes.World).appendDependency("amount",VariableTypes.ATOMIC_NUMBER)
+                .appendDependency("entity",BuiltInTypes.Entity).initGenerator().setLanguage(en,"Fov Update")
+                .setSide(Side.Client).buildAndOutput();
 
+
+        pluginFactory.createDataList("eventnumberparameters").appendElement("amount").initGenerator().buildAndOutput();
 
         pluginFactory.createProcedure("atomic_number_set").appendArgs0InputValue("key", VariableTypes.ATOMIC_NUMBER)
                 .appendArgs0InputValue("value", BuiltInTypes.Number).toolBoxInitBuilder().setName("value")
@@ -53,6 +57,10 @@ public class DataGen {
         pluginFactory.createProcedure("minecraft_isserver").setColor(BuiltInBlocklyColor.LOGIC.toString())
                 .setOutput(BuiltInTypes.Boolean).setGroup("name").setCategory(BuiltInToolBoxId.Procedure.ADVANCED)
                 .setLanguage(en,"isServer").initGenerator().buildAndOutput();
+        pluginFactory.createProcedure("event_number_parameter_set").setColor(BuiltInBlocklyColor.MATH.toString())
+                .setNextStatement(null).setPreviousStatement(null).setCategory(BuiltInToolBoxId.Procedure.ADVANCED).setGroup("name")
+                .appendArgs0FieldDataListSelector("parameter","eventnumberparameters","amount").appendArgs0InputValue("value",BuiltInTypes.Number)
+                .setLanguage(en,"set number event parameter %1 to %2").initGenerator().buildAndOutput();
 
         en.buildAndOutput();
         cn.buildAndOutput();
