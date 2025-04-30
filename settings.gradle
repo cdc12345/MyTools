@@ -7,4 +7,5 @@ include 'DataGen'
 include ":Fountain"
 project(":Fountain").projectDir = file(fountain_path)
 include 'TempPlugin'
+include "ConvenientTransfer"
 

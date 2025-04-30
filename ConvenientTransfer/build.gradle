@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = 'org.liquid'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.gradle.org/gradle/libs-releases" } // for gradle-tooling-api
+    flatDir { dirs mcreator_path + '/lib' }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    api project(':MCreator')
+
+    project(':MCreator').afterEvaluate(() ->
+            project(":MCreator").configurations.named("implementation").get().dependencies.each {
+                //noinspection ForeignDelegate
+                api it
+            }
+    )
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("convenientTransfer.zip")
+}
