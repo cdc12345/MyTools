@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.toolbox.element.MyEnchantment;
 import org.cdc.toolbox.ui.MyEnchantmentGUI;
-import org.cdc.toolbox.ui.MyLoottableGUI;
 import org.cdc.toolbox.utils.wrap.ModElementTypeLoaderWrap;
 
 public class MyToolBoxMain extends JavaPlugin {
@@ -31,10 +30,6 @@ public class MyToolBoxMain extends JavaPlugin {
                 ModElementType.ENCHANTMENT = type;
                 ModElementTypeLoader.register(type).coveredOn(GeneratorFlavor.gamePlatform(GamePlatform.JAVAEDITION));
 
-                REGISTRY.remove(ModElementType.LOOTTABLE);
-                var type1 = new ModElementType<>("loottable", 'l', MyLoottableGUI::new, LootTable.class);
-                ModElementType.LOOTTABLE = type1;
-                ModElementTypeLoader.register(type1);
             } catch (Exception ignored) {
             }
         });

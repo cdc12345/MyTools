@@ -16,11 +16,11 @@
   "previousStatement": null,
   "colour": "%{BKY_MATH_HUE}",
   "mcreator": {
-    "group": "name",
-    "toolbox_id": "math",
     "toolbox_init": [
       "<value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
     ],
+    "toolbox_id": "math",
+    "group": "name",
     "inputs": [
       "key",
       "value"

@@ -1,0 +1,9 @@
+- Archaeology:
+  other:
+    name: "archaeology/{0}"
+
+- Equipment:
+  other:
+    name: "equipment/{0}"
+
+- Shearing

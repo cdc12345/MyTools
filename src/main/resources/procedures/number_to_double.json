@@ -6,9 +6,9 @@
       "check": "Number"
     }
   ],
-  "inputsInline": true,
   "colour": "%{BKY_MATH_HUE}",
   "output": "Number",
+  "inputsInline": true,
   "mcreator": {
     "group": "name",
     "toolbox_id": "advanced",

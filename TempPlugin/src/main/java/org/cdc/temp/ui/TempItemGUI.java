@@ -1,26 +1,22 @@
 package org.cdc.temp.ui;
 
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
-import net.mcreator.ui.laf.themes.Theme;
-import net.mcreator.ui.views.ViewBase;
+import net.mcreator.ui.validation.component.VComboBox;
+import net.mcreator.ui.validation.component.VTextField;
 import org.cdc.temp.element.TempItem;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public class TempItemGUI extends ViewBase {
-
-    private Consumer<TempItem> consumer;
-    private JComboBox<String> type;
-    private JTextField readableName;
-    private JComboBox<String> code;
-    private JTextField registryName;
+public class TempItemGUI extends TempElementGUI<TempItem> {
+    private VTextField readableName;
+    private VComboBox<String> type;
+    private VComboBox<String> code;
+    private VTextField registryName;
 
     private int profession;
 
@@ -28,23 +24,24 @@ public class TempItemGUI extends ViewBase {
         super(mcreator);
 
         this.initGUI();
+        this.finalizeGUI();
     }
 
     protected void initGUI() {
         JPanel config = new JPanel(new GridLayout(4,2));
         config.setOpaque(false);
 
-        readableName = new JTextField();
+        readableName = new VTextField();
         readableName.setOpaque(false);
         config.add(new JLabel(L10N.t("gui.item.readablename")));
         config.add(readableName);
 
-        type = new JComboBox<>(new String[]{"block","item"});
+        type = new VComboBox<>(new String[]{"block","item"});
         type.setOpaque(false);
         config.add(L10N.label("gui.item.type"));
         config.add(type);
 
-        code = new JComboBox<>(Arrays.stream(TempItem.CodeConstants.values()).map(Object::toString).toList().toArray(new String[0]));
+        code = new VComboBox<>(Arrays.stream(TempItem.CodeConstants.values()).map(Object::toString).toList().toArray(new String[0]));
         code.setEditable(true);
         code.setSelectedItem("Blocks.AIR");
         type.addItemListener(e -> {
@@ -57,36 +54,18 @@ public class TempItemGUI extends ViewBase {
         config.add(new JLabel("Code: "));
         config.add(code);
 
-        registryName = new JTextField();
+        registryName = new VTextField();
         registryName.setOpaque(false);
         config.add(L10N.label("gui.item.registryname"));
         config.add(registryName);
-
-        JButton save = L10N.button("elementgui.save_mod_element");
-        save.setMargin(new Insets(1, 40, 1, 40));
-        save.setBackground(Theme.current().getInterfaceAccentColor());
-        save.setForeground(Theme.current().getSecondAltBackgroundColor());
-        save.addActionListener(event -> consumer.accept(getElementFromGUI()));
-
-        JPanel toolBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        JPanel toolBarLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        toolBarLeft.setOpaque(false);
-        toolBar.setOpaque(false);
-        toolBar.add(save);
 
         JPanel tip = new JPanel(new FlowLayout(FlowLayout.CENTER));
         tip.setOpaque(false);
         tip.add(new JLabel(L10N.t("gui.tip.donotforge")));
 
-        add("North",
-                ComponentUtils.applyPadding(PanelUtils.westAndEastElement(toolBarLeft, toolBar), 5, true, false,
-                        true, false));
+
         add("Center",PanelUtils.totalCenterInPanel(config));
         add("South",tip);
-    }
-
-    public void setOnSaved(Consumer<TempItem> consumer){
-        this.consumer = consumer;
     }
 
     public TempItem getElementFromGUI() {
