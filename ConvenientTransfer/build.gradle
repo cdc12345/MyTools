@@ -26,10 +26,17 @@ dependencies {
     )
 }
 
-test {
-    useJUnitPlatform()
-}
-
 tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
     archiveFileName.set("convenientTransfer.zip")
+
+    doLast {
+        copy {
+            from "build/libs/convenientTransfer.zip"
+            into mcreator_plugins_path
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
 }

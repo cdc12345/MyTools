@@ -1,0 +1,17 @@
+{
+  "type": 0,
+  "width": 176,
+  "height": 166,
+  "inventoryOffsetX": 0,
+  "inventoryOffsetY": 0,
+  "renderBgLayer": true,
+  "doesPauseGame": false,
+  "components": [],
+  "gridSettings": {
+    "sx": 18,
+    "sy": 18,
+    "ox": 11,
+    "oy": 15,
+    "snapOnGrid": false
+  }
+}

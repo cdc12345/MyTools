@@ -1,11 +1,14 @@
 package org.liquid.convenient.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.liquid.convenient.TransferMain;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
@@ -20,8 +23,9 @@ public abstract class JsonUtils {
 	public static final String CODE = "1";
 	public static final String CONTENT = "2";
 	public static final String _TYPE = "4";
+	public static final String TEXTURE = "5";
 
-	public static boolean isRegularPack(JsonObject jsonObject) {
+	public static boolean isDeepCopyData(JsonObject jsonObject) {
 		return jsonObject.has("name") || jsonObject.has(JsonUtils.NAME);
 	}
 
@@ -41,16 +45,36 @@ public abstract class JsonUtils {
 				var type = jsonObject.get("type").getAsString();
 				jsonObject.addProperty("type", dic.getProperty(type, type).replace("types.", ""));
 			}
+			String type = null;
 			if (jsonObject.has("_type")) {
-				var type = jsonObject.get("_type").getAsString();
+				type = jsonObject.get("_type").getAsString();
 				jsonObject.remove("_type");
 				jsonObject.addProperty(_TYPE, dic.getProperty(type, type).replace("types.", ""));
 			}
-			if (jsonObject.has("definition")){
+			if (jsonObject.has("definition")) {
 				JsonObject definition = jsonObject.getAsJsonObject("definition");
-				if (definition.has("procedurexml")){
+				if (definition.has("procedurexml")) {
 					var procedurexml = definition.get("procedurexml").getAsString().substring(55);
-					definition.addProperty("procedurexml",procedurexml);
+					definition.addProperty("procedurexml", procedurexml);
+				}
+				var in = JsonUtils.class.getResourceAsStream("/dictionary/" + type + ".defaults.json");
+				if (in != null) {
+					var defaults = new Gson().fromJson(new InputStreamReader(in), JsonObject.class);
+					for (Map.Entry<String, JsonElement> entry : defaults.entrySet()) {
+						if (definition.has(entry.getKey()) && definition.get(entry.getKey()).equals(entry.getValue())) {
+							definition.remove(entry.getKey());
+						}
+					}
+				}
+				if (definition.has("name")){
+					var name = definition.get("name").getAsString();
+					definition.remove("name");
+					definition.addProperty(NAME,name);
+				}
+				if (definition.has("texture")){
+					var texture = definition.get("texture");
+					definition.remove("texture");
+					definition.add(TEXTURE,texture);
 				}
 			}
 		} catch (IOException ignored) {
@@ -73,18 +97,39 @@ public abstract class JsonUtils {
 				jsonObject.remove(_TYPE);
 				jsonObject.addProperty("_type", dic.getProperty("types." + type, type));
 			}
+			String type = null;
 			if (jsonObject.has("_type")) {
-				var type = jsonObject.get("_type").getAsString();
+				type = jsonObject.get("_type").getAsString();
 				jsonObject.addProperty("_type", dic.getProperty("types." + type, type));
 			}
-			if (jsonObject.has("definition")){
+
+			if (jsonObject.has("definition")) {
 				JsonObject definition = jsonObject.getAsJsonObject("definition");
-				if (definition.has("procedurexml")){
+				if (definition.has("procedurexml")) {
 					var procedurexml = definition.get("procedurexml").getAsString();
 					if (!procedurexml.startsWith("<xml")) {
 						String prefix = "<xml xmlns=\"https://developers.google.com/blockly/xml\">";
-						definition.addProperty("procedurexml", prefix+procedurexml);
+						definition.addProperty("procedurexml", prefix + procedurexml);
 					}
+				}
+				var in = JsonUtils.class.getResourceAsStream("/dictionary/" + type + ".defaults.json");
+				if (in != null) {
+					var defaults = new Gson().fromJson(new InputStreamReader(in), JsonObject.class);
+					for (Map.Entry<String, JsonElement> entry : defaults.entrySet()) {
+						if (!definition.has(entry.getKey())) {
+							definition.add(entry.getKey(), entry.getValue());
+						}
+					}
+				}
+				if (definition.has(NAME)){
+					var name = definition.get(NAME).getAsString();
+					definition.remove(NAME);
+					definition.addProperty("name",name);
+				}
+				if (definition.has(TEXTURE)){
+					var texture = definition.get(TEXTURE);
+					definition.remove(TEXTURE);
+					definition.add("texture",texture);
 				}
 			}
 		} catch (IOException ignored) {
@@ -92,7 +137,7 @@ public abstract class JsonUtils {
 		return jsonObject;
 	}
 
-	public static String uncompress(byte[] bytes) throws IOException {
+	public static String decompress(byte[] bytes) throws IOException {
 		if (bytes == null || bytes.length == 0) {
 			return null;
 		}
@@ -113,7 +158,8 @@ public abstract class JsonUtils {
 		}
 
 		var result = out.toString();
-		if (!result.startsWith("[{")) {
+
+		if (!result.startsWith("[{") && !result.endsWith("}]")) {
 			result = "[{" + result + "}]";
 		}
 		return result;
@@ -135,5 +181,14 @@ public abstract class JsonUtils {
 		gzip.write(str.getBytes(encoding));
 		gzip.close();
 		return out.toByteArray();
+	}
+
+	public static String getContent(JsonObject object) {
+		var content = object.get(CONTENT);
+		if (content.isJsonPrimitive()) {
+			return content.getAsString();
+		} else {
+			return content.toString();
+		}
 	}
 }

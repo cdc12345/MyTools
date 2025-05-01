@@ -97,22 +97,17 @@ public class TempPluginMain extends JavaPlugin {
 					dataListBuilder[0].appendElement(String.format("""
 									%s: 
 									  readable_name: "%s"
-									  type: %s""", StringUtils.uppercaseFirstLetter(type) + "s" + "."
+									  type: %s
+									  """, StringUtils.uppercaseFirstLetter(type) + "s" + "."
 									+ JavaConventions.convertToValidClassName(readableName), readableName, type),
 							String.format("""
-									  
+									
 									  - %s
 									  - "%s"
 									""", code, registryName)).initGenerator().buildAndOutput();
 					mcreator.getTabs().closeTab(tab);
 				});
 				mcreator.getTabs().addTab(tab);
-
-
-/*                String readableName = JOptionPane.showInputDialog("input your item/block readable name");
-                String type = JOptionPane.showInputDialog("input your entry type (block or item)");
-                String registryName = JOptionPane.showInputDialog("input your item/block registerId(eg. minecraft:air)");*/
-
 			});
 			temp.add(addTempItem);
 

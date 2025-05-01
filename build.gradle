@@ -74,3 +74,11 @@ subprojects { subproject ->
         }
     }
 }
+
+gradle.taskGraph.whenReady {
+    gradle.taskGraph.allTasks.each {
+        if(it.project == project(":MCreator")) {
+            it.onlyIf { false }
+        }
+    }
+}

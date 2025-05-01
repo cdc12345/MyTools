@@ -26,7 +26,7 @@ dependencies {
         implementation it
     }
 
-    export project(":Fountain")
+    implementation project(':Fountain')
 }
 
 tasks.jar {
@@ -34,7 +34,14 @@ tasks.jar {
     archiveFileName.set("tempPlugin.zip")
 
     from {
-        configurations.export.collect { it.isDirectory() ? it : zipTree(it) }
+        zipTree(new File(project(':Fountain').projectDir,"/build/libs/").listFiles()[0])
+    }
+
+    doLast {
+        copy {
+            from "build/libs/tempPlugin.zip"
+            into mcreator_plugins_path
+        }
     }
 }
 

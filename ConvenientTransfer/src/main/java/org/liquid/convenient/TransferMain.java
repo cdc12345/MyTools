@@ -14,6 +14,7 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
+import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.IElement;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.ModElementManager;
@@ -302,7 +303,7 @@ public class TransferMain extends JavaPlugin {
 
 	private JsonArray parseInputToJsonArray(String input) throws IOException {
 		byte[] raw = Base64.getDecoder().decode(input.getBytes(StandardCharsets.UTF_8));
-		String json = JsonUtils.uncompress(raw);
+		String json = JsonUtils.decompress(raw);
 
 		try {
 			return GSON.fromJson(json, JsonArray.class);
@@ -333,7 +334,7 @@ public class TransferMain extends JavaPlugin {
 
 	private GeneratableElement createGeneratableElement(ModElementManager manager, ModElement element,
 			JsonObject object) {
-		if (JsonUtils.isRegularPack(object)) {
+		if (JsonUtils.isDeepCopyData(object)) {
 			JsonObject content = JsonUtils.unmap(object.get("content").getAsJsonObject());
 			return manager.fromJSONtoGeneratableElement(content.toString(), element);
 		}
@@ -362,22 +363,24 @@ public class TransferMain extends JavaPlugin {
 
 		for (JsonElement jsonElement : jsonElements) {
 			JsonObject object = JsonUtils.unmap(jsonElement.getAsJsonObject());
-			JsonObject elementJson = JsonUtils.unmap(
-					GSON.fromJson(object.has("content")?object.get("content").getAsString():object.get(JsonUtils.CONTENT).getAsString(), JsonObject.class));
+			JsonObject elementJson = JsonUtils.unmap(GSON.fromJson(object.has("content") ?
+					object.get("content").getAsString() :
+					JsonUtils.getContent(object), JsonObject.class));
 
-			if (!JsonUtils.isRegularPack(object)) {
+			if (!JsonUtils.isDeepCopyData(object)) {
 				LOG.warn("Invalid Element: {}", object);
 				continue;
 			}
 
-			String name = object.has("name")?object.get("name").getAsString():object.get(JsonUtils.NAME).getAsString();
+			String name = object.has("name") ?
+					object.get("name").getAsString() :
+					object.get(JsonUtils.NAME).getAsString();
 			String type = object.has("type") ?
 					object.get("type").getAsString() :
 					elementJson.get("_type").getAsString();
 
 			var type1 = ModElementTypeLoader.getModElementType(type);
-			ModElement modElement = new ModElement(mcreator.getWorkspace(), name,
-					type1);
+			ModElement modElement = new ModElement(mcreator.getWorkspace(), name, type1);
 
 			GeneratableElement generatableElement = manager.fromJSONtoGeneratableElement(elementJson.toString(),
 					modElement);
@@ -385,8 +388,9 @@ public class TransferMain extends JavaPlugin {
 			if (object.has("code") || object.has(JsonUtils.CODE)) {
 				generatableElement =
 						generatableElement != null ? generatableElement : modElement.getGeneratableElement();
-				processCodeElementForCreation(mcreator, modElement, generatableElement, object.has("code")?
-						object.get("code").getAsString():object.get(JsonUtils.CODE).getAsString());
+				processCodeElementForCreation(mcreator, modElement, generatableElement, object.has("code") ?
+						object.get("code").getAsString() :
+						object.get(JsonUtils.CODE).getAsString());
 			}
 
 			if (generatableElement == null) {
@@ -398,14 +402,14 @@ public class TransferMain extends JavaPlugin {
 			generatableElement.setModElement(modElement);
 			manager.storeModElement(generatableElement);
 
-			if (mcreator instanceof ModMaker modMaker){
-				modMaker.getWorkspacePanel().editCurrentlySelectedModElement(modElement,modMaker.getWorkspacePanel().list,0,0);
+			if (mcreator instanceof ModMaker modMaker) {
+				modMaker.getWorkspacePanel()
+						.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
 			}
 		}
 
 		mcreator.reloadWorkspaceTabContents();
-//		RegenerateCodeAction.regenerateCode(mcreator, false, false);
-
+		//		RegenerateCodeAction.regenerateCode(mcreator, false, false);
 
 	}
 
@@ -460,7 +464,7 @@ public class TransferMain extends JavaPlugin {
 			jsonObject.add(JsonUtils.CODE, new JsonPrimitive(ImportFormat.removeImports(code, "")));
 		}
 
-		jsonObject.add(JsonUtils.CONTENT, new JsonPrimitive(JsonUtils.map(elementContent).toString()));
+		jsonObject.add(JsonUtils.CONTENT, JsonUtils.map(elementContent));
 		return JsonUtils.map(jsonObject);
 	}
 
@@ -478,7 +482,7 @@ public class TransferMain extends JavaPlugin {
 			if (!preview.isEmpty()) {
 				preview.append(": ");
 			}
-			preview.append(message.length() > PREVIEW_LENGTH ? message.substring(0, PREVIEW_LENGTH) + "...." : message);
+			preview.append(StringUtils.abbreviateString(message, PREVIEW_LENGTH) + "......");
 		}
 		JOptionPane.showMessageDialog(parent, preview.toString());
 	}
