@@ -15,6 +15,7 @@ import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.StringUtils;
+import net.mcreator.workspace.elements.FolderElement;
 import net.mcreator.workspace.elements.IElement;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.ModElementManager;
@@ -131,30 +132,31 @@ public class TransferMain extends JavaPlugin {
 		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.pastereplace"));
 
 		menuItem.addActionListener(e -> {
-			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
-				return;
-			}
+			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 
-			ModElement element = getSelectedModElement(workspacePanel);
-			if (element == null) {
-				showError(mcreator, L10N.t("common.tip.notselected"));
-				return;
-			}
-
-			try {
-				String input = getBase64Input();
-				if (input == null)
-					return;
-
-				JsonArray elements = parseInputToJsonArray(input);
-				if (elements == null || elements.isEmpty()) {
-					showError(workspacePanel, "Invalid Element");
+				ModElement element = getSelectedModElement(workspacePanel);
+				if (element == null) {
+					showError(mcreator, L10N.t("common.tip.notselected"));
 					return;
 				}
 
-				processElementReplacement(mcreator, element, JsonUtils.unmap(elements.get(0).getAsJsonObject()));
-			} catch (Exception ex) {
-				handleProcessingError(workspacePanel, ex);
+				try {
+					String input = getBase64Input();
+					if (input == null)
+						return;
+
+					JsonArray elements = parseInputToJsonArray(input);
+					if (elements == null || elements.isEmpty()) {
+						showError(workspacePanel, "Invalid Element");
+						return;
+					}
+
+					processElementReplacement(mcreator, element, JsonUtils.unmap(elements.get(0).getAsJsonObject()));
+				} catch (Exception ex) {
+					handleProcessingError(workspacePanel, ex);
+				}
+			} else {
+				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
 			}
 		});
 
@@ -166,25 +168,26 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
-				return;
-			}
+			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 
-			try {
-				String input = getBase64Input();
-				if (input == null)
-					return;
+				try {
+					String input = getBase64Input();
+					if (input == null)
+						return;
 
-				JsonArray elements = parseInputToJsonArray(input);
-				if (elements == null) {
-					showError(workspacePanel, "Invalid Element");
-					return;
+					JsonArray elements = parseInputToJsonArray(input);
+					if (elements == null) {
+						showError(workspacePanel, "Invalid Element");
+						return;
+					}
+
+					processMultipleElementsCreation(mcreator, elements);
+					showPreview(workspacePanel, elements.toString());
+				} catch (Exception ex) {
+					handleProcessingError(workspacePanel, ex);
 				}
-
-				processMultipleElementsCreation(mcreator, elements);
-				showPreview(workspacePanel, elements.toString());
-			} catch (Exception ex) {
-				handleProcessingError(workspacePanel, ex);
+			} else {
+				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
 			}
 		});
 
@@ -196,34 +199,34 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
-				return;
-			}
-
-			ModElement element = getSelectedModElement(workspacePanel);
-			if (element == null) {
-				showError(workspacePanel, L10N.t("common.tip.notselected"));
-				return;
-			}
-
-			try {
-				String json = mcreator.getWorkspace().getModElementManager()
-						.generatableElementToJSON(element.getGeneratableElement());
-
-				if (json == null || element.getGeneratableElement() instanceof CustomElement) {
-					showError(workspacePanel, "Invalid Element");
+			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+				ModElement element = getSelectedModElement(workspacePanel);
+				if (element == null) {
+					showError(workspacePanel, L10N.t("common.tip.notselected"));
 					return;
 				}
 
-				JsonArray result = new JsonArray();
-				var preview = GSON.fromJson(json, JsonObject.class);
-				result.add(JsonUtils.map(preview));
+				try {
+					String json = mcreator.getWorkspace().getModElementManager()
+							.generatableElementToJSON(element.getGeneratableElement());
 
-				showPreview(workspacePanel, element.getName(), preview.toString());
-				copyToClipboard(compressToBase64(result.toString()));
-				LOG.info("{}:{}", element.getName(), result);
-			} catch (Exception ex) {
-				handleProcessingError(workspacePanel, ex);
+					if (json == null || element.getGeneratableElement() instanceof CustomElement) {
+						showError(workspacePanel, "Invalid Element");
+						return;
+					}
+
+					JsonArray result = new JsonArray();
+					var preview = GSON.fromJson(json, JsonObject.class);
+					result.add(JsonUtils.map(preview));
+
+					showPreview(workspacePanel, element.getName(), preview.toString());
+					copyToClipboard(compressToBase64(result.toString()));
+					LOG.info("{}:{}", element.getName(), result);
+				} catch (Exception ex) {
+					handleProcessingError(workspacePanel, ex);
+				}
+			} else {
+				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
 			}
 		});
 
@@ -235,23 +238,23 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
-				return;
-			}
+			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel){
+				List<IElement> elements = workspacePanel.list.getSelectedValuesList();
+				if (elements == null || elements.isEmpty()) {
+					showError(mcreator, L10N.t("common.tip.notselected"));
+					return;
+				}
 
-			List<IElement> elements = workspacePanel.list.getSelectedValuesList();
-			if (elements == null || elements.isEmpty()) {
-				showError(mcreator, L10N.t("common.tip.notselected"));
-				return;
-			}
-
-			try {
-				JsonArray jsonElements = createJsonForElements(mcreator, elements);
-				showPreview(workspacePanel, jsonElements.toString());
-				copyToClipboard(compressToBase64(jsonElements.toString()));
-				LOG.info(jsonElements.toString());
-			} catch (Exception ex) {
-				handleProcessingError(workspacePanel, ex);
+				try {
+					JsonArray jsonElements = createJsonForElements(mcreator, elements);
+					showPreview(workspacePanel, jsonElements.toString());
+					copyToClipboard(compressToBase64(jsonElements.toString()));
+					LOG.info(jsonElements.toString());
+				} catch (Exception ex) {
+					handleProcessingError(workspacePanel, ex);
+				}
+			} else {
+				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
 			}
 		});
 
@@ -398,14 +401,21 @@ public class TransferMain extends JavaPlugin {
 				return;
 			}
 
+			if (mcreator.getWorkspacePanel() instanceof WorkspacePanel workspacePanel){
+				modElement.setParentFolder(workspacePanel.currentFolder);
+			}
+
 			mcreator.getWorkspace().addModElement(modElement);
 			generatableElement.setModElement(modElement);
 			manager.storeModElement(generatableElement);
+
+
 
 			if (mcreator instanceof ModMaker modMaker) {
 				modMaker.getWorkspacePanel()
 						.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
 			}
+
 		}
 
 		mcreator.reloadWorkspaceTabContents();
@@ -437,6 +447,12 @@ public class TransferMain extends JavaPlugin {
 		for (IElement element : elements) {
 			if (element instanceof ModElement modElement) {
 				jsonElements.add(createElementJson(mcreator, modElement));
+			} else if (element instanceof FolderElement folderElement){
+				for (ModElement element1:mcreator.getWorkspace().getModElements()){
+					if (folderElement.getPath().equals(element1.getFolderPath())){
+						jsonElements.add(createElementJson(mcreator,element1));
+					}
+				}
 			}
 		}
 
