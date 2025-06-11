@@ -1,0 +1,10 @@
+name: JdkAmazon
+
+forge-1.20.1: 
+   gradle: | 
+    java {
+        toolchain {
+            vendor = JvmVendorSpec.AMAZON
+            implementation = JvmImplementation.VENDOR_SPECIFIC
+        }
+    }

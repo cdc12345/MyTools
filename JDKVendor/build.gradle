@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.cdc.mytools'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("jdkvendor.zip")
+
+    doLast {
+        copy {
+            from "build/libs/jdkvendor.zip"
+            into mcreator_plugins_path
+        }
+    }
+}

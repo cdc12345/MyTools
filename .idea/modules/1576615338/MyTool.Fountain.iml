@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../../../../FountainBase" dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/../../../../FountainBase/.settings" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../FountainBase/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../FountainBase/plugins" />
+    </content>
+  </component>
+</module>

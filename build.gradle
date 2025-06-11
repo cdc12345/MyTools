@@ -30,8 +30,8 @@ dependencies {
     )
 
     // Uncomment the following two lines if you need to use JavaFX in your plugin
-    //implementation group: 'org.openjfx', name: 'javafx-web', version: '21.0.2'
-    //implementation group: 'org.openjfx', name: 'javafx-swing', version: '21.0.2'
+//    implementation group: 'org.openjfx', name: 'javafx-web', version: '21.0.7'
+//    implementation group: 'org.openjfx', name: 'javafx-swing', version: '21.0.7'
 
     // Use "export" configuration for dependencies that should be included in the plugin (if MCreator does not provide them)
     // export group: 'org.example', name: 'example-library', version: '1.2.3'

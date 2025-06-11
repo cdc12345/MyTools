@@ -515,4 +515,8 @@ public class TransferMain extends JavaPlugin {
 	public String getOrDefault(String key, String defaultValue) {
 		return descMap.has(key) ? descMap.get(key).getAsString() : defaultValue;
 	}
+
+	public boolean isEmpty(){
+		return descMap.isEmpty();
+	}
 }

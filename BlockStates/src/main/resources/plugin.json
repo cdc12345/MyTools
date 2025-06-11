@@ -1,0 +1,19 @@
+{
+  "id": "cblockstates",
+  "supportedversions": [
+    "202500299999",
+    "2025001",
+    "2024004",
+    "2024003",
+    "2024002",
+    "20240029999"
+  ],
+  "weight": 0,
+  "javaplugin": "org.cdc.blockstates.BlockStateMain",
+  "info": {
+    "name": "cblockstates",
+    "version": "{mainPlugins.version}",
+    "description": "A block state plugin",
+    "author": "cdc12345"
+  }
+}

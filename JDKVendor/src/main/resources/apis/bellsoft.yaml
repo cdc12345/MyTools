@@ -1,0 +1,10 @@
+name: JdkBellSoft
+
+forge-1.20.1: 
+   gradle: | 
+    java {
+        toolchain {
+            vendor = JvmVendorSpec.BELLSOFT
+            implementation = JvmImplementation.VENDOR_SPECIFIC
+        }
+    }

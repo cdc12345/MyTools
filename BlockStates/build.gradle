@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = 'org.cdc.mytools'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.gradle.org/gradle/libs-releases" } // for gradle-tooling-api
+    flatDir { dirs mcreator_path + '/lib' }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    api project(':MCreator')
+
+    project(':MCreator').afterEvaluate(() ->
+            project(":MCreator").configurations.named("implementation").get().dependencies.each {
+                //noinspection ForeignDelegate
+                api it
+            }
+    )
+
+    implementation fileTree("libs")
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("cblockstates.zip")
+
+    doLast {
+        copy {
+            from "build/libs/cblockstates.zip"
+            into mcreator_plugins_path
+        }
+    }
+}
+
+tasks.register('runMCreatorWithPlugin', JavaExec) {
+    dependsOn jar
+
+    group = "build"
+
+    environment("MCREATOR_PLUGINS_DEV", "")
+
+    jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+
+    classpath = project(':MCreator').sourceSets.main.runtimeClasspath
+
+    main = 'net.mcreator.Launcher'
+
+    workingDir = mcreator_path
+}
+
+test {
+    useJUnitPlatform()
+}

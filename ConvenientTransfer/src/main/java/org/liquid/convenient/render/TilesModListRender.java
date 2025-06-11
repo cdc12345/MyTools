@@ -42,7 +42,7 @@ public class TilesModListRender extends JPanel implements ListCellRenderer<IElem
 
 	public static void updateRenderer(MCreator mcreator, TransferMain transferMain){
 		if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-			if (mcreator.getWorkspaceUserSettings().workspacePanelIconSize == WorkspaceUserSettings.IconSize.TILES && !(workspacePanel.list.getCellRenderer() instanceof TilesModListRender)) {
+			if (mcreator.getWorkspaceUserSettings().workspacePanelIconSize == WorkspaceUserSettings.IconSize.TILES && !(workspacePanel.list.getCellRenderer() instanceof TilesModListRender) && !transferMain.isEmpty()) {
 				LOG.info("Renderer update");
 				workspacePanel.list.setCellRenderer(new TilesModListRender(transferMain));
 			}
@@ -62,7 +62,7 @@ public class TilesModListRender extends JPanel implements ListCellRenderer<IElem
 		setBackground(Theme.current().getForegroundColor());
 
 		label.setFont(label.getFont().deriveFont(24.0f));
-		label_details.setFont(label.getFont().deriveFont(15.0f));
+		label_details.setFont(label.getFont().deriveFont(10.0f));
 		text.setOpaque(false);
 		text.add("Center", label);
 		text.add("South", label_details);

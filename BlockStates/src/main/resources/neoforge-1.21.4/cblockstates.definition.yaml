@@ -1,0 +1,4 @@
+templates:
+  - template: cblockstates.json.ftl
+    writer: json
+    name: "@MODASSETSROOT/blockstates/@[filepath].json"
