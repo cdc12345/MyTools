@@ -1,0 +1,20 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "list",
+      "check": "ObjectList"
+    }
+  ],
+  "colour": 60,
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "list",
+    "inputs": [
+      "list"
+    ]
+  }
+}

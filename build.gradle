@@ -48,7 +48,7 @@ tasks.jar {
 tasks.register('runMCreatorWithPlugin', JavaExec) {
     dependsOn jar
 
-	group = "build"
+    group = "build"
 
     environment("MCREATOR_PLUGINS_FOLDER", file("./build/libs"))
     environment("MCREATOR_PLUGINS_DEV", "")
@@ -77,7 +77,7 @@ subprojects { subproject ->
 
 gradle.taskGraph.whenReady {
     gradle.taskGraph.allTasks.each {
-        if(it.project == project(":MCreator")) {
+        if (it.project == project(":MCreator")) {
             it.onlyIf { false }
         }
     }
