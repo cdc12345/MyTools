@@ -1,6 +1,8 @@
 {
   "id": "arraylist",
   "supportedversions": [
+    "2024003",
+    "2024004",
     "2025001"
   ],
   "weight": 0,

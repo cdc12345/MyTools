@@ -2,22 +2,21 @@
   "args0": [
     {
       "type": "input_value",
-      "name": "list",
-      "check": "ObjectList"
-    },
-    {
-      "type": "input_value",
       "name": "index",
       "check": "Number"
     },
     {
-      "type": "field_data_list_selector",
-      "name": "type",
-      "datalist": "supportedtypes",
-      "testValue": "String"
+      "type": "input_value",
+      "name": "element"
+    },
+    {
+      "type": "input_value",
+      "name": "list",
+      "check": "ObjectList"
     }
   ],
-  "output": null,
+  "previousStatement": null,
+  "nextStatement": null,
   "inputsInline": true,
   "colour": "40",
   "mcreator": {
@@ -27,11 +26,9 @@
     ],
     "toolbox_id": "list",
     "inputs": [
-      "list",
-      "index"
-    ],
-    "fields": [
-      "type"
+      "index",
+      "element",
+      "list"
     ]
   }
 }

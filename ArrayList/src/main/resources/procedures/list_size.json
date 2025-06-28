@@ -6,8 +6,7 @@
       "check": "ObjectList"
     }
   ],
-  "previousStatement": null,
-  "nextStatement": null,
+  "output": "Number",
   "inputsInline": true,
   "colour": "40",
   "mcreator": {

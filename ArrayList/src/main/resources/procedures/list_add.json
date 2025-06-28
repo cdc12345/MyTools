@@ -10,10 +10,10 @@
       "name": "element"
     }
   ],
-  "colour": 39,
   "previousStatement": null,
   "nextStatement": null,
   "inputsInline": true,
+  "colour": 40,
   "mcreator": {
     "group": "name",
     "toolbox_init": [

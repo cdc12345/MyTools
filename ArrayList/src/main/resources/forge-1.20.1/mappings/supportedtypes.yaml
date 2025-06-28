@@ -1,0 +1,18 @@
+BlockState: 
+- BlockState
+- "Blocks.AIR.defaultBlockState()"
+Boolean: 
+- Boolean
+- "false"
+Entity: 
+- Entity
+- null
+Number: 
+- Double
+- "0"
+Text: 
+- String
+- "\"\""
+_default: 
+- String
+- "\"\""

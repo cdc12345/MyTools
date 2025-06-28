@@ -1,6 +1,5 @@
 {
+  "blocklyVariableType": "ObjectList",
   "nullable": false,
-  "ignoredByCoverage": true,
-  "color": 39,
-  "blocklyVariableType": "ObjectList"
+  "ignoredByCoverage": true
 }

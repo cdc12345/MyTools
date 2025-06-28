@@ -1,2 +1,3 @@
+<#assign cls=generator.map(field$type,"supportedtypes",0)>
 <@addTemplate file="utils/list/list_get.java.ftl"/>
-(/*@${generator.map(field$type,"supportedtypes",0)}*/getListElement(${input$list},${input$index},${generator.map(field$type,"supportedtypes",0)}.class,${generator.map(field$type,"supportedtypes",1)}))
+/*@${cls}*/(getListElement(${input$list},${opt.toInt(input$index)},${cls}.class,${generator.map(field$type,"supportedtypes",1)}))
