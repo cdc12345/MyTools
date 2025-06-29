@@ -1,0 +1,34 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "index",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "list",
+      "check": "ObjectList"
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "type",
+      "datalist": "supportedtypes",
+      "testValue": "String"
+    }
+  ],
+  "output": "Boolean",
+  "inputsInline": true,
+  "colour": "40",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "list",
+    "inputs": [
+      "index",
+      "list"
+    ],
+    "fields": [
+      "type"
+    ]
+  }
+}

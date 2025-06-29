@@ -9,7 +9,6 @@ import org.cdc.framework.utils.BuiltInTypes;
 import org.cdc.framework.utils.Generators;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,7 +46,12 @@ public class DataGen {
 				.appendArgs0InputValue("list", "ObjectList").appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String").toolBoxInitBuilder()
 				.setName("index").appendConstantNumber(0).buildAndReturn()
-				.setLanguage(en, "get element index %2 from %1, type: %3").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type").initGenerator().buildAndOutput();
+		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_check_type", BuiltInTypes.Boolean)
+				.appendArgs0InputValue("index", BuiltInTypes.Number)
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String")
+				.setLanguage(en, "Element index %1 from %2 is type %3").initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_remove")
 				.appendArgs0InputValue("index", BuiltInTypes.Number).appendArgs0InputValue("list", "ObjectList")
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn()
@@ -60,9 +64,9 @@ public class DataGen {
 				.setLanguage(en, "set index %1 to %2 list: %3").initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_size", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE).initGenerator()
-				.setLanguage(en, "get size of %1").buildAndOutput();
+				.setPlaceHolderLanguage(en, "get size of %list").buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_reverse")
-				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setLanguage(en, "reverse %1").initGenerator()
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setPlaceHolderLanguage(en, "reverse %list").initGenerator()
 				.buildAndOutput();
 
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_advanced", (String) null)
@@ -70,15 +74,16 @@ public class DataGen {
 				.appendArgs0InputValue("type", BuiltInTypes.String).appendArgs0InputValue("defaultValue", (String) null)
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn().toolBoxInitBuilder()
 				.setName("type").appendConstantString("java.lang.String").buildAndReturn()
-				.setLanguage(en, "get element index %2 from %1, type: %3, default %4").initGenerator().buildAndOutput();
-
+				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type, default %defaultValue").initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_allnum", ObjectListType.INSTANCE)
-				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setLanguage(en, "get all numbers from list %1")
-				.initGenerator().buildAndOutput();
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.setLanguage(en, "get all numbers from list %1 and sort").initGenerator().buildAndOutput();
 
-		mCreatorPluginFactory.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())
-				.appendArgs0InputValue("number", BuiltInTypes.Number).setToolBoxId(BuiltInToolBoxId.Procedure.MATH)
-				.setLanguage(en, "number %1 + 1").setLanguage(zh,"让数字变量%1加一").initGenerator().buildAndOutput();
+		//math
+		mCreatorPluginFactory.getToolKit().createInputProcedure("number_plus_one")
+				.setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("number", BuiltInTypes.Number)
+				.setToolBoxId(BuiltInToolBoxId.Procedure.MATH).setLanguage(en, "number %1 + 1")
+				.setLanguage(zh, "让数字变量%1加一").initGenerator().buildAndOutput();
 
 		mCreatorPluginFactory.initGenerator(Generators.NEOFORGE1214);
 		mCreatorPluginFactory.getToolKit().clearGenerator();
@@ -89,15 +94,5 @@ public class DataGen {
 
 		en.buildAndOutput();
 		zh.buildAndOutput();
-	}
-
-	private static <E> E getListElement(ArrayList<Object> objects, int index, Class<E> eClass, Object defaultValue) {
-		if (index < objects.size()) {
-			var element = objects.get(index);
-			if (eClass.isInstance(element)) {
-				return eClass.cast(element);
-			}
-		}
-		return eClass.cast(defaultValue);
 	}
 }

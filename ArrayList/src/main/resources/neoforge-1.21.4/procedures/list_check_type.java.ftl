@@ -1,0 +1,1 @@
+(${input$list}.get(${input$index}) instanceof ${generator.map(field$type,"supportedtypes",0)})

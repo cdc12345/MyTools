@@ -1,1 +1,1 @@
-(new ArrayList<>(${input$list}.stream().filter(a -> Number.class.isAssignableFrom(a.getClass())).map(a -> (Number) a).sorted(Comparator.comparingDouble(Number::doubleValue)).map(a->(Object) a).toList())
+(new ArrayList<>(${input$list}.stream().filter(a -> Number.class.isAssignableFrom(a.getClass())).sorted(Comparator.comparingDouble(a->((Number)a).doubleValue())).toList()))
