@@ -5,5 +5,37 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding gbk" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="MyTool" options="" />
+      <module name="MyTool.ArrayList" options="" />
+      <module name="MyTool.ArrayList.main" options="" />
+      <module name="MyTool.ArrayList.test" options="" />
+      <module name="MyTool.ConvenientTransfer" options="" />
+      <module name="MyTool.ConvenientTransfer.main" options="" />
+      <module name="MyTool.ConvenientTransfer.test" options="" />
+      <module name="MyTool.DataGen" options="" />
+      <module name="MyTool.DataGen.main" options="" />
+      <module name="MyTool.DataGen.test" options="" />
+      <module name="MyTool.Fountain" options="" />
+      <module name="MyTool.Fountain.main" options="" />
+      <module name="MyTool.Fountain.test" options="" />
+      <module name="MyTool.JDKVendor" options="" />
+      <module name="MyTool.JDKVendor.main" options="" />
+      <module name="MyTool.JDKVendor.test" options="" />
+      <module name="MyTool.MCreator" options="" />
+      <module name="MyTool.MCreator.main" options="" />
+      <module name="MyTool.MCreator.test" options="" />
+      <module name="MyTool.TempPlugin" options="" />
+      <module name="MyTool.TempPlugin.main" options="" />
+      <module name="MyTool.TempPlugin.test" options="" />
+      <module name="MyTool.main" options="" />
+      <module name="MyTool.test" options="" />
+      <module name="helloworld" options="" />
+      <module name="helloworld.main" options="" />
+      <module name="helloworld.test" options="" />
+      <module name="helloworldo" options="" />
+      <module name="helloworldo.main" options="" />
+      <module name="helloworldo.test" options="" />
+    </option>
   </component>
 </project>

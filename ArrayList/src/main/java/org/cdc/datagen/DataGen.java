@@ -1,17 +1,26 @@
 package org.cdc.datagen;
 
+import org.cdc.datagen.categories.ListCategory;
+import org.cdc.datagen.types.ObjectListType;
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.framework.utils.BuiltInBlocklyColor;
+import org.cdc.framework.utils.BuiltInToolBoxId;
 import org.cdc.framework.utils.BuiltInTypes;
 import org.cdc.framework.utils.Generators;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DataGen {
 	public static void main(String[] args) {
-		MCreatorPluginFactory mCreatorPluginFactory = MCreatorPluginFactory.createFactory(
-				"ArrayList/src/main/resources");
+		MCreatorPluginFactory mCreatorPluginFactory = new MCreatorPluginFactory(
+				new File("src/main/resources").getAbsoluteFile());
 		var en = mCreatorPluginFactory.createDefaultLanguage();
+		var zh = mCreatorPluginFactory.createLanguage(Locale.CHINA);
 
+		//datalist
 		mCreatorPluginFactory.createDataList("supportedtypes").appendElement("Text", List.of("String", "\"\"\"\""))
 				.appendElement("Number", List.of("Double", "\"0\"")).appendElement("Entity", List.of("Entity", "null"))
 				.appendElement("BlockState", List.of("BlockState", "Blocks.AIR.defaultBlockState()"))
@@ -19,14 +28,18 @@ public class DataGen {
 		mCreatorPluginFactory.createDataList("types").appendElement("objectlist", "ArrayList<Object>").initGenerator()
 				.build();
 
-		mCreatorPluginFactory.createProcedureCategory("list").setColor(60).setLanguage(en, "Lists").buildAndOutput();
-		mCreatorPluginFactory.createVariable().setName("objectlist").setBlocklyVariableType("ObjectList")
+		//ini
+		mCreatorPluginFactory.createProcedureCategory(ListCategory.INSTANCE.getName()).setColor(40)
+				.setLanguage(en, "Lists").buildAndOutput();
+		mCreatorPluginFactory.createVariable().setName("objectlist").setBlocklyVariableType("ObjectList").setColor(40)
 				.setNullable(false).setIgnoredByCoverage(true).initGenerator().buildAndOutput();
 
+		//list management
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_add").setColor(40)
 				.appendArgs0InputValue("list", "ObjectList").appendArgs0InputValue("element", (String) null, true)
 				.toolBoxInitBuilder().setName("element").appendConstantString("helloworld").buildAndReturn()
-				.setLanguage(en, "add element %2 to %1").setToolBoxId("list").initGenerator().buildAndOutput();
+				.setLanguage(en, "add element %2 to %1").setToolBoxId(ListCategory.INSTANCE).initGenerator()
+				.buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_clear")
 				.appendArgs0InputValue("list", "ObjectList").setLanguage(en, "clear list %1").initGenerator()
 				.buildAndOutput();
@@ -42,13 +55,30 @@ public class DataGen {
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_set")
 				.appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("element", (String) null, true).appendArgs0InputValue("list", "ObjectList")
-				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn()
+				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn().toolBoxInitBuilder()
+				.setName("element").appendConstantString("element").buildAndReturn()
 				.setLanguage(en, "set index %1 to %2 list: %3").initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_size", BuiltInTypes.Number)
-				.appendArgs0InputValue("list", "ObjectList").initGenerator().setLanguage(en, "get size of %1")
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).initGenerator()
+				.setLanguage(en, "get size of %1").buildAndOutput();
+		mCreatorPluginFactory.getToolKit().createInputProcedure("list_reverse")
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setLanguage(en, "reverse %1").initGenerator()
 				.buildAndOutput();
 
+		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_advanced", (String) null)
+				.appendArgs0InputValue("list", "ObjectList").appendArgs0InputValue("index", BuiltInTypes.Number)
+				.appendArgs0InputValue("type", BuiltInTypes.String).appendArgs0InputValue("defaultValue", (String) null)
+				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn().toolBoxInitBuilder()
+				.setName("type").appendConstantString("java.lang.String").buildAndReturn()
+				.setLanguage(en, "get element index %2 from %1, type: %3, default %4").initGenerator().buildAndOutput();
 
+		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_allnum", ObjectListType.INSTANCE)
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setLanguage(en, "get all numbers from list %1")
+				.initGenerator().buildAndOutput();
+
+		mCreatorPluginFactory.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())
+				.appendArgs0InputValue("number", BuiltInTypes.Number).setToolBoxId(BuiltInToolBoxId.Procedure.MATH)
+				.setLanguage(en, "number %1 + 1").setLanguage(zh,"让数字变量%1加一").initGenerator().buildAndOutput();
 
 		mCreatorPluginFactory.initGenerator(Generators.NEOFORGE1214);
 		mCreatorPluginFactory.getToolKit().clearGenerator();
@@ -58,6 +88,16 @@ public class DataGen {
 		mCreatorPluginFactory.getToolKit().clearGenerator();
 
 		en.buildAndOutput();
+		zh.buildAndOutput();
+	}
 
+	private static <E> E getListElement(ArrayList<Object> objects, int index, Class<E> eClass, Object defaultValue) {
+		if (index < objects.size()) {
+			var element = objects.get(index);
+			if (eClass.isInstance(element)) {
+				return eClass.cast(element);
+			}
+		}
+		return eClass.cast(defaultValue);
 	}
 }

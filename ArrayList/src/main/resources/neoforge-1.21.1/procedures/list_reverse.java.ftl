@@ -1,0 +1,1 @@
+Collections.reverse(${input$list});

@@ -1,6 +1,7 @@
 {
   "id": "convenienttransfer",
   "supportedversions": [
+    "2025002",
     "2025001",
     "2024004",
     "2024003",
