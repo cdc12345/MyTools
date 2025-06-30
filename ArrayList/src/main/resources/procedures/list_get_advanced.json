@@ -1,0 +1,40 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "list",
+      "check": "ObjectList"
+    },
+    {
+      "type": "input_value",
+      "name": "index",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "type",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "defaultValue"
+    }
+  ],
+  "output": null,
+  "inputsInline": true,
+  "colour": "40",
+  "mcreator": {
+    "group": "name",
+    "toolbox_init": [
+      "<value name=\"index\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"type\"><block type=\"text\"><field name=\"TEXT\">java.lang.String</field></block></value>"
+    ],
+    "toolbox_id": "list",
+    "inputs": [
+      "list",
+      "index",
+      "type",
+      "defaultValue"
+    ]
+  }
+}

@@ -46,38 +46,45 @@ public class DataGen {
 				.appendArgs0InputValue("list", "ObjectList").appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String").toolBoxInitBuilder()
 				.setName("index").appendConstantNumber(0).buildAndReturn()
-				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type").initGenerator()
+				.buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_check_type", BuiltInTypes.Boolean)
 				.appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
 				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String")
-				.setLanguage(en, "Element index %1 from %2 is type %3").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "Element index %index from %list is type %type").initGenerator()
+				.buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_remove")
 				.appendArgs0InputValue("index", BuiltInTypes.Number).appendArgs0InputValue("list", "ObjectList")
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn()
-				.setLanguage(en, "remove index %1 from %2").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "remove index %index from %list").initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_set")
 				.appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("element", (String) null, true).appendArgs0InputValue("list", "ObjectList")
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn().toolBoxInitBuilder()
 				.setName("element").appendConstantString("element").buildAndReturn()
-				.setLanguage(en, "set index %1 to %2 list: %3").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "set index %index to %element list: %list").initGenerator()
+				.buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_size", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE).initGenerator()
 				.setPlaceHolderLanguage(en, "get size of %list").buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_reverse")
-				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setPlaceHolderLanguage(en, "reverse %list").initGenerator()
-				.buildAndOutput();
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setPlaceHolderLanguage(en, "reverse %list")
+				.initGenerator().buildAndOutput();
 
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_advanced", (String) null)
 				.appendArgs0InputValue("list", "ObjectList").appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("type", BuiltInTypes.String).appendArgs0InputValue("defaultValue", (String) null)
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn().toolBoxInitBuilder()
 				.setName("type").appendConstantString("java.lang.String").buildAndReturn()
-				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type, default %defaultValue").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type, default %defaultValue")
+				.initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_allnum", ObjectListType.INSTANCE)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
 				.setLanguage(en, "get all numbers from list %1 and sort").initGenerator().buildAndOutput();
+		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_contains", BuiltInTypes.Boolean)
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).appendArgs0InputValue("value", (String) null)
+				.setPlaceHolderLanguage(en, "list %list contains %value").initGenerator().buildAndOutput();
 
 		//math
 		mCreatorPluginFactory.getToolKit().createInputProcedure("number_plus_one")
