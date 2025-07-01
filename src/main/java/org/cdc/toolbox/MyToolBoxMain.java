@@ -1,20 +1,10 @@
 package org.cdc.toolbox;
 
-import net.mcreator.element.ModElementType;
-import net.mcreator.element.ModElementTypeLoader;
-import net.mcreator.element.types.LootTable;
-import net.mcreator.element.types.Recipe;
-import net.mcreator.generator.GeneratorFlavor;
-import net.mcreator.generator.GeneratorFlavor.GamePlatform;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
-import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
+import net.mcreator.plugin.events.ui.ModElementGUIEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cdc.toolbox.element.MyEnchantment;
-import org.cdc.toolbox.ui.ERecipeGUI;
-import org.cdc.toolbox.ui.MyEnchantmentGUI;
-import org.cdc.toolbox.utils.wrap.ModElementTypeLoaderWrap;
 
 public class MyToolBoxMain extends JavaPlugin {
 
@@ -23,7 +13,7 @@ public class MyToolBoxMain extends JavaPlugin {
     public MyToolBoxMain(Plugin plugin) {
         super(plugin);
 
-        addListener(PreGeneratorsLoadingEvent.class, a -> {
+/*        addListener(PreGeneratorsLoadingEvent.class, a -> {
             try {
                 //reInject
                 var REGISTRY = new ModElementTypeLoaderWrap().getREGISTERIES();
@@ -36,8 +26,13 @@ public class MyToolBoxMain extends JavaPlugin {
                 ModElementType.RECIPE = ModElementTypeLoader.register(new ModElementType<>("recipe", 'r', ERecipeGUI::new, Recipe.class));
             } catch (Exception ignored) {
             }
+        });*/
 
-
+        addListener(ModElementGUIEvent.WhenSaving.class,a->{
+            if (!a.getMCreator().getActionRegistry().buildWorkspace.isEnabled()) {
+                a.getMCreator().getGradleConsole().exec("build");
+                a.getMCreator().getGradleConsole().markRunning();
+            }
         });
     }
 

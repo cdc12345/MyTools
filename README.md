@@ -11,6 +11,8 @@ In order for the plugin to work, make a new file called `gradle.properties` with
 
 ```
 mcreator_path=<path to MCreator core Gradle project directory>
+fountain_path=<path to FountainBase Project>
+mcreator_plugins_path=<Your mcreator's plugin path>
 ```
 
 # Running MCreator with the plugin

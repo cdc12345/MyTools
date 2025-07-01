@@ -12,7 +12,7 @@
   ],
   "output": "Boolean",
   "inputsInline": true,
-  "colour": "40",
+  "colour": "%{BKY_LOGIC_HUE}",
   "mcreator": {
     "group": "name",
     "toolbox_id": "list",

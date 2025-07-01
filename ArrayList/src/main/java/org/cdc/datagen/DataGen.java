@@ -3,10 +3,7 @@ package org.cdc.datagen;
 import org.cdc.datagen.categories.ListCategory;
 import org.cdc.datagen.types.ObjectListType;
 import org.cdc.framework.MCreatorPluginFactory;
-import org.cdc.framework.utils.BuiltInBlocklyColor;
-import org.cdc.framework.utils.BuiltInToolBoxId;
-import org.cdc.framework.utils.BuiltInTypes;
-import org.cdc.framework.utils.Generators;
+import org.cdc.framework.utils.*;
 
 import java.io.File;
 import java.util.List;
@@ -18,6 +15,8 @@ public class DataGen {
 				new File("src/main/resources").getAbsoluteFile());
 		var en = mCreatorPluginFactory.createDefaultLanguage();
 		var zh = mCreatorPluginFactory.createLanguage(Locale.CHINA);
+
+		ColorUtils.putSuggestColor("list","40");
 
 		//datalist
 		mCreatorPluginFactory.createDataList("supportedtypes").appendElement("Text", List.of("String", "\"\"\"\""))
@@ -51,25 +50,25 @@ public class DataGen {
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_check_type", BuiltInTypes.Boolean)
 				.appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
-				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String")
-				.setPlaceHolderLanguage(en, "Element index %index from %list is type %type").initGenerator()
+				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String").setColor(BuiltInBlocklyColor.LOGIC.toString())
+				.setPlaceHolderLanguage(en, "Element index %index from %list is type %type").setPlaceHolderLanguage(zh,"列表%list中的第%index是%type").initGenerator()
 				.buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_remove")
 				.appendArgs0InputValue("index", BuiltInTypes.Number).appendArgs0InputValue("list", "ObjectList")
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn()
-				.setPlaceHolderLanguage(en, "remove index %index from %list").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "remove index %index from %list").setPlaceHolderLanguage(zh,"移除列表%list中第%index的元素").initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_set")
 				.appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("element", (String) null, true).appendArgs0InputValue("list", "ObjectList")
 				.toolBoxInitBuilder().setName("index").appendConstantNumber(0).buildAndReturn().toolBoxInitBuilder()
 				.setName("element").appendConstantString("element").buildAndReturn()
-				.setPlaceHolderLanguage(en, "set index %index to %element list: %list").initGenerator()
+				.setPlaceHolderLanguage(en, "set index %index to %element list: %list").setPlaceHolderLanguage(zh,"设置列表%list中的第%index为%element").initGenerator()
 				.buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_size", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE).initGenerator()
 				.setPlaceHolderLanguage(en, "get size of %list").buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createInputProcedure("list_reverse")
-				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setPlaceHolderLanguage(en, "reverse %list")
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).setPlaceHolderLanguage(en, "reverse %list").setPlaceHolderLanguage(zh,"反转列表%list")
 				.initGenerator().buildAndOutput();
 
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_advanced", (String) null)
@@ -81,10 +80,10 @@ public class DataGen {
 				.initGenerator().buildAndOutput();
 		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_get_allnum", ObjectListType.INSTANCE)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
-				.setLanguage(en, "get all numbers from list %1 and sort").initGenerator().buildAndOutput();
-		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_contains", BuiltInTypes.Boolean)
+				.setLanguage(en, "get all numbers from list %1 and sort").setPlaceHolderLanguage(zh,"从列表%list获得所有数字并整理").initGenerator().buildAndOutput();
+		mCreatorPluginFactory.getToolKit().createOutputProcedure("list_contains", BuiltInTypes.Boolean).setColor(BuiltInBlocklyColor.LOGIC.toString())
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE).appendArgs0InputValue("value", (String) null)
-				.setPlaceHolderLanguage(en, "list %list contains %value").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "list %list contains %value").setPlaceHolderLanguage(zh,"列表%list包含%value").initGenerator().buildAndOutput();
 
 		//math
 		mCreatorPluginFactory.getToolKit().createInputProcedure("number_plus_one")
