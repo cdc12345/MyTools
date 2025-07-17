@@ -1,0 +1,18 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "key",
+      "check": "String"
+    }
+  ],
+  "inputsInline": true,
+  "colour": "#F0FF2",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "other",
+    "inputs": [
+      "key"
+    ]
+  }
+}

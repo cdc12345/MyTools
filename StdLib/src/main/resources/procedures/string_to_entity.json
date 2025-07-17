@@ -1,0 +1,28 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "source",
+      "check": "String"
+    }
+  ],
+  "output": "Entity",
+  "inputsInline": true,
+  "colour": 195,
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "entitydata",
+    "toolbox_init": [
+      "<value name=\"source\"><block type=\"text\"><field name=\"TEXT\"></field></block></value>"
+    ],
+    "inputs": [
+      "source"
+    ],
+    "dependencies": [
+      {
+        "name": "world",
+        "type": "world"
+      }
+    ]
+  }
+}

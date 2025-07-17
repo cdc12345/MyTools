@@ -1,0 +1,18 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "jsonelement",
+      "check": "JsonElement"
+    }
+  ],
+  "inputsInline": true,
+  "colour": "#F0FF2",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "other",
+    "inputs": [
+      "jsonelement"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "stdlibsforcdc",
+  "supportedversions": [
+    "2025001",
+    "2025002"
+  ],
+  "weight": 0,
+  "info": {
+    "name": "MoreProcedures",
+    "version": "{mainPlugins.version}",
+    "description": "add more procedures",
+    "author": "cdc12345"
+  }
+}

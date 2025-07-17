@@ -16,4 +16,7 @@ include "ConvenientTransfer"
 include 'JDKVendor'
 //include 'BlockStates'
 include 'ArrayList'
-
+include 'LootModifier'
+include 'Walker'
+include 'StdLib'
+include 'Attributes'

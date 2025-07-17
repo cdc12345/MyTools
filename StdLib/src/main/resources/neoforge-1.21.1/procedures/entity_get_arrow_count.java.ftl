@@ -1,0 +1,1 @@
+(${input$entity} instanceof LivingEntity _living?_living.getArrowCount():0)

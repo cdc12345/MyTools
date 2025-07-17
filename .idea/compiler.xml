@@ -9,7 +9,15 @@
       <module name="MyTool" options="" />
       <module name="MyTool.ArrayList" options="" />
       <module name="MyTool.ArrayList.main" options="" />
+      <module name="MyTool.ArrayList.src" options="" />
+      <module name="MyTool.ArrayList.src.main" options="" />
+      <module name="MyTool.ArrayList.src.main.LootModifier" options="" />
+      <module name="MyTool.ArrayList.src.main.LootModifier.main" options="" />
+      <module name="MyTool.ArrayList.src.main.LootModifier.test" options="" />
       <module name="MyTool.ArrayList.test" options="" />
+      <module name="MyTool.Attributes" options="" />
+      <module name="MyTool.Attributes.main" options="" />
+      <module name="MyTool.Attributes.test" options="" />
       <module name="MyTool.ConvenientTransfer" options="" />
       <module name="MyTool.ConvenientTransfer.main" options="" />
       <module name="MyTool.ConvenientTransfer.test" options="" />
@@ -19,15 +27,26 @@
       <module name="MyTool.Fountain" options="" />
       <module name="MyTool.Fountain.main" options="" />
       <module name="MyTool.Fountain.test" options="" />
+      <module name="MyTool.Gson.main" options="" />
+      <module name="MyTool.Gson.test" options="" />
       <module name="MyTool.JDKVendor" options="" />
       <module name="MyTool.JDKVendor.main" options="" />
       <module name="MyTool.JDKVendor.test" options="" />
+      <module name="MyTool.LootModifier" options="" />
+      <module name="MyTool.LootModifier.main" options="" />
+      <module name="MyTool.LootModifier.test" options="" />
       <module name="MyTool.MCreator" options="" />
       <module name="MyTool.MCreator.main" options="" />
       <module name="MyTool.MCreator.test" options="" />
+      <module name="MyTool.StdLib" options="" />
+      <module name="MyTool.StdLib.main" options="" />
+      <module name="MyTool.StdLib.test" options="" />
       <module name="MyTool.TempPlugin" options="" />
       <module name="MyTool.TempPlugin.main" options="" />
       <module name="MyTool.TempPlugin.test" options="" />
+      <module name="MyTool.Walker" options="" />
+      <module name="MyTool.Walker.main" options="" />
+      <module name="MyTool.Walker.test" options="" />
       <module name="MyTool.main" options="" />
       <module name="MyTool.test" options="" />
       <module name="helloworld" options="" />
