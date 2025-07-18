@@ -20,7 +20,7 @@
     "toolbox_id": "entitymanagement",
     "toolbox_init": [
       "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
-      "<value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
+      "<value name=\"value\"><block type=\"math_plus_self\"><value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></value>"
     ],
     "inputs": [
       "entity",

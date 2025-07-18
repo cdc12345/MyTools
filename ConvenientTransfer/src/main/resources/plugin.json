@@ -12,7 +12,7 @@
   "javaplugin": "org.liquid.convenient.TransferMain",
   "info": {
     "name": "CT",
-    "version": "{mainPlugins.version}",
+    "version": "2025.2.718",
     "description": "Random",
     "author": "liquid"
   }
