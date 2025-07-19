@@ -58,7 +58,7 @@ public class TransferMain extends JavaPlugin {
 			if (mcreator instanceof ModMaker) {
 				JMenuBar bar = mcreator.getMainMenuBar();
 
-				JMenu transfer = new JMenu("Transfer");
+				JMenu transfer = new JMenu(L10N.t("common.menubar.transfer"));
 
 				// Copy operations
 				transfer.add(buildShallowCopyMenu(mcreator));
@@ -147,7 +147,7 @@ public class TransferMain extends JavaPlugin {
 
 					JsonArray elements = parseInputToJsonArray(input);
 					if (elements == null || elements.isEmpty()) {
-						showError(workspacePanel, "Invalid Element");
+						showError(workspacePanel, L10N.t("dialog.error.invalidelement"));
 						return;
 					}
 
@@ -156,7 +156,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
+				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -177,7 +177,7 @@ public class TransferMain extends JavaPlugin {
 
 					JsonArray elements = parseInputToJsonArray(input);
 					if (elements == null) {
-						showError(workspacePanel, "Invalid Element");
+						showError(workspacePanel, L10N.t("dialog.error.invalidelement"));
 						return;
 					}
 
@@ -187,7 +187,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
+				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -211,7 +211,7 @@ public class TransferMain extends JavaPlugin {
 							.generatableElementToJSON(element.getGeneratableElement());
 
 					if (json == null || element.getGeneratableElement() instanceof CustomElement) {
-						showError(workspacePanel, "Invalid Element");
+						showError(workspacePanel, L10N.t("dialog.error.invalidelement"));
 						return;
 					}
 
@@ -226,7 +226,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
+				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -254,7 +254,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),"Please switch to Workspace Tab");
+				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -301,7 +301,7 @@ public class TransferMain extends JavaPlugin {
 	}
 
 	private String getBase64Input() {
-		return JOptionPane.showInputDialog("Input your element base64");
+		return JOptionPane.showInputDialog(L10N.t("dialog.info.inputbase64"));
 	}
 
 	private JsonArray parseInputToJsonArray(String input) throws IOException {
@@ -322,7 +322,7 @@ public class TransferMain extends JavaPlugin {
 		GeneratableElement generatableElement = createGeneratableElement(manager, element, object);
 
 		if (generatableElement == null) {
-			showError(mcreator, "Invalid Element");
+			showError(mcreator, L10N.t("dialog.error.invalidelement"));
 			LOG.warn("generatableElement == null");
 			return;
 		}
@@ -371,7 +371,7 @@ public class TransferMain extends JavaPlugin {
 					JsonUtils.getContent(object), JsonObject.class));
 
 			if (!JsonUtils.isDeepCopyData(object)) {
-				LOG.warn("Invalid Element: {}", object);
+				LOG.warn("{}: {}",L10N.t("dialog.error.invalidelement"), object);
 				continue;
 			}
 
@@ -397,7 +397,7 @@ public class TransferMain extends JavaPlugin {
 			}
 
 			if (generatableElement == null) {
-				showError(mcreator, "Invalid Element");
+				showError(mcreator, L10N.t("dialog.error.invalidelement"));
 				return;
 			}
 

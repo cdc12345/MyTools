@@ -103,6 +103,20 @@ public class DataGen {
 				.appendArgs0InputValue("tagValue", BuiltInTypes.Number).toolBoxInitBuilder().setName("tagValue")
 				.appendConstantNumber(0).buildAndReturn().setLanguage(en, "set entity %1 number nbt %2 to %3")
 				.setLanguage(zh, "设置实体%1的数字nbt%2为%3").initGenerator().buildAndOutput();
+		factory.getToolKit().createOutputProcedure("entity_nbt_has_advanced",BuiltInTypes.Boolean)
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("").buildAndReturn()
+				.setLanguage(en, "entity %1 has nbt %2").setLanguage(zh, "实体%1存在nbt%2").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_nbt_create_empty_compound")
+				.setColor(BuiltInBlocklyColor.ENTITY_COLOR).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("").buildAndReturn()
+				.setLanguage(en, "append empty compound tag to entity %1 location %2")
+				.setLanguage(zh, "追加空nbt组件到实体%1位置%2").initGenerator().buildAndOutput();
 
 		factory.getToolKit().createOutputProcedure("item_player_skull", BuiltInTypes.ItemStack)
 				.setColor(BuiltInBlocklyColor.ITEMSTACK_COLOR).setToolBoxId(BuiltInToolBoxId.Procedure.ITEM_DATA)

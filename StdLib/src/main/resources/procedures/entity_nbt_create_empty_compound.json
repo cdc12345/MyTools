@@ -1,0 +1,30 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "tagName",
+      "check": "String"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "195",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "entitymanagement",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
+      "<value name=\"tagName\"><block type=\"text\"><field name=\"TEXT\"></field></block></value>"
+    ],
+    "inputs": [
+      "entity",
+      "tagName"
+    ]
+  }
+}
