@@ -23,9 +23,9 @@ public class DataGen {
 		mcr.createProcedureCategory("json_walker").setColor("#F0FF2").setLanguage(en, "Json walker").buildAndOutput();
 		mcr.createProcedureCategory("nbt_walker").setColor("#F0FF1").setLanguage(en,"NBT Walker").buildAndOutput();
 
-		mcr.createProcedure("walk_json_element").appendArgs0InputValue("jsonelement", JsonElementType.getInstance()).statementBuilder().setName("walkplace").appendProvide("walker","walker").buildAndReturn()
+		mcr.createProcedure("walk_nbt_element").appendArgs0InputValue("jsonelement", JsonElementType.getInstance()).statementBuilder().setName("walkplace").appendProvide("walker","walker").buildAndReturn()
 				.setLanguage(en, "start json walker's journey, origin: %1").initGenerator().buildAndOutput();
-		mcr.createProcedure("walk_json_into").appendArgs0InputValue("key", BuiltInTypes.String)
+		mcr.createProcedure("walk_nbt_into").appendArgs0InputValue("key", BuiltInTypes.String)
 				.setLanguage(en, "walk in %1").initGenerator().buildAndOutput();
 
 		mcr.getToolKit().createOutputProcedure("walk_json_set_number", BuiltInTypes.Number).appendArgs0InputValue("value",BuiltInTypes.Number).setPlaceHolderLanguage(en,"set value number: %value").initGenerator()

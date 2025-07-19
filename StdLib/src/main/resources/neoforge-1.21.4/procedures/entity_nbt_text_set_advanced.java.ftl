@@ -1,0 +1,2 @@
+<#assign tagSplit = opt.removeParentheses(input$tagName)?replace("\"","")?split(".")>
+${input$entity}.getPersistentData()<#list tagSplit as tag><#if tag?has_next>.getCompound("${tag}")<#else>.putString("${tag}",${input$tagValue})</#if></#list>;

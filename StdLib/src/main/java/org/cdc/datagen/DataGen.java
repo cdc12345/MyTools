@@ -18,7 +18,7 @@ public class DataGen {
 
 		factory.createTrigger("on_gui_layer_render").appendDependency("namespace", BuiltInTypes.String)
 				.appendDependency("path", BuiltInTypes.String).setLanguage(en, "On layer render").setCancelable(true)
-				.setLanguage(zh,"GUI层渲染时").setSide(Side.Client).initGenerator().buildAndOutput();
+				.setLanguage(zh, "GUI层渲染时").setSide(Side.Client).initGenerator().buildAndOutput();
 
 		factory.getToolKit().createOutputProcedure("entity_save_to_string", BuiltInTypes.String)
 				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0InputValue("entity", BuiltInTypes.Entity)
@@ -55,6 +55,62 @@ public class DataGen {
 				.buildAndReturn().setCategory(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT).initGenerator()
 				.setLanguage(en, "set entity %1 invulnerableTime to %2").setLanguage(zh, "设置实体%1的无敌帧为%2")
 				.buildAndOutput();
+		factory.getToolKit().createOutputProcedure("entity_nbt_logic_get_advanced", BuiltInTypes.Boolean)
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("node1.node2").buildAndReturn()
+				.setLanguage(en, "get entity %1 logic nbt %2").setLanguage(zh, "得到实体%1的逻辑nbt%2").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createOutputProcedure("entity_nbt_num_get_advanced", BuiltInTypes.Number)
+				.setColor(BuiltInBlocklyColor.MATH.toString()).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("node1.node2").buildAndReturn()
+				.setLanguage(en, "get entity %1 number nbt %2").setLanguage(zh, "得到实体%1的数字nbt%2").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createOutputProcedure("entity_nbt_text_get_advanced", BuiltInTypes.String)
+				.setColor(BuiltInBlocklyColor.TEXTS.toString()).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("node1.node2").buildAndReturn()
+				.setLanguage(en, "get entity %1 text nbt %2").setLanguage(zh, "得到实体%1的字符串nbt%2").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_nbt_text_set_advanced")
+				.setColor(BuiltInBlocklyColor.TEXTS.toString())
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("node1.node2.node3").buildAndReturn()
+				.appendArgs0InputValue("tagValue", BuiltInTypes.String).toolBoxInitBuilder().setName("tagValue")
+				.appendConstantString("").buildAndReturn().setLanguage(en, "set entity %1 text nbt %2 to %3")
+				.setLanguage(zh, "得到实体%1的字符串nbt%2为%3").initGenerator().buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_nbt_logic_set_advanced")
+				.setColor(BuiltInBlocklyColor.LOGIC.toString())
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("node1.node2.node3").buildAndReturn()
+				.appendArgs0InputValue("tagValue", BuiltInTypes.Boolean).toolBoxInitBuilder().setName("tagValue")
+				.appendConstantBoolean(true).buildAndReturn().setLanguage(en, "set entity %1 logic nbt %2 to %3")
+				.setLanguage(zh, "设置实体%1的字符串nbt%2为%3").initGenerator().buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_nbt_num_set_advanced")
+				.setColor(BuiltInBlocklyColor.MATH.toString())
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("tagName").appendConstantString("node1.node2.node3").buildAndReturn()
+				.appendArgs0InputValue("tagValue", BuiltInTypes.Number).toolBoxInitBuilder().setName("tagValue")
+				.appendConstantNumber(0).buildAndReturn().setLanguage(en, "set entity %1 number nbt %2 to %3")
+				.setLanguage(zh, "设置实体%1的数字nbt%2为%3").initGenerator().buildAndOutput();
+
+		factory.getToolKit().createOutputProcedure("item_player_skull", BuiltInTypes.ItemStack)
+				.setColor(BuiltInBlocklyColor.ITEMSTACK_COLOR).setToolBoxId(BuiltInToolBoxId.Procedure.ITEM_DATA)
+				.appendArgs0InputValue("name", BuiltInTypes.String).toolBoxInitBuilder().setName("name")
+				.appendConstantString("cdc12345").buildAndReturn().appendArgs0InputValue("uuid", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("uuid").appendConstantString("fefb13e3-3089-433e-9f72-ffb85e62dd73")
+				.buildAndReturn().setLanguage(en, "get player skull, name: %1, uuid: %2")
+				.setLanguage(zh, "获取玩家头颅物品,name: %1,UUID: %2").initGenerator().buildAndOutput();
 
 		factory.getToolKit().createOutputProcedure("math_plus_self", BuiltInTypes.Number)
 				.setToolBoxId(BuiltInToolBoxId.Procedure.MATH).setColor(BuiltInBlocklyColor.MATH.toString())

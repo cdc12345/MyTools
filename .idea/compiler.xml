@@ -9,11 +9,6 @@
       <module name="MyTool" options="" />
       <module name="MyTool.ArrayList" options="" />
       <module name="MyTool.ArrayList.main" options="" />
-      <module name="MyTool.ArrayList.src" options="" />
-      <module name="MyTool.ArrayList.src.main" options="" />
-      <module name="MyTool.ArrayList.src.main.LootModifier" options="" />
-      <module name="MyTool.ArrayList.src.main.LootModifier.main" options="" />
-      <module name="MyTool.ArrayList.src.main.LootModifier.test" options="" />
       <module name="MyTool.ArrayList.test" options="" />
       <module name="MyTool.Attributes" options="" />
       <module name="MyTool.Attributes.main" options="" />
@@ -27,8 +22,6 @@
       <module name="MyTool.Fountain" options="" />
       <module name="MyTool.Fountain.main" options="" />
       <module name="MyTool.Fountain.test" options="" />
-      <module name="MyTool.Gson.main" options="" />
-      <module name="MyTool.Gson.test" options="" />
       <module name="MyTool.JDKVendor" options="" />
       <module name="MyTool.JDKVendor.main" options="" />
       <module name="MyTool.JDKVendor.test" options="" />

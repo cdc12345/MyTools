@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "tagName",
+      "check": "String"
+    }
+  ],
+  "output": "Boolean",
+  "inputsInline": true,
+  "colour": "%{BKY_LOGIC_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "entitydata",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
+      "<value name=\"tagName\"><block type=\"text\"><field name=\"TEXT\">node1.node2</field></block></value>"
+    ],
+    "inputs": [
+      "entity",
+      "tagName"
+    ]
+  }
+}

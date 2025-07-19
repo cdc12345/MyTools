@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "name",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "uuid",
+      "check": "String"
+    }
+  ],
+  "output": "MCItem",
+  "inputsInline": true,
+  "colour": "250",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "itemdata",
+    "toolbox_init": [
+      "<value name=\"name\"><block type=\"text\"><field name=\"TEXT\">cdc12345</field></block></value>",
+      "<value name=\"uuid\"><block type=\"text\"><field name=\"TEXT\">fefb13e3-3089-433e-9f72-ffb85e62dd73</field></block></value>"
+    ],
+    "inputs": [
+      "name",
+      "uuid"
+    ]
+  }
+}
