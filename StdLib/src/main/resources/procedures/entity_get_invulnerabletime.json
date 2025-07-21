@@ -8,7 +8,7 @@
   ],
   "output": "Number",
   "inputsInline": true,
-  "colour": "%{BKY_MATH_HUE}",
+  "colour": "195",
   "mcreator": {
     "toolbox_init": [
       "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>"

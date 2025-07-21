@@ -27,12 +27,13 @@ tasks.withType(JavaCompile).configureEach {
 tasks.jar {
     exclude("org/cdc/datagen/**")
 
+    inputs.dir(mcreator_plugins_path)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName.set("arraylist.zip")
 
     doLast {
         copy {
-            from "build/libs/"+archiveFileName.get();
+            from archiveFile.get()
             into mcreator_plugins_path
         }
     }

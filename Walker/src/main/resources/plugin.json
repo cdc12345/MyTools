@@ -1,0 +1,14 @@
+{
+  "id": "walkers",
+  "supportedversions": [
+    "2025001",
+    "2025002"
+  ],
+  "weight": 0,
+  "info": {
+    "name": "Walkers",
+    "version": "2025.2.718",
+    "description": "Walkers",
+    "author": "cdc12345"
+  }
+}

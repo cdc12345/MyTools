@@ -20,6 +20,17 @@ public class DataGen {
 				.appendDependency("path", BuiltInTypes.String).setLanguage(en, "On layer render").setCancelable(true)
 				.setLanguage(zh, "GUI层渲染时").setSide(Side.Client).initGenerator().buildAndOutput();
 
+		factory.getToolKit().createOutputProcedure("vec3_create_vec", "_vec3")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.MATH)
+				.appendArgs0InputValueWithDefaultToolboxInit("x", BuiltInTypes.Number)
+				.appendArgs0InputValueWithDefaultToolboxInit("y", BuiltInTypes.Number)
+				.appendArgs0InputValueWithDefaultToolboxInit("z", BuiltInTypes.Number)
+				.setLanguage(en, "create vector x: %1 y: %2 z: %3").setLanguage(zh,"创建向量x: %1 y: %2 z: %3").initGenerator().buildAndOutput();
+		factory.getToolKit().createOutputProcedure("entity_get_view_vectory", "_vec3")
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValueWithDefaultToolboxInit("distance", BuiltInTypes.Number)
+				.setLanguage(en, "get view vector of %1 with distance %2").initGenerator().buildAndOutput();
+
 		factory.getToolKit().createOutputProcedure("entity_save_to_string", BuiltInTypes.String)
 				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0InputValue("entity", BuiltInTypes.Entity)
 				.toolBoxInitBuilder().setName("entity").appendDefaultEntity().buildAndReturn()
@@ -103,7 +114,7 @@ public class DataGen {
 				.appendArgs0InputValue("tagValue", BuiltInTypes.Number).toolBoxInitBuilder().setName("tagValue")
 				.appendConstantNumber(0).buildAndReturn().setLanguage(en, "set entity %1 number nbt %2 to %3")
 				.setLanguage(zh, "设置实体%1的数字nbt%2为%3").initGenerator().buildAndOutput();
-		factory.getToolKit().createOutputProcedure("entity_nbt_has_advanced",BuiltInTypes.Boolean)
+		factory.getToolKit().createOutputProcedure("entity_nbt_has_advanced", BuiltInTypes.Boolean)
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
 				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
 				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("tagName", BuiltInTypes.String)

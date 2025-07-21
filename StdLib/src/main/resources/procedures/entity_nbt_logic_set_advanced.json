@@ -19,7 +19,7 @@
   "previousStatement": null,
   "nextStatement": null,
   "inputsInline": true,
-  "colour": "%{BKY_LOGIC_HUE}",
+  "colour": "195",
   "mcreator": {
     "group": "name",
     "toolbox_id": "entitymanagement",

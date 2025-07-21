@@ -8,7 +8,7 @@
   ],
   "output": "Number",
   "inputsInline": true,
-  "colour": "%{BKY_MATH_HUE}",
+  "colour": "195",
   "mcreator": {
     "group": "name",
     "toolbox_id": "entitydata",

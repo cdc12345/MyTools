@@ -8,7 +8,7 @@
   ],
   "output": "String",
   "inputsInline": true,
-  "colour": "%{BKY_TEXTS_HUE}",
+  "colour": "195",
   "mcreator": {
     "group": "name",
     "toolbox_init": [
