@@ -9,6 +9,7 @@ import java.util.Locale;
 
 public class DataGen {
 
+	// 我是人
 	private static final String PLUS_SELF = "<block type=\"math_plus_self\"><value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block>";
 
 	public static void main(String[] args) {

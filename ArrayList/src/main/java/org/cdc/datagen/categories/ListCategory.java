@@ -8,4 +8,8 @@ public enum ListCategory implements IProcedureCategory {
 	@Override public String getName() {
 		return "list";
 	}
+
+	@Override public String getDefaultColor() {
+		return "40";
+	}
 }

@@ -23,8 +23,8 @@ public class DataGen {
 				.appendElement("BlockState", List.of("BlockState", "Blocks.AIR.defaultBlockState()"))
 				.appendElement("Logic", List.of("Boolean", "\"false\""))
 				.appendElement("Direction", List.of("Direction", "\"Direction.NORTH\""))
-				.appendElement("DamageSource",List.of("DamageSource","null"))
-				.appendElement("ItemStack",List.of("ItemStack","ItemStack.EMPTY"))
+				.appendElement("DamageSource", List.of("DamageSource", "null"))
+				.appendElement("ItemStack", List.of("ItemStack", "ItemStack.EMPTY"))
 				.setMessageLocalization(en, "Select a type").setMessageLocalization(zh, "选择一个类型").setDefault()
 				.initGenerator().buildAndOutput();
 		plugin.createDataList("types").appendElement("objectlist", "ArrayList<Object>").initGenerator().build();
@@ -33,7 +33,9 @@ public class DataGen {
 		plugin.createProcedureCategory(ListCategory.INSTANCE.getName()).setColor(40).setLanguage(en, "Lists")
 				.setLanguage(zh, "列表").buildAndOutput();
 		plugin.createVariable().setName("objectlist").setBlocklyVariableType("ObjectList").setColor(40)
-				.setNullable(false).setIgnoredByCoverage(true).initGenerator().buildAndOutput();
+				.setNullable(false).setIgnoredByCoverage(true).setSetterText(en, "set objectList")
+				.setGetterText(en, "get objectList").setReturnText(en, "return objectlist")
+				.setSetterText(zh, "设objectList").setGetterText(zh, "得到ObjectList").initGenerator().buildAndOutput();
 
 		//list management
 		plugin.getToolKit().createInputProcedure("list_add").setColor(40).appendArgs0InputValue("list", "ObjectList")
@@ -48,7 +50,7 @@ public class DataGen {
 				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String").toolBoxInitBuilder()
 				.setName("index").appendConstantNumber(0).buildAndReturn()
 				.setPlaceHolderLanguage(en, "get element index %index from %list, type: %type").initGenerator()
-				.setPlaceHolderLanguage(en, "得到元素, 索引 %index 列表 %list 类型: %type").buildAndOutput();
+				.setPlaceHolderLanguage(zh, "得到元素, 索引 %index 列表 %list 类型: %type").buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_check_type", BuiltInTypes.Boolean)
 				.appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
@@ -68,20 +70,23 @@ public class DataGen {
 				.setPlaceHolderLanguage(en, "set index %index to %element list: %list")
 				.setPlaceHolderLanguage(zh, "设置列表%list中的第%index为%element").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_size", BuiltInTypes.Number)
-				.appendArgs0InputValue("list", ObjectListType.INSTANCE).initGenerator()
-				.setPlaceHolderLanguage(en, "get size of %list").setPlaceHolderLanguage(zh, "列表 %list 的长度")
-				.buildAndOutput();
+				.setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.initGenerator().setPlaceHolderLanguage(en, "get size of %list")
+				.setPlaceHolderLanguage(zh, "列表 %list 的长度").buildAndOutput();
 		plugin.getToolKit().createInputProcedure("list_reverse").appendArgs0InputValue("list", ObjectListType.INSTANCE)
 				.setPlaceHolderLanguage(en, "reverse %list").setPlaceHolderLanguage(zh, "反转列表%list").initGenerator()
 				.buildAndOutput();
 		plugin.getToolKit().createInputProcedure("list_merge").appendArgs0InputValue("origin", ObjectListType.INSTANCE)
 				.appendArgs0InputValue("target", ObjectListType.INSTANCE)
-				.setPlaceHolderLanguage(en, "%origin merge with %target")
-				.setPlaceHolderLanguage(zh, "%origin与%target合并").initGenerator().buildAndOutput();
+				.setPlaceHolderLanguage(en, "%origin add all from %target")
+				.setPlaceHolderLanguage(zh, "给%origin添加所有%target的元素").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_contains", BuiltInTypes.Boolean)
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
 				.appendArgs0InputValue("value", (String) null).setPlaceHolderLanguage(en, "list %list contains %value")
 				.setPlaceHolderLanguage(zh, "列表%list包含%value").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("list_is_empty", BuiltInTypes.Boolean)
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.setLanguage(en, "is %1 empty").initGenerator().buildAndOutput();
 
 		plugin.getToolKit().createOutputProcedure("list_get_advanced", (String) null)
 				.appendArgs0InputValue("list", "ObjectList").appendArgs0InputValue("index", BuiltInTypes.Number)
@@ -94,6 +99,16 @@ public class DataGen {
 				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
 				.setLanguage(en, "get all numbers from list %1 and sort")
 				.setPlaceHolderLanguage(zh, "从列表%list获得所有数字并整理").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("index_of_list", BuiltInTypes.Number)
+				.setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0FieldInput("mark", "1")
+				.setLanguage(en, "Index %1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createInputProcedure("list_for_each").setToolBoxId(ListCategory.INSTANCE)
+				.appendArgs0InputValue("for_list", ObjectListType.INSTANCE)
+				.appendArgs0InputValue("_placeholder", BuiltInTypes.Number, true).toolBoxInitBuilder()
+				.setName("_placeholder").appendReferenceBlock("index_of_list").buildAndReturn()
+				.appendExtension(BuiltInExtensions.IS_CUSTOM_LOOP).appendArgs0StatementInput("for_each")
+				.statementBuilder().setName("for_each").buildAndReturn().setLanguage(en, "for each %1 %2 %3")
+				.initGenerator().buildAndOutput();
 
 		//math
 		plugin.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())
@@ -112,6 +127,7 @@ public class DataGen {
 
 		en.buildAndOutput();
 		zh.buildAndOutput();
+
 
 	}
 }
