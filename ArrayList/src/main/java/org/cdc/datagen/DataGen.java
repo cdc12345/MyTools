@@ -35,7 +35,9 @@ public class DataGen {
 		plugin.createVariable().setName("objectlist").setBlocklyVariableType("ObjectList").setColor(40)
 				.setNullable(false).setIgnoredByCoverage(true).setSetterText(en, "set objectList")
 				.setGetterText(en, "get objectList").setReturnText(en, "return objectlist")
-				.setSetterText(zh, "设objectList").setGetterText(zh, "得到ObjectList").initGenerator().buildAndOutput();
+				.setCustomDependency(en, "Objectlist dependency")
+				.setCallProcedureRetval(en, "Call procedure and get objectList return value")
+				.setSetterText(zh, "设objectList").setGetterText(zh, "得到objectList").initGenerator().buildAndOutput();
 
 		//list management
 		plugin.getToolKit().createInputProcedure("list_add").setColor(40).appendArgs0InputValue("list", "ObjectList")
@@ -127,7 +129,6 @@ public class DataGen {
 
 		en.buildAndOutput();
 		zh.buildAndOutput();
-
 
 	}
 }
