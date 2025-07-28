@@ -25,10 +25,12 @@ public class DataGen {
 				.appendArgs0InputValueWithDefaultToolboxInit("x", BuiltInTypes.Number)
 				.appendArgs0InputValueWithDefaultToolboxInit("y", BuiltInTypes.Number)
 				.appendArgs0InputValueWithDefaultToolboxInit("z", BuiltInTypes.Number)
-				.setLanguage(en, "create vector x: %1 y: %2 z: %3").setLanguage(zh,"创建向量x: %1 y: %2 z: %3").initGenerator().buildAndOutput();
+				.setLanguage(en, "create vector x: %1 y: %2 z: %3").setLanguage(zh, "创建向量x: %1 y: %2 z: %3")
+				.initGenerator().buildAndOutput();
 		factory.getToolKit().createOutputProcedure("entity_get_view_vectory", "_vec3")
 				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
-				.appendDefaultEntity().buildAndReturn().appendArgs0InputValueWithDefaultToolboxInit("distance", BuiltInTypes.Number)
+				.appendDefaultEntity().buildAndReturn()
+				.appendArgs0InputValueWithDefaultToolboxInit("distance", BuiltInTypes.Number)
 				.setLanguage(en, "get view vector of %1 with distance %2").initGenerator().buildAndOutput();
 
 		factory.getToolKit().createOutputProcedure("entity_save_to_string", BuiltInTypes.String)
@@ -136,6 +138,13 @@ public class DataGen {
 				.toolBoxInitBuilder().setName("uuid").appendConstantString("fefb13e3-3089-433e-9f72-ffb85e62dd73")
 				.buildAndReturn().setLanguage(en, "get player skull, name: %1, uuid: %2")
 				.setLanguage(zh, "获取玩家头颅物品,name: %1,UUID: %2").initGenerator().buildAndOutput();
+		factory.getToolKit().createInputProcedure("item_unbreakable_set")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ITEM_MANAGEMENT).setColor(BuiltInBlocklyColor.ITEMSTACK_COLOR)
+				.appendArgs0InputValue("itemstack", BuiltInTypes.ItemStack).toolBoxInitBuilder().setName("itemstack")
+				.appendDefaultItem().buildAndReturn()
+				.appendArgs0InputValueWithDefaultToolboxInit("add_to_tooltip", BuiltInTypes.Boolean)
+				.setLanguage(en, "make itemstack %1 unbreakable, addToTooltip: %2")
+				.setLanguage(zh, "使物品%1无法破坏，显示在物品tooltip: %2").initGenerator().buildAndOutput();
 
 		factory.getToolKit().createOutputProcedure("math_plus_self", BuiltInTypes.Number)
 				.setToolBoxId(BuiltInToolBoxId.Procedure.MATH).setColor(BuiltInBlocklyColor.MATH.toString())

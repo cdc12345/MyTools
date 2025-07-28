@@ -1,3 +1,4 @@
+<-- unchecked -->
 <#assign cls=generator.map(field$type,"supportedtypes",0)>
 /*@${cls}*/(new Object() {
 	private <E> E getListElement(ArrayList<Object> objects, int index, Class<E> eClass,

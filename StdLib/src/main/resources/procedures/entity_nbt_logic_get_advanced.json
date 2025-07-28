@@ -13,7 +13,7 @@
   ],
   "output": "Boolean",
   "inputsInline": true,
-  "colour": "195",
+  "colour": "%{BKY_LOGIC_HUE}",
   "mcreator": {
     "group": "name",
     "toolbox_id": "entitydata",

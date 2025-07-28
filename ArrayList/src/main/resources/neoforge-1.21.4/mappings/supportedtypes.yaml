@@ -1,18 +1,27 @@
+BlockState: 
+ - BlockState
+ - Blocks.AIR.defaultBlockState()
+DamageSource: 
+ - DamageSource
+ - null
+Direction: 
+ - Direction
+ - "Direction.NORTH"
 Entity: 
  - Entity
- - "null"
+ - null
+ItemStack: 
+ - ItemStack
+ - ItemStack.EMPTY
+Logic: 
+ - Boolean
+ - "false"
 Number: 
  - Double
  - "0"
 Text: 
  - String
  - "\"\""
-BlockState:
- - BlockState
- - "Blocks.AIR.defaultBlockState()"
-Boolean:
- - Boolean
- - "false"
-_default:
+_default: 
  - String
  - "\"\""

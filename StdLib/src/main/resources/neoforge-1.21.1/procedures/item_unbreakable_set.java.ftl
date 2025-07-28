@@ -1,0 +1,1 @@
+${input$itemstack}.set(DataComponents.UNBREAKABLE,new Unbreakable(${input$add_to_tooltip}));
