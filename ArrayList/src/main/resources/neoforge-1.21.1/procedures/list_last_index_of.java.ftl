@@ -1,0 +1,1 @@
+(${input$list}.lastIndexOf(${input$value}))

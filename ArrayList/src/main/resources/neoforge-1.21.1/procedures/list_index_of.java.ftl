@@ -1,0 +1,1 @@
+(${input$list}.indexOf(${input$value}))

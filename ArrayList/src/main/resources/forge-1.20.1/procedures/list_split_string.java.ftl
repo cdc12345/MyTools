@@ -1,0 +1,1 @@
+List.of(${input$text}.split(${input$seperator}))

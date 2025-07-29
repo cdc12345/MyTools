@@ -1,6 +1,7 @@
 package org.cdc.datagen;
 
 import org.cdc.datagen.categories.ListCategory;
+import org.cdc.datagen.types.ArrayListsType;
 import org.cdc.datagen.types.ObjectListType;
 import org.cdc.framework.MCreatorPluginFactory;
 import org.cdc.framework.utils.*;
@@ -59,7 +60,7 @@ public class DataGen {
 				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String")
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).toolBoxInitBuilder().setName("index")
 				.appendConstantNumber(0).buildAndReturn()
-				.setPlaceHolderLanguage(en, "Element index %index from %list is type %type")
+				.setPlaceHolderLanguage(en, "is element index %index in %list type %type")
 				.setPlaceHolderLanguage(zh, "列表%list中的第%index是%type").initGenerator().buildAndOutput();
 		plugin.getToolKit().createInputProcedure("list_remove").appendArgs0InputValue("index", BuiltInTypes.Number)
 				.appendArgs0InputValue("list", "ObjectList").toolBoxInitBuilder().setName("index")
@@ -111,6 +112,28 @@ public class DataGen {
 				.appendExtension(BuiltInExtensions.IS_CUSTOM_LOOP).appendArgs0StatementInput("for_each")
 				.statementBuilder().setName("for_each").buildAndReturn().setLanguage(en, "for each %1 %2 %3")
 				.initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("list_split_string", ObjectListType.INSTANCE)
+				.setToolBoxId(ListCategory.INSTANCE)
+				.appendArgs0InputValueWithDefaultToolboxInit("text", BuiltInTypes.String)
+				.appendArgs0InputValue("seperator", BuiltInTypes.String).toolBoxInitBuilder().setName("seperator")
+				.appendConstantString(",").buildAndReturn().setLanguage(en, "split %1 using %2")
+				.setLanguage(zh, "使用%2分割%1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("list_index_of", BuiltInTypes.Number)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.appendArgs0InputValue("value", (String) null).toolBoxInitBuilder().setName("value").appendConstantString("element")
+				.buildAndReturn().setLanguage(en, "get index of %2 in list %1 or -1 if value not exist")
+				.setLanguage(zh, "%2如果在%1那么返回其索引否则-1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("list_last_index_of", BuiltInTypes.Number)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.appendArgs0InputValue("value", (String) null).toolBoxInitBuilder().setName("value").appendConstantString("element")
+				.buildAndReturn().setLanguage(en, "get last index of %2 in list %1 or -1 if value not exist")
+				.setLanguage(zh, "%2如果在%1那么返回其最后所在的索引否则-1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("list_compatible_with_arraylists", ArrayListsType.INSTANCE)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(300).appendArgs0InputValue("objectlist_var", ObjectListType.INSTANCE)
+				.setLanguage(en, "ArrayListsSupport: to ArrayLists %1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("arraylists_compatible_with_objectslist", ObjectListType.INSTANCE)
+				.setToolBoxId(ListCategory.INSTANCE).appendArgs0InputValue("arraylists_var", ArrayListsType.INSTANCE)
+				.setLanguage(en, "ArrayListsSupport: to ObjectList %1").initGenerator().buildAndOutput();
 
 		//math
 		plugin.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())
@@ -129,6 +152,8 @@ public class DataGen {
 
 		en.buildAndOutput();
 		zh.buildAndOutput();
+
+
 
 	}
 }

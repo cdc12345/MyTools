@@ -1,3 +1,1 @@
-<#-- ${input$list} -->
-<#--  -->
-<#--  -->
+(${input$list}.isEmpty())

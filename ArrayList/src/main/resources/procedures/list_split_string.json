@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "text",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "seperator",
+      "check": "String"
+    }
+  ],
+  "output": "ObjectList",
+  "inputsInline": true,
+  "colour": "40",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "list",
+    "toolbox_init": [
+      "<value name=\"text\"><block type=\"text\"><field name=\"TEXT\">text</field></block></value>",
+      "<value name=\"seperator\"><block type=\"text\"><field name=\"TEXT\">,</field></block></value>"
+    ],
+    "inputs": [
+      "text",
+      "seperator"
+    ]
+  }
+}

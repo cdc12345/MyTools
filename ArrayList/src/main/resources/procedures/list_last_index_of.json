@@ -1,0 +1,27 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "list",
+      "check": "ObjectList"
+    },
+    {
+      "type": "input_value",
+      "name": "value"
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "list",
+    "toolbox_init": [
+      "<value name=\"value\"><block type=\"text\"><field name=\"TEXT\">element</field></block></value>"
+    ],
+    "inputs": [
+      "list",
+      "value"
+    ]
+  }
+}
