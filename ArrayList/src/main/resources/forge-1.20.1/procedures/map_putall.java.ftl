@@ -1,3 +1,1 @@
-<#-- ${input$receiver},${input$source} -->
-<#--  -->
-<#--  -->
+${input$receiver}.putAll(${input$source});

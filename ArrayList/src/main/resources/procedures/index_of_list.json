@@ -1,0 +1,19 @@
+{
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "mark",
+      "text": "1"
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "list",
+    "fields": [
+      "mark"
+    ]
+  }
+}

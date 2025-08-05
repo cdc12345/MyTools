@@ -1,0 +1,41 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "for_map",
+      "check": "ObjectMap"
+    },
+    {
+      "type": "input_value",
+      "name": "_placeholder",
+      "check": "String"
+    },
+    {
+      "type": "input_statement",
+      "name": "for_each"
+    }
+  ],
+  "extensions": [
+    "is_custom_loop"
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": 45,
+  "mcreator": {
+    "group": "name",
+    "toolbox_init": [
+      "<value name=\"_placeholder\"><block type=\"key_of_map\"></block></value>"
+    ],
+    "toolbox_id": "maps",
+    "inputs": [
+      "for_map",
+      "_placeholder"
+    ],
+    "statements": [
+      {
+        "name": "for_each"
+      }
+    ]
+  }
+}
