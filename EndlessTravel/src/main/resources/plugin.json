@@ -1,14 +1,14 @@
 {
-  "id": "stdlibsforcdc",
+  "id": "endlesstravel",
   "supportedversions": [
     "2025001",
     "2025002"
   ],
   "weight": 0,
   "info": {
-    "name": "MoreProcedures",
+    "name": "Endless Travel",
     "version": "2025.2.718",
-    "description": "add more procedures",
+    "description": "The way you not take",
     "author": "cdc12345"
   }
 }

@@ -19,6 +19,12 @@ Logic:
 Number: 
  - Double
  - "0"
+ObjectList: 
+ - ArrayList
+ - null
+ObjectMap: 
+ - HashMap
+ - null
 Text: 
  - String
  - "\"\""

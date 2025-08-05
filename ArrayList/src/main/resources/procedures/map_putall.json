@@ -1,0 +1,26 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "receiver",
+      "check": "ObjectMap"
+    },
+    {
+      "type": "input_value",
+      "name": "source",
+      "check": "ObjectMap"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": 45,
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "maps",
+    "inputs": [
+      "receiver",
+      "source"
+    ]
+  }
+}

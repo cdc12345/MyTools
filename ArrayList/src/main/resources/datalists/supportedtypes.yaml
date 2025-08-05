@@ -6,3 +6,5 @@
 - Direction
 - DamageSource
 - ItemStack
+- ObjectList
+- ObjectMap

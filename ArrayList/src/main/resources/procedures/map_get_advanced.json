@@ -1,0 +1,40 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "map",
+      "check": "ObjectMap"
+    },
+    {
+      "type": "input_value",
+      "name": "map_key",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "type",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "defaultValue"
+    }
+  ],
+  "output": null,
+  "inputsInline": true,
+  "colour": "%{BKY_LOGIC_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_init": [
+      "<value name=\"map_key\"><block type=\"text\"><field name=\"TEXT\">Map key</field></block></value>",
+      "<value name=\"type\"><block type=\"text\"><field name=\"TEXT\">java.lang.String</field></block></value>"
+    ],
+    "toolbox_id": "maps",
+    "inputs": [
+      "map",
+      "map_key",
+      "type",
+      "defaultValue"
+    ]
+  }
+}

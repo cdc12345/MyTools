@@ -1,14 +1,14 @@
 {
-  "id": "arraylist",
+  "id": "collections",
   "supportedversions": [
     "2025001",
     "2025002"
   ],
   "weight": 0,
   "info": {
-    "name": "arraylist",
+    "name": "Collection",
     "version": "2025.2.718",
-    "description": "Intro the list to your mcreator",
+    "description": "Intro some surprise to your mcreator",
     "author": "cdc12345"
   }
 }

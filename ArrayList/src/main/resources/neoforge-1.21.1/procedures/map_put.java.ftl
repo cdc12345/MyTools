@@ -1,0 +1,1 @@
+${input$map}.put(${input$map_key},${input$map_value});

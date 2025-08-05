@@ -41,7 +41,7 @@ tasks.jar {
 
 tasks.register("runDataGen",JavaExec).configure {
     group = "build"
-    main("org.cdc.datagen.DataGen")
+    main("org.cdc.datagen.CollectionsDataGen")
     classpath = sourceSets.main.runtimeClasspath
     workingDir(projectDir)
 }

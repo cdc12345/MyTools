@@ -22,6 +22,12 @@ Number:
 Text: 
  - String
  - "\"\""
+ObjectList:
+ - ArrayList
+ - null
+ObjectMap:
+ - HashMap
+ - null
 _default: 
  - String
  - "\"\""

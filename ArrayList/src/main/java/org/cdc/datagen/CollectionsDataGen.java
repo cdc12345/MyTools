@@ -1,8 +1,10 @@
 package org.cdc.datagen;
 
 import org.cdc.datagen.categories.ListCategory;
+import org.cdc.datagen.categories.MapsCategory;
 import org.cdc.datagen.types.ArrayListsType;
 import org.cdc.datagen.types.ObjectListType;
+import org.cdc.datagen.types.ObjectMapType;
 import org.cdc.framework.MCreatorPluginFactory;
 import org.cdc.framework.utils.*;
 
@@ -10,7 +12,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
-public class DataGen {
+public class CollectionsDataGen {
 	public static void main(String[] args) {
 		MCreatorPluginFactory plugin = new MCreatorPluginFactory(new File("src/main/resources").getAbsoluteFile());
 		var en = plugin.createDefaultLanguage();
@@ -26,19 +28,28 @@ public class DataGen {
 				.appendElement("Direction", List.of("Direction", "\"Direction.NORTH\""))
 				.appendElement("DamageSource", List.of("DamageSource", "null"))
 				.appendElement("ItemStack", List.of("ItemStack", "ItemStack.EMPTY"))
-				.setMessageLocalization(en, "Select a type").setMessageLocalization(zh, "选择一个类型").setDefault()
-				.initGenerator().buildAndOutput();
-		plugin.createDataList("types").appendElement("objectlist", "ArrayList<Object>").initGenerator().build();
+				.appendElement("ObjectList", List.of("ArrayList", "null"))
+				.appendElement("ObjectMap", List.of("HashMap", "null")).setMessageLocalization(en, "Select a type")
+				.setMessageLocalization(zh, "选择一个类型").setDefault().initGenerator().buildAndOutput();
+		plugin.createDataList("types").appendElement("objectlist", "ArrayList<Object>")
+				.appendElement("objectmap", "HashMap<String,Object>").initGenerator().build();
 
 		//ini
+		plugin.createProcedureCategory(MapsCategory.INSTANCE.getName()).setColor(45).setLanguage(en, "Maps")
+				.setLanguage(zh, "字典").buildAndOutput();
 		plugin.createProcedureCategory(ListCategory.INSTANCE.getName()).setColor(40).setLanguage(en, "Lists")
 				.setLanguage(zh, "列表").buildAndOutput();
 		plugin.createVariable().setName("objectlist").setBlocklyVariableType("ObjectList").setColor(40)
 				.setNullable(false).setIgnoredByCoverage(true).setSetterText(en, "set objectList")
-				.setGetterText(en, "get objectList").setReturnText(en, "return objectlist")
-				.setCustomDependency(en, "Objectlist dependency")
+				.setGetterText(en, "get objectList").setReturnText(en, "return objectList")
+				.setCustomDependency(en, "ObjectList dependency")
 				.setCallProcedureRetval(en, "Call procedure and get objectList return value")
 				.setSetterText(zh, "设objectList").setGetterText(zh, "得到objectList").initGenerator().buildAndOutput();
+		plugin.createVariable().setName("objectmap").setBlocklyVariableType("ObjectMap").setColor(40).setNullable(false)
+				.setIgnoredByCoverage(true).setSetterText(en, "set objectMap").setGetterText(en, "get objectMap")
+				.setReturnText(en, "return objectMap").setCustomDependency(en, "ObjectMap dependency")
+				.setCallProcedureRetval(en, "Call procedure and get objectMap return value")
+				.setSetterText(zh, "设objectMap").setGetterText(zh, "得到objectMap").initGenerator().buildAndOutput();
 
 		//list management
 		plugin.getToolKit().createInputProcedure("list_add").setColor(40).appendArgs0InputValue("list", "ObjectList")
@@ -85,7 +96,8 @@ public class DataGen {
 				.setPlaceHolderLanguage(zh, "给%origin添加所有%target的元素").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_contains", BuiltInTypes.Boolean)
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
-				.appendArgs0InputValue("value", (String) null).setPlaceHolderLanguage(en, "list %list contains %value")
+				.appendArgs0InputValue("value", (String) null).toolBoxInitBuilder().setName("value")
+				.appendConstantString("value").buildAndReturn().setPlaceHolderLanguage(en, "list %list contains %value")
 				.setPlaceHolderLanguage(zh, "列表%list包含%value").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_is_empty", BuiltInTypes.Boolean)
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
@@ -119,21 +131,83 @@ public class DataGen {
 				.appendConstantString(",").buildAndReturn().setLanguage(en, "split %1 using %2")
 				.setLanguage(zh, "使用%2分割%1").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_index_of", BuiltInTypes.Number)
-				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
-				.appendArgs0InputValue("value", (String) null).toolBoxInitBuilder().setName("value").appendConstantString("element")
-				.buildAndReturn().setLanguage(en, "get index of %2 in list %1 or -1 if value not exist")
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.MATH.toString())
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).appendArgs0InputValue("value", (String) null)
+				.toolBoxInitBuilder().setName("value").appendConstantString("element").buildAndReturn()
+				.setLanguage(en, "get index of %2 in list %1 or -1 if value not exist")
 				.setLanguage(zh, "%2如果在%1那么返回其索引否则-1").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_last_index_of", BuiltInTypes.Number)
-				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
-				.appendArgs0InputValue("value", (String) null).toolBoxInitBuilder().setName("value").appendConstantString("element")
-				.buildAndReturn().setLanguage(en, "get last index of %2 in list %1 or -1 if value not exist")
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.MATH.toString())
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE).appendArgs0InputValue("value", (String) null)
+				.toolBoxInitBuilder().setName("value").appendConstantString("element").buildAndReturn()
+				.setLanguage(en, "get last index of %2 in list %1 or -1 if value not exist")
 				.setLanguage(zh, "%2如果在%1那么返回其最后所在的索引否则-1").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_compatible_with_arraylists", ArrayListsType.INSTANCE)
-				.setToolBoxId(ListCategory.INSTANCE).setColor(300).appendArgs0InputValue("objectlist_var", ObjectListType.INSTANCE)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(300)
+				.appendArgs0InputValue("objectlist_var", ObjectListType.INSTANCE)
 				.setLanguage(en, "ArrayListsSupport: to ArrayLists %1").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("arraylists_compatible_with_objectslist", ObjectListType.INSTANCE)
 				.setToolBoxId(ListCategory.INSTANCE).appendArgs0InputValue("arraylists_var", ArrayListsType.INSTANCE)
 				.setLanguage(en, "ArrayListsSupport: to ObjectList %1").initGenerator().buildAndOutput();
+		//map
+		plugin.getToolKit().createInputProcedure("map_put").setToolBoxId(MapsCategory.INSTANCE).setColor(45)
+				.appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.appendArgs0InputValue("map_key", BuiltInTypes.String, true).toolBoxInitBuilder().setName("map_key")
+				.appendConstantString("Map key").buildAndReturn().appendArgs0InputValue("map_value", (String) null)
+				.toolBoxInitBuilder().setName("map_value").appendConstantString("Map value").buildAndReturn()
+				.setLanguage(en, "put key %2 value %3 to %1").setLanguage(zh, "添加映射 %2 -> %3 到表 %1")
+				.initGenerator().buildAndOutput();
+		plugin.getToolKit().createInputProcedure("map_clear").appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.setLanguage(en, "clear map %1").setLanguage(zh, "清空字典%1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("map_get", (String) null)
+				.appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.appendArgs0InputValue("map_key", BuiltInTypes.String).toolBoxInitBuilder().setName("map_key")
+				.appendConstantString("Map key").buildAndReturn()
+				.appendArgs0FieldDataListSelector("type", "supportedtypes", "String")
+				.setPlaceHolderLanguage(en, "get value key %map_key from %map, type: %type").initGenerator()
+				.setPlaceHolderLanguage(zh, "得到值, 键%map_key 来源：%map 类型：%type").buildAndOutput();
+		plugin.getToolKit().createInputProcedure("map_remove").appendArgs0InputValue("map_key", BuiltInTypes.String)
+				.appendArgs0InputValue("map", ObjectMapType.INSTANCE).toolBoxInitBuilder().setName("map_key")
+				.appendConstantString("Map key").buildAndReturn()
+				.setPlaceHolderLanguage(en, "remove key %map_key from %map")
+				.setPlaceHolderLanguage(zh, "移除字典%map中键%map_key的映射").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("map_size", BuiltInTypes.Number)
+				.setColor(BuiltInBlocklyColor.MATH.toString()).appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.initGenerator().setPlaceHolderLanguage(en, "get size of %map")
+				.setPlaceHolderLanguage(zh, "字典 %map 的长度").buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("map_contains_key", BuiltInTypes.Boolean)
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.appendArgs0InputValue("map_key", BuiltInTypes.String).toolBoxInitBuilder().setName("map_key")
+				.appendConstantString("Map key").buildAndReturn()
+				.setPlaceHolderLanguage(en, "map %map contains key %map_key")
+				.setPlaceHolderLanguage(zh, "列表%map存在键%map_key的映射").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("map_is_empty", BuiltInTypes.Boolean)
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.setLanguage(en, "is %1 empty").initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("map_get_advanced", (String) null)
+				.appendArgs0InputValue("map", ObjectMapType.INSTANCE)
+				.appendArgs0InputValue("map_key", BuiltInTypes.String)
+				.appendArgs0InputValue("type", BuiltInTypes.String).appendArgs0InputValue("defaultValue", (String) null)
+				.toolBoxInitBuilder().setName("map_key").appendConstantString("Map key").buildAndReturn()
+				.toolBoxInitBuilder().setName("type").appendConstantString("java.lang.String").buildAndReturn()
+				.setPlaceHolderLanguage(en,
+						"get value through key %map_key from %map, type: %type, default %defaultValue").initGenerator()
+				.buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("key_of_map", BuiltInTypes.String)
+				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0FieldInput("mark", "1")
+				.setLanguage(en, "Key %1").initGenerator().buildAndOutput();
+		plugin.getToolKit().createInputProcedure("map_for_each").setColor(45)
+				.appendArgs0InputValue("for_map", ObjectMapType.INSTANCE)
+				.appendArgs0InputValue("_placeholder", BuiltInTypes.String, true).toolBoxInitBuilder()
+				.setName("_placeholder").appendReferenceBlock("key_of_map").buildAndReturn()
+				.appendExtension(BuiltInExtensions.IS_CUSTOM_LOOP).appendArgs0StatementInput("for_each")
+				.statementBuilder().setName("for_each").buildAndReturn().setLanguage(en, "for each %1 %2 %3")
+				.initGenerator().buildAndOutput();
+		plugin.getToolKit().createInputProcedure("map_putall").setToolBoxId(MapsCategory.INSTANCE).setColor(45)
+				.appendArgs0InputValue("receiver", ObjectMapType.INSTANCE)
+				.appendArgs0InputValue("source", ObjectMapType.INSTANCE).setLanguage(en, "put all entry from %2 to %1")
+				.setLanguage(zh, "将%2所有的映射推入%1").initGenerator().buildAndOutput();
+
 
 		//math
 		plugin.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())
@@ -152,8 +226,6 @@ public class DataGen {
 
 		en.buildAndOutput();
 		zh.buildAndOutput();
-
-
 
 	}
 }

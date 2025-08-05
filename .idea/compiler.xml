@@ -19,6 +19,9 @@
       <module name="MyTool.DataGen" options="" />
       <module name="MyTool.DataGen.main" options="" />
       <module name="MyTool.DataGen.test" options="" />
+      <module name="MyTool.EndlessTravel" options="" />
+      <module name="MyTool.EndlessTravel.main" options="" />
+      <module name="MyTool.EndlessTravel.test" options="" />
       <module name="MyTool.Fountain" options="" />
       <module name="MyTool.Fountain.main" options="" />
       <module name="MyTool.Fountain.test" options="" />
@@ -31,7 +34,6 @@
       <module name="MyTool.MCreator" options="" />
       <module name="MyTool.MCreator.main" options="" />
       <module name="MyTool.MCreator.test" options="" />
-      <module name="MyTool.StdLib" options="" />
       <module name="MyTool.StdLib.main" options="" />
       <module name="MyTool.StdLib.test" options="" />
       <module name="MyTool.TempPlugin" options="" />

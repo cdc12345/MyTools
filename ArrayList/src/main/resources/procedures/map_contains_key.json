@@ -1,0 +1,28 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "map",
+      "check": "ObjectMap"
+    },
+    {
+      "type": "input_value",
+      "name": "map_key",
+      "check": "String"
+    }
+  ],
+  "output": "Boolean",
+  "inputsInline": true,
+  "colour": "%{BKY_LOGIC_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_init": [
+      "<value name=\"map_key\"><block type=\"text\"><field name=\"TEXT\">Map key</field></block></value>"
+    ],
+    "toolbox_id": "maps",
+    "inputs": [
+      "map",
+      "map_key"
+    ]
+  }
+}
