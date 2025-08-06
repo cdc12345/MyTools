@@ -1,0 +1,30 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "itemstack",
+      "check": "MCItem"
+    },
+    {
+      "type": "input_value",
+      "name": "add_to_tooltip",
+      "check": "Boolean"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "250",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "itemmanagement",
+    "toolbox_init": [
+      "<value name=\"itemstack\"><block type=\"itemstack_to_mcitem\"></block></value>",
+      "<value name=\"add_to_tooltip\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>"
+    ],
+    "inputs": [
+      "itemstack",
+      "add_to_tooltip"
+    ]
+  }
+}

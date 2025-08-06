@@ -152,6 +152,10 @@ public class DataGen {
 				.appendArgs0InputValue("value", BuiltInTypes.Number).toolBoxInitBuilder().setName("value")
 				.appendConstantNumber(0).buildAndReturn().setLanguage(en, "plus myself %1").setLanguage(zh, "自增%1")
 				.initGenerator().buildAndOutput();
+//		factory.getToolKit().createOutputProcedure("advanced_test_lambda",BuiltInTypes.String).setColor(Color.GRAY.darker())
+//				.appendArgs0StatementInput("statement").statementBuilder().setName("statement").buildAndReturn()
+//				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setLanguage(en, "Do nothing %1").initGenerator()
+//				.buildAndOutput();
 		factory.getToolKit().createInputProcedure("advanced_do_nothing").setColor(Color.GRAY.darker())
 				.appendArgs0StatementInput("statement").statementBuilder().setName("statement").buildAndReturn()
 				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setLanguage(en, "Do nothing %1").initGenerator()

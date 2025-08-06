@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "distance",
+      "check": "Number"
+    }
+  ],
+  "output": "_vec3",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
+      "<value name=\"distance\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
+    ],
+    "toolbox_id": "math",
+    "inputs": [
+      "entity",
+      "distance"
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 package org.cdc.datagen;
 
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.framework.utils.BuiltInBlocklyColor;
 import org.cdc.framework.utils.BuiltInTypes;
 import org.cdc.framework.utils.Generators;
 
@@ -19,18 +20,31 @@ public class DataGen {
 		//				.buildAndOutput();
 
 		mcr.createProcedureCategory("walkers").setColor(Color.MAGENTA).setLanguage(en, "Walkers").buildAndOutput();
-		mcr.createProcedureCategory("json_walker").setParentCategory("walkers").setColor(Color.MAGENTA).setLanguage(en, "Json walker").buildAndOutput();
-		mcr.createProcedureCategory("nbt_walker").setColor(Color.MAGENTA).setParentCategory("walkers").setLanguage(en, "NBT Walker").buildAndOutput();
+		mcr.createProcedureCategory("json_walker").setParentCategory("walkers").setColor(Color.MAGENTA)
+				.setLanguage(en, "Json walker").buildAndOutput();
+		mcr.createProcedureCategory("nbt_walker").setColor(Color.MAGENTA.darker()).setParentCategory("walkers")
+				.setLanguage(en, "NBT Walker").buildAndOutput();
 
-		mcr.getToolKit().createOutputProcedure("walk_nbt_element",(String)null).setToolBoxId("nbt_walker")
-				.appendArgs0InputValue("entity", BuiltInTypes.Entity)
-				.setLanguage(en, "start nbt walker's journey, target: %1").initGenerator().buildAndOutput();
-		mcr.getToolKit().createInputProcedure("walk_nbt_see_number")
-				.appendArgs0InputValue("tagName", BuiltInTypes.String).setLanguage(en, "get number %1").initGenerator()
-				.buildAndOutput();
-		mcr.getToolKit().createInputProcedure("walk_nbt_see_compound")
-				.appendArgs0InputValue("tagName", BuiltInTypes.String).setLanguage(en, "get compound %1").initGenerator()
-				.buildAndOutput();
+		mcr.getToolKit().createOutputProcedure("walk_nbt_element", (String) null).setToolBoxId("nbt_walker")
+				.appendArgs0InputValueWithDefaultToolboxInit("entity", BuiltInTypes.Entity)
+				.appendArgs0StatementInput("walker").statementBuilder().setName("walker")
+				.appendProvide("_walker", "_walker").buildAndReturn()
+				.setLanguage(en, "start nbt walker's journey, target: %1 %2").initGenerator().buildAndOutput();
+		mcr.getToolKit().createInputProcedure("walk_nbt_see_compound").appendDependency("_walker", "_walker")
+				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
+				.setLanguage(en, "walk compound %1").initGenerator().buildAndOutput();
+		mcr.getToolKit().createInputProcedure("walk_nbt_see_number").setNextStatement("").setToolBoxId("nbt_walker")
+				.setColor(BuiltInBlocklyColor.MATH.toString()).appendDependency("_walker", "_walker")
+				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
+				.setLanguage(en, "walk number %1").initGenerator().buildAndOutput();
+		mcr.getToolKit().createInputProcedure("walk_nbt_see_text").setNextStatement("").setToolBoxId("nbt_walker")
+				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendDependency("_walker", "_walker")
+				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
+				.setLanguage(en, "walk text %1").buildAndOutput();
+		mcr.getToolKit().createInputProcedure("walk_nbt_see_logic").setNextStatement("").setToolBoxId("nbt_walker")
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendDependency("_walker", "_walker")
+				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
+				.setLanguage(en, "walk nbt logic %1").buildAndOutput();
 
 		//		mcr.createProcedure("walk_nbt_into").appendArgs0InputValue("key", BuiltInTypes.String)
 		//				.setLanguage(en, "walk in %1").initGenerator().buildAndOutput();

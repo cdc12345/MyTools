@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "tagName",
+      "check": "String"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": "",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "nbt_walker",
+    "toolbox_init": [
+      "<value name=\"tagName\"><block type=\"text\"><field name=\"TEXT\">tagName</field></block></value>"
+    ],
+    "inputs": [
+      "tagName"
+    ],
+    "dependencies": [
+      {
+        "name": "_walker",
+        "type": "_walker"
+      }
+    ]
+  }
+}

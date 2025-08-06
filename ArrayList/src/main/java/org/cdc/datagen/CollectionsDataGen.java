@@ -124,6 +124,15 @@ public class CollectionsDataGen {
 				.appendExtension(BuiltInExtensions.IS_CUSTOM_LOOP).appendArgs0StatementInput("for_each")
 				.statementBuilder().setName("for_each").buildAndReturn().setLanguage(en, "for each %1 %2 %3")
 				.initGenerator().buildAndOutput();
+		plugin.getToolKit().createOutputProcedure("list_stream_to_string", BuiltInTypes.String)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.appendArgs0InputValue("delimiter", BuiltInTypes.String).toolBoxInitBuilder().setName("delimiter")
+				.appendConstantString(",").buildAndReturn().appendArgs0InputValue("prefix", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("prefix").appendConstantString("[").buildAndReturn()
+				.appendArgs0InputValue("suffix", BuiltInTypes.String).toolBoxInitBuilder().setName("suffix")
+				.appendConstantString("]").buildAndReturn().initGenerator().appendArgs0FieldInput("decorator","Object::toString")
+				.setLanguage(en, "to Text: %1, delimiter: %2, prefix: %3, suffix: %4, decorator: %5")
+				.setLanguage(zh, "转列表为字符串：%1, 分割符号：%2, 前拽：%3, 后拽：%4, decorator: %5").buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_split_string", ObjectListType.INSTANCE)
 				.setToolBoxId(ListCategory.INSTANCE)
 				.appendArgs0InputValueWithDefaultToolboxInit("text", BuiltInTypes.String)
@@ -142,6 +151,7 @@ public class CollectionsDataGen {
 				.toolBoxInitBuilder().setName("value").appendConstantString("element").buildAndReturn()
 				.setLanguage(en, "get last index of %2 in list %1 or -1 if value not exist")
 				.setLanguage(zh, "%2如果在%1那么返回其最后所在的索引否则-1").initGenerator().buildAndOutput();
+
 		plugin.getToolKit().createOutputProcedure("list_compatible_with_arraylists", ArrayListsType.INSTANCE)
 				.setToolBoxId(ListCategory.INSTANCE).setColor(300)
 				.appendArgs0InputValue("objectlist_var", ObjectListType.INSTANCE)
@@ -207,7 +217,6 @@ public class CollectionsDataGen {
 				.appendArgs0InputValue("receiver", ObjectMapType.INSTANCE)
 				.appendArgs0InputValue("source", ObjectMapType.INSTANCE).setLanguage(en, "put all entry from %2 to %1")
 				.setLanguage(zh, "将%2所有的映射推入%1").initGenerator().buildAndOutput();
-
 
 		//math
 		plugin.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())

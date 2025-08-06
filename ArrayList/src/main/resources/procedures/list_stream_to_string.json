@@ -1,0 +1,50 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "list",
+      "check": "ObjectList"
+    },
+    {
+      "type": "input_value",
+      "name": "delimiter",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "prefix",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "suffix",
+      "check": "String"
+    },
+    {
+      "type": "field_input",
+      "name": "decorator",
+      "text": "Object::toString"
+    }
+  ],
+  "output": "String",
+  "inputsInline": true,
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "list",
+    "toolbox_init": [
+      "<value name=\"delimiter\"><block type=\"text\"><field name=\"TEXT\">,</field></block></value>",
+      "<value name=\"prefix\"><block type=\"text\"><field name=\"TEXT\">[</field></block></value>",
+      "<value name=\"suffix\"><block type=\"text\"><field name=\"TEXT\">]</field></block></value>"
+    ],
+    "inputs": [
+      "list",
+      "delimiter",
+      "prefix",
+      "suffix"
+    ],
+    "fields": [
+      "decorator"
+    ]
+  }
+}

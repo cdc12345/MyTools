@@ -1,1 +1,1 @@
-List.of(${input$text}.split(${input$seperator}))
+new ArrayList<Object>(List.of(${input$text}.split(${input$seperator})))
