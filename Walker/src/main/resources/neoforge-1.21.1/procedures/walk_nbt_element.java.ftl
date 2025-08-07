@@ -1,0 +1,3 @@
+<#-- ${input$entity} -->
+<#-- ${statement$walkplace} -->
+<#--  -->

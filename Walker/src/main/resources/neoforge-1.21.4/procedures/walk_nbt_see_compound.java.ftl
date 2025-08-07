@@ -1,0 +1,1 @@
+.getCompound(${input$tagName})

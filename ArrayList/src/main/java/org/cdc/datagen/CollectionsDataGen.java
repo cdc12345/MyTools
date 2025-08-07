@@ -57,6 +57,11 @@ public class CollectionsDataGen {
 				.appendConstantString("helloworld").buildAndReturn().setLanguage(en, "add element %2 to %1")
 				.setLanguage(zh, "添加元素 %2 到列表 %1").setToolBoxId(ListCategory.INSTANCE).initGenerator()
 				.buildAndOutput();
+		plugin.getToolKit().createInputProcedure("list_insert").setColor(40).appendArgs0InputValue("list", "ObjectList")
+				.appendArgs0InputValue("element", (String) null, true).toolBoxInitBuilder().setName("element")
+				.appendConstantString("helloworld").buildAndReturn().appendArgs0InputValueWithDefaultToolboxInit("index",BuiltInTypes.Number).setLanguage(en, "insert element %2 to %1 with index %3")
+				.setLanguage(zh, "添加元素 %2 到列表 %1 于索引 %3").setToolBoxId(ListCategory.INSTANCE).initGenerator()
+				.buildAndOutput();
 		plugin.getToolKit().createInputProcedure("list_clear").appendArgs0InputValue("list", "ObjectList")
 				.setLanguage(en, "clear list %1").setLanguage(zh, "清空列表%1").initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_get", (String) null).appendArgs0InputValue("list", "ObjectList")

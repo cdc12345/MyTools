@@ -8,7 +8,7 @@ import org.cdc.framework.utils.Generators;
 import java.awt.*;
 import java.io.File;
 
-public class DataGen {
+public class WalkerDataGen {
 	public static void main(String[] args) {
 		MCreatorPluginFactory mcr = new MCreatorPluginFactory(new File("src/main/resources").getAbsoluteFile());
 
@@ -29,22 +29,23 @@ public class DataGen {
 				.appendArgs0InputValueWithDefaultToolboxInit("entity", BuiltInTypes.Entity)
 				.appendArgs0StatementInput("walker").statementBuilder().setName("walker")
 				.appendProvide("_walker", "_walker").buildAndReturn()
-				.setLanguage(en, "start nbt walker's journey, target: %1 %2").initGenerator().buildAndOutput();
+				.setLanguage(en, "Walk start with entity %1 %2").initGenerator().buildAndOutput();
 		mcr.getToolKit().createInputProcedure("walk_nbt_see_compound").appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
 				.setLanguage(en, "walk compound %1").initGenerator().buildAndOutput();
-		mcr.getToolKit().createInputProcedure("walk_nbt_see_number").setNextStatement("").setToolBoxId("nbt_walker")
+		mcr.getToolKit().createEndProcedure("walk_nbt_see_number").setToolBoxId("nbt_walker")
 				.setColor(BuiltInBlocklyColor.MATH.toString()).appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
 				.setLanguage(en, "walk number %1").initGenerator().buildAndOutput();
-		mcr.getToolKit().createInputProcedure("walk_nbt_see_text").setNextStatement("").setToolBoxId("nbt_walker")
+		mcr.getToolKit().createEndProcedure("walk_nbt_see_text").setToolBoxId("nbt_walker")
 				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
 				.setLanguage(en, "walk text %1").buildAndOutput();
-		mcr.getToolKit().createInputProcedure("walk_nbt_see_logic").setNextStatement("").setToolBoxId("nbt_walker")
+		mcr.getToolKit().createEndProcedure("walk_nbt_see_logic").setToolBoxId("nbt_walker")
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
 				.setLanguage(en, "walk nbt logic %1").buildAndOutput();
+
 
 		//		mcr.createProcedure("walk_nbt_into").appendArgs0InputValue("key", BuiltInTypes.String)
 		//				.setLanguage(en, "walk in %1").initGenerator().buildAndOutput();

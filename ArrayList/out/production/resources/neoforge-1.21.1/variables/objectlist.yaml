@@ -1,0 +1,10 @@
+defaultvalue: new ArrayList<>()
+scopes:
+  local:
+    init: ${var.getType().getJavaType(generator.getWorkspace())} ${var.getName()} = ${var.getType().getDefaultValue(generator.getWorkspace())};
+    get: ${name}
+    set: ${name} = ${value};
+  global_session:
+    init: public static ArrayList<Object> ${var.getName()} = new ArrayList<>();
+    get: ${JavaModName}Variables.${name}
+    set: ${JavaModName}Variables.${name} = ${value};

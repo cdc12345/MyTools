@@ -1,0 +1,1 @@
+(${input$entity}.getPersistentData().${statement$walker})

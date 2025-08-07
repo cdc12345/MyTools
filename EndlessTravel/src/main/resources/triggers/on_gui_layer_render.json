@@ -1,0 +1,14 @@
+{
+  "dependencies_provided": [
+    {
+      "name": "namespace",
+      "type": "string"
+    },
+    {
+      "name": "path",
+      "type": "string"
+    }
+  ],
+  "cancelable": true,
+  "side": "client"
+}
