@@ -1,0 +1,21 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "id",
+      "check": "Number"
+    }
+  ],
+  "output": "Number",
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "minecraftcolor",
+    "toolbox_id": "graphiccolor",
+    "toolbox_init": [
+      "<value name=\"id\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
+    ],
+    "inputs": [
+      "id"
+    ]
+  }
+}

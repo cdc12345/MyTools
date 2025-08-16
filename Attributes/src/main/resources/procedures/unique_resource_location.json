@@ -1,0 +1,22 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "location",
+      "check": "String"
+    }
+  ],
+  "output": "_unique_id",
+  "inputsInline": true,
+  "colour": "75",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "attributes",
+    "toolbox_init": [
+      "<value name=\"location\"><block type=\"text\"><field name=\"TEXT\">namespace:path</field></block></value>"
+    ],
+    "inputs": [
+      "location"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "attributes",
+  "weight": 0,
+  "supportedversions": [
+    "2025002"
+  ],
+  "info": {
+    "author": "cdc12345",
+    "name": "attributes"
+  }
+}

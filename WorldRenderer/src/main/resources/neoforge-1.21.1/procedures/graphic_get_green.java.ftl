@@ -1,0 +1,1 @@
+/*@int*/(${opt.toInt(input$color)} >> 8 & 255)

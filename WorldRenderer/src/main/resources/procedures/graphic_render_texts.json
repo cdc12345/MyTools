@@ -1,0 +1,91 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "texts",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "x",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "y",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "z",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "yaw",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "pitch",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "roll",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "scale",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "color",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "glowing",
+      "check": "Boolean"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "toolbox_id": "graphicworld",
+    "toolbox_init": [
+      "<value name=\"texts\"><block type=\"text\"><field name=\"TEXT\">texts</field></block></value>",
+      "<value name=\"x\"><block type=\"coord_x\"></block></value>",
+      "<value name=\"y\"><block type=\"coord_y\"></block></value>",
+      "<value name=\"z\"><block type=\"coord_z\"></block></value>",
+      "<value name=\"yaw\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"pitch\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"roll\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"scale\"><block type=\"math_number\"><field name=\"NUM\">0.025</field></block></value>",
+      "<value name=\"color\"><block type=\"graphic_get_rgbacolor\"><value name=\"red\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value><value name=\"green\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value><value name=\"blue\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value><value name=\"alpha\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value></block></value>",
+      "<value name=\"glowing\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value>"
+    ],
+    "inputs": [
+      "texts",
+      "x",
+      "y",
+      "z",
+      "yaw",
+      "pitch",
+      "roll",
+      "scale",
+      "color",
+      "glowing"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+setSkyColor(${opt.toInt(input$sky)});

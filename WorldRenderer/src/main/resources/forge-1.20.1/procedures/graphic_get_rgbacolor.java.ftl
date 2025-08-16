@@ -1,0 +1,1 @@
+/*@int*/(${opt.toInt(input$alpha)} << 24 | ${opt.toInt(input$red)} << 16 | ${opt.toInt(input$green)} << 8 | ${opt.toInt(input$blue)})

@@ -1,0 +1,1 @@
+renderMoon(${opt.toFloat(input$size)}, ${opt.toInt(input$color)}, ${input$phase}, ${input$constant});

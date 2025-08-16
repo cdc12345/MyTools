@@ -6,15 +6,16 @@ import org.cdc.datagen.types.ArrayListsType;
 import org.cdc.datagen.types.ObjectListType;
 import org.cdc.datagen.types.ObjectMapType;
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.framework.interfaces.IFountainMain;
 import org.cdc.framework.utils.*;
 
-import java.io.File;
+import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 
-public class CollectionsDataGen {
-	public static void main(String[] args) {
-		MCreatorPluginFactory plugin = new MCreatorPluginFactory(new File("src/main/resources").getAbsoluteFile());
+public class CollectionsDataGen implements IFountainMain {
+	@Override
+	public void generatePlugin(MCreatorPluginFactory plugin) {
 		var en = plugin.createDefaultLanguage();
 		var zh = plugin.createLanguage(Locale.CHINA);
 
@@ -22,7 +23,8 @@ public class CollectionsDataGen {
 
 		//datalist
 		plugin.createDataList("supportedtypes").appendElement("Text", List.of("String", "\"\\\"\\\"\""))
-				.appendElement("Number", List.of("Double", "\"0\"")).appendElement("Entity", List.of("Entity", "null"))
+				.appendElement("Number", List.of("Double", "\"0.0\""))
+				.appendElement("Entity", List.of("Entity", "null"))
 				.appendElement("BlockState", List.of("BlockState", "Blocks.AIR.defaultBlockState()"))
 				.appendElement("Logic", List.of("Boolean", "\"false\""))
 				.appendElement("Direction", List.of("Direction", "\"Direction.NORTH\""))
@@ -59,7 +61,9 @@ public class CollectionsDataGen {
 				.buildAndOutput();
 		plugin.getToolKit().createInputProcedure("list_insert").setColor(40).appendArgs0InputValue("list", "ObjectList")
 				.appendArgs0InputValue("element", (String) null, true).toolBoxInitBuilder().setName("element")
-				.appendConstantString("helloworld").buildAndReturn().appendArgs0InputValueWithDefaultToolboxInit("index",BuiltInTypes.Number).setLanguage(en, "insert element %2 to %1 with index %3")
+				.appendConstantString("helloworld").buildAndReturn()
+				.appendArgs0InputValueWithDefaultToolboxInit("index", BuiltInTypes.Number)
+				.setLanguage(en, "insert element %2 to %1 with index %3")
 				.setLanguage(zh, "添加元素 %2 到列表 %1 于索引 %3").setToolBoxId(ListCategory.INSTANCE).initGenerator()
 				.buildAndOutput();
 		plugin.getToolKit().createInputProcedure("list_clear").appendArgs0InputValue("list", "ObjectList")
@@ -130,12 +134,14 @@ public class CollectionsDataGen {
 				.statementBuilder().setName("for_each").buildAndReturn().setLanguage(en, "for each %1 %2 %3")
 				.initGenerator().buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_stream_to_string", BuiltInTypes.String)
-				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.TEXTS.toString())
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
 				.appendArgs0InputValue("delimiter", BuiltInTypes.String).toolBoxInitBuilder().setName("delimiter")
 				.appendConstantString(",").buildAndReturn().appendArgs0InputValue("prefix", BuiltInTypes.String)
 				.toolBoxInitBuilder().setName("prefix").appendConstantString("[").buildAndReturn()
 				.appendArgs0InputValue("suffix", BuiltInTypes.String).toolBoxInitBuilder().setName("suffix")
-				.appendConstantString("]").buildAndReturn().initGenerator().appendArgs0FieldInput("decorator","Object::toString")
+				.appendConstantString("]").buildAndReturn().initGenerator()
+				.appendArgs0FieldInput("decorator", "Object::toString")
 				.setLanguage(en, "to Text: %1, delimiter: %2, prefix: %3, suffix: %4, decorator: %5")
 				.setLanguage(zh, "转列表为字符串：%1, 分割符号：%2, 前拽：%3, 后拽：%4, decorator: %5").buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("list_split_string", ObjectListType.INSTANCE)
@@ -222,6 +228,11 @@ public class CollectionsDataGen {
 				.appendArgs0InputValue("receiver", ObjectMapType.INSTANCE)
 				.appendArgs0InputValue("source", ObjectMapType.INSTANCE).setLanguage(en, "put all entry from %2 to %1")
 				.setLanguage(zh, "将%2所有的映射推入%1").initGenerator().buildAndOutput();
+
+		//compatible with 2024.3 and 2024.4
+		plugin.getToolKit().createInputProcedure("templateCode").setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setColor(
+						Color.GRAY).setLanguage(en, "compatible with 2025.1 below")
+				.initGenerator().buildAndOutput();
 
 		//math
 		plugin.getToolKit().createInputProcedure("number_plus_one").setColor(BuiltInBlocklyColor.MATH.toString())

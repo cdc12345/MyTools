@@ -1,0 +1,47 @@
+{
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "target",
+      "options": [
+        [
+          "SKY",
+          "1"
+        ],
+        [
+          "WORLD",
+          "2"
+        ]
+      ]
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "do"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "group": "shaperenderer",
+    "toolbox_id": "graphicshape",
+    "fields": [
+      "target"
+    ],
+    "statements": [
+      {
+        "name": "do"
+      }
+    ]
+  }
+}

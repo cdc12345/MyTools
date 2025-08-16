@@ -1,0 +1,1 @@
+renderSun(${opt.toFloat(input$size)}, ${opt.toInt(input$color)}, ${input$constant});

@@ -1,0 +1,1 @@
+(Optional.ofNullable(Minecraft.getInstance().hitResult).map(_hitResult -> _hitResult.getLocation().y()).orElse(0.0D))

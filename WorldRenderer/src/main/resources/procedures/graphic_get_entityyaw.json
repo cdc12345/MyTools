@@ -1,0 +1,34 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "entityrotation",
+    "toolbox_id": "graphicdata",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>"
+    ],
+    "inputs": [
+      "entity"
+    ],
+    "dependencies": [
+      {
+        "name": "partialTick",
+        "type": "number"
+      }
+    ]
+  }
+}

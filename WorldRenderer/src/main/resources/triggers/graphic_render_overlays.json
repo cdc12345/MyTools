@@ -1,0 +1,19 @@
+{
+  "dependencies_provided": [
+    {
+      "name": "mouseX",
+      "type": "number"
+    },
+    {
+      "name": "mouseY",
+      "type": "number"
+    },
+    {
+      "name": "partialTick",
+      "type": "number"
+    }
+  ],
+  "cancelable": "false",
+  "has_result": "false",
+  "side": "client"
+}

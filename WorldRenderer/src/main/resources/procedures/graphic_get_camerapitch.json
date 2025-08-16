@@ -1,0 +1,17 @@
+{
+  "args0": [
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "camerarotation",
+    "toolbox_id": "graphicdata"
+  }
+}

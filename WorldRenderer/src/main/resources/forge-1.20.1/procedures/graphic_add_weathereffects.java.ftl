@@ -1,0 +1,1 @@
+addEffects(${field$target}, ${opt.toFloat(input$power)}, ${opt.toInt(input$range)}, ${input$particles}, ${input$sounds}, ${input$constant});

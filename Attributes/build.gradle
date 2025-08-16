@@ -21,14 +21,13 @@ test {
 }
 
 tasks.jar {
-    exclude("org/cdc/datagen/**")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName.set("attributes.zip")
 
     doLast {
         copy {
-            from "build/libs/" + archiveFileName
+            from archiveFile
             into mcreator_plugins_path
         }
     }
@@ -37,7 +36,7 @@ tasks.jar {
 
 tasks.register("runDataGen",JavaExec).configure {
     group = "build"
-    main("org.cdc.datagen.DataGen")
+    main = "org.cdc.framework.FountainBaseMain"
     classpath = sourceSets.main.runtimeClasspath
     workingDir(projectDir)
 }

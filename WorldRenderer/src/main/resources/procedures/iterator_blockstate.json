@@ -1,0 +1,14 @@
+{
+  "output": "MCItemBlock",
+  "colour": 60,
+  "mcreator": {
+    "group": "data",
+    "toolbox_id": "graphicothers",
+    "dependencies": [
+      {
+        "name": "blockstateiterator",
+        "type": "blockstate"
+      }
+    ]
+  }
+}

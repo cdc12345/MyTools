@@ -1,0 +1,1 @@
+renderTexture(${opt.toFloat(input$x)}, ${opt.toFloat(input$y)}, ${opt.toFloat(input$depth)}, ${opt.toFloat(input$angle)}, ${opt.toFloat(input$scale)}, ${opt.toInt(input$color)}, ${field$alignment});

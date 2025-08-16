@@ -1,0 +1,1 @@
+setColor(${opt.toInt(input$color)});

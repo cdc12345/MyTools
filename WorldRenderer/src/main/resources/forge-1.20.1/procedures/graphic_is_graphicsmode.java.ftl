@@ -1,0 +1,1 @@
+(Minecraft.getInstance().options.graphicsMode().get() == ${field$mode})

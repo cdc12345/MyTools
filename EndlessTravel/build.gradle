@@ -29,7 +29,7 @@ tasks.jar {
     exclude("org/cdc/datagen/**")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveFileName.set("stdlibs.zip")
+    archiveFileName.set("endless.zip")
 
     doLast {
         copy {

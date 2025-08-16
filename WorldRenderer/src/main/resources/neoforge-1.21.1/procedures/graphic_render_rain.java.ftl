@@ -1,0 +1,1 @@
+renderRain(${opt.toFloat(input$speed)}, ${opt.toInt(input$x)}, ${opt.toInt(input$z)}, ${opt.toInt(input$range)}, ${opt.toInt(input$color)}, ${input$constant});

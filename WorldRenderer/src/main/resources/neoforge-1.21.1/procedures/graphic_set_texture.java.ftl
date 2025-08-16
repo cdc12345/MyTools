@@ -1,0 +1,1 @@
+RenderSystem.setShaderTexture(0, ResourceLocation.parse(${input$texture}));

@@ -1,0 +1,1 @@
+RenderSystem.colorMask(${input$red}, ${input$green}, ${input$blue}, ${input$alpha});

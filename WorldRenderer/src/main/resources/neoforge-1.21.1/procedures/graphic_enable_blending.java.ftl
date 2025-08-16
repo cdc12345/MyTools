@@ -1,0 +1,1 @@
+${generator.map(field$mode, "blendmodes", 0)}

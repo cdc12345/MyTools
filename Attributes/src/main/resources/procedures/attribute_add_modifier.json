@@ -1,0 +1,69 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "unique_id",
+      "check": "_unique_id"
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "attribute",
+      "datalist": "attributes",
+      "testValue": "ATTACK_DAMAGE"
+    },
+    {
+      "type": "input_value",
+      "name": "amount",
+      "check": "Number"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "operation",
+      "options": [
+        [
+          "ADD_VALUE",
+          "ADD_VALUE"
+        ],
+        [
+          "ADD_MULTIPLIED_TOTAL",
+          "ADD_MULTIPLIED_TOTAL"
+        ],
+        [
+          "ADD_MULTIPLIED_BASE",
+          "ADD_MULTIPLIED_BASE"
+        ]
+      ]
+    },
+    {
+      "type": "field_input",
+      "name": "slot",
+      "text": "ANY"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "75",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "attributes",
+    "toolbox_init": [
+      "<value name=\"amount\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
+    ],
+    "inputs": [
+      "unique_id",
+      "amount"
+    ],
+    "fields": [
+      "attribute",
+      "operation",
+      "slot"
+    ],
+    "dependencies": [
+      {
+        "name": "attributesmodifiers",
+        "type": "_modifiers"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+setAngles(${opt.toFloat(input$yaw)}, ${opt.toFloat(input$pitch)}, ${opt.toFloat(input$roll)});

@@ -1,0 +1,1 @@
+/*@int*/(world.getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(${input$x}), Mth.floor(${input$z})))

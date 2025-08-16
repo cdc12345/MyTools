@@ -1,0 +1,21 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "color",
+      "check": "Number"
+    }
+  ],
+  "output": "Number",
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "colorcomponent",
+    "toolbox_id": "graphiccolor",
+    "toolbox_init": [
+      "<value name=\"color\"></value>"
+    ],
+    "inputs": [
+      "color"
+    ]
+  }
+}

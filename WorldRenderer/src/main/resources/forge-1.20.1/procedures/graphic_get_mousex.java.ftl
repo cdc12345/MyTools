@@ -1,0 +1,1 @@
+(Minecraft.getInstance().mouseHandler.xpos() / Minecraft.getInstance().getWindow().getGuiScale())

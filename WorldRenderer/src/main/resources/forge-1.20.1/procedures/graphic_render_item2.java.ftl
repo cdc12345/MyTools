@@ -1,0 +1,2 @@
+<#include "mcitems.ftl">
+renderItem(world, ${mappedMCItemToItemStackCode(input$item, 1)}, ${input$x}, ${input$y}, ${input$depth}, ${opt.toFloat(input$yaw)}, ${opt.toFloat(input$pitch)}, ${opt.toFloat(input$roll)}, ${opt.toFloat(input$scale)});

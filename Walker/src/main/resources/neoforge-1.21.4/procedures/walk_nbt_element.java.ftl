@@ -1,1 +1,1 @@
-(${input$entity}.getPersistentData().${statement$walker})
+(${input$entity}.getPersistentData()${statement$walker})

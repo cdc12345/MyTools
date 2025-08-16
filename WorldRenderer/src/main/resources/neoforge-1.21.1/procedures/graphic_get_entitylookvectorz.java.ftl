@@ -1,0 +1,1 @@
+(${input$entity}.getViewVector((float) partialTick).z())

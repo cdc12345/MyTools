@@ -1,0 +1,64 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "x1",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "y1",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "x2",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "y2",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "depth",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "color",
+      "check": "Number"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "group": "renderer",
+    "toolbox_id": "graphicoverlay",
+    "toolbox_init": [
+      "<value name=\"x1\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"y1\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"x2\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"y2\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"depth\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"color\"><block type=\"graphic_get_rgbacolor\"><value name=\"red\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value><value name=\"green\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value><value name=\"blue\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value><value name=\"alpha\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value></block></value>"
+    ],
+    "inputs": [
+      "x1",
+      "y1",
+      "x2",
+      "y2",
+      "depth",
+      "color"
+    ]
+  }
+}

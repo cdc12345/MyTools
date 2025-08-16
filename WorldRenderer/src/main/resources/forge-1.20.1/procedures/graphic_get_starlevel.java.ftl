@@ -1,0 +1,1 @@
+/*@float*/(world instanceof ClientLevel ? ((ClientLevel) world).getStarBrightness((float) partialTick) : 0.0F)

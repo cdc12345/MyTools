@@ -1,0 +1,1 @@
+(Minecraft.getInstance().options.getCloudsType() == ${field$mode})

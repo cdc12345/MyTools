@@ -1,0 +1,36 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "red",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "green",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "blue",
+      "check": "Number"
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "colorcreater",
+    "toolbox_id": "graphiccolor",
+    "toolbox_init": [
+      "<value name=\"red\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value>",
+      "<value name=\"green\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value>",
+      "<value name=\"blue\"><block type=\"math_number\"><field name=\"NUM\">255</field></block></value>"
+    ],
+    "inputs": [
+      "red",
+      "green",
+      "blue"
+    ]
+  }
+}

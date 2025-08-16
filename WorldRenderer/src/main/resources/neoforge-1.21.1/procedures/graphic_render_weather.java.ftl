@@ -1,0 +1,1 @@
+renderWeather(${input$rain}, ${input$snow}, ${opt.toFloat(input$speed)}, ${opt.toInt(input$range)}, ${opt.toInt(input$color)}, ${input$constant});

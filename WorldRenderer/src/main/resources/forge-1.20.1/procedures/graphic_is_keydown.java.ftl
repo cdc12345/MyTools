@@ -1,0 +1,1 @@
+(GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_${generator.map(field$key, "keybuttons")}) == GLFW.GLFW_PRESS)

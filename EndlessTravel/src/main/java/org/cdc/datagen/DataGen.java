@@ -34,6 +34,19 @@ public class DataGen {
 				.appendArgs0InputValueWithDefaultToolboxInit("distance", BuiltInTypes.Number)
 				.setLanguage(en, "get view vector of %1 with distance %2").initGenerator().buildAndOutput();
 
+		factory.getToolKit().createInputProcedure("entity_set_in_lover")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("animal", BuiltInTypes.Entity)
+				.appendArgs0InputValue("player", BuiltInTypes.Entity)
+				.appendArgs0InputValueWithDefaultToolboxInit("in_love", BuiltInTypes.Boolean)
+				.setLanguage(en, "make animal %1 in love state: %3 by player %2")
+				.setLanguage(zh, "让动物%1的求爱模式为%3，媒婆玩家：%2").initGenerator().buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_set_in_lover_time")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("animal", BuiltInTypes.Entity)
+				.appendArgs0InputValueWithDefaultToolboxInit("in_love_time", BuiltInTypes.Number)
+				.setLanguage(en, "make animal %1 in love remain time: %2")
+				.setLanguage(zh, "让动物%1的求爱模式剩余时间为%2").initGenerator().buildAndOutput();
 		factory.getToolKit().createOutputProcedure("entity_save_to_string", BuiltInTypes.String)
 				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0InputValue("entity", BuiltInTypes.Entity)
 				.toolBoxInitBuilder().setName("entity").appendDefaultEntity().buildAndReturn()
@@ -152,10 +165,10 @@ public class DataGen {
 				.appendArgs0InputValue("value", BuiltInTypes.Number).toolBoxInitBuilder().setName("value")
 				.appendConstantNumber(0).buildAndReturn().setLanguage(en, "plus myself %1").setLanguage(zh, "自增%1")
 				.initGenerator().buildAndOutput();
-//		factory.getToolKit().createOutputProcedure("advanced_test_lambda",BuiltInTypes.String).setColor(Color.GRAY.darker())
-//				.appendArgs0StatementInput("statement").statementBuilder().setName("statement").buildAndReturn()
-//				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setLanguage(en, "Do nothing %1").initGenerator()
-//				.buildAndOutput();
+		//		factory.getToolKit().createOutputProcedure("advanced_test_lambda",BuiltInTypes.String).setColor(Color.GRAY.darker())
+		//				.appendArgs0StatementInput("statement").statementBuilder().setName("statement").buildAndReturn()
+		//				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setLanguage(en, "Do nothing %1").initGenerator()
+		//				.buildAndOutput();
 		factory.getToolKit().createInputProcedure("advanced_do_nothing").setColor(Color.GRAY.darker())
 				.appendArgs0StatementInput("statement").statementBuilder().setName("statement").buildAndReturn()
 				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setLanguage(en, "Do nothing %1").initGenerator()

@@ -1,0 +1,1 @@
+renderShape(${input$shape}, ${input$x}, ${input$y}, ${input$z}, ${opt.toFloat(input$yaw)}, ${opt.toFloat(input$pitch)}, ${opt.toFloat(input$roll)}, ${opt.toFloat(input$xscale)}, ${opt.toFloat(input$yscale)}, ${opt.toFloat(input$zscale)}, ${opt.toInt(input$color)});

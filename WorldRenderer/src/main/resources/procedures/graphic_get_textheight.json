@@ -1,0 +1,34 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "texts",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "scale",
+      "check": "Number"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "%{BKY_MATH_HUE}",
+  "mcreator": {
+    "group": "textdata",
+    "toolbox_id": "graphicdata",
+    "toolbox_init": [
+      "<value name=\"texts\"><block type=\"text\"><field name=\"TEXT\">texts</field></block></value>",
+      "<value name=\"scale\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value>"
+    ],
+    "inputs": [
+      "scale"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+renderSunlights(${opt.toInt(input$color)});

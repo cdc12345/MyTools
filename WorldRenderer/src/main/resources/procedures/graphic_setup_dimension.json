@@ -1,0 +1,58 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "dimension",
+      "check": "DimensionType"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "type",
+      "options": [
+        [
+          "OVERWORLD",
+          "OVERWORLD"
+        ],
+        [
+          "NETHER",
+          "NETHER"
+        ],
+        [
+          "END",
+          "END"
+        ]
+      ]
+    },
+    {
+      "type": "input_value",
+      "name": "fog",
+      "check": "Boolean"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "#888888",
+  "mcreator": {
+    "toolbox_init": [
+      "<value name=\"dimension\"><block type=\"get_dimensionid\"></block></value>",
+      "<value name=\"fog\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value>"
+    ],
+    "inputs": [
+      "dimension",
+      "fog"
+    ],
+    "fields": [
+      "type"
+    ],
+    "warnings": [
+      "graphic_setup_dimension"
+    ]
+  }
+}

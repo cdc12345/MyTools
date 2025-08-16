@@ -1,0 +1,1 @@
+setBlockColor(${opt.toFloat(input$level)}, ${opt.toInt(input$block)});

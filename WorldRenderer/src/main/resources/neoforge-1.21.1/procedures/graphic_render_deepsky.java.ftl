@@ -1,0 +1,1 @@
+renderDeepSky(${opt.toInt(input$color)});

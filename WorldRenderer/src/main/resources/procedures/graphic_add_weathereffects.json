@@ -1,0 +1,85 @@
+{
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "target",
+      "options": [
+        [
+          "RAINY_BIOMES",
+          "1"
+        ],
+        [
+          "SNOWY_BIOMES",
+          "2"
+        ],
+        [
+          "HUMID_BIOMES",
+          "4"
+        ],
+        [
+          "DRY_BIOMES",
+          "8"
+        ],
+        [
+          "ANY_BIOMES",
+          "16"
+        ]
+      ]
+    },
+    {
+      "type": "input_value",
+      "name": "power",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "range",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "particles",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "sounds",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "constant",
+      "check": "Boolean"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "toolbox_id": "graphicweathereffects",
+    "toolbox_init": [
+      "<value name=\"power\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value>",
+      "<value name=\"range\"><block type=\"math_number\"><field name=\"NUM\">5</field></block></value>",
+      "<value name=\"particles\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"sounds\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"constant\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value>"
+    ],
+    "fields": [
+      "target"
+    ],
+    "inputs": [
+      "power",
+      "range",
+      "particles",
+      "sounds",
+      "constant"
+    ]
+  }
+}

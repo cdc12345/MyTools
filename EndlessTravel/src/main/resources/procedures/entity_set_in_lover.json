@@ -1,0 +1,35 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "animal",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "player",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "in_love",
+      "check": "Boolean"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "195",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "entitymanagement",
+    "toolbox_init": [
+      "<value name=\"in_love\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>"
+    ],
+    "inputs": [
+      "animal",
+      "player",
+      "in_love"
+    ]
+  }
+}

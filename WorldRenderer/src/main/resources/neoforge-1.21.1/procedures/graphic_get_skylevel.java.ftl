@@ -1,0 +1,1 @@
+/*@float*/(world instanceof ClientLevel _skyLevelContext ? _skyLevelContext.getSkyDarken((float) partialTick) : 1.0F)

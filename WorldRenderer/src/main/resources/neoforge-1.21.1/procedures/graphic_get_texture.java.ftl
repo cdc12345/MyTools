@@ -1,0 +1,1 @@
+(${input$id} + ":textures/" + ${input$name} + ".png")

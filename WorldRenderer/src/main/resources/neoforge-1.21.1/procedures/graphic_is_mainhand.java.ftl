@@ -1,0 +1,1 @@
+(Minecraft.getInstance().options.mainHand().get() == HumanoidArm.${field$hand})

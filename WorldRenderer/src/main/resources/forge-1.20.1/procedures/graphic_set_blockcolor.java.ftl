@@ -1,0 +1,1 @@
+setBlockColor(${opt.toInt(input$block)});

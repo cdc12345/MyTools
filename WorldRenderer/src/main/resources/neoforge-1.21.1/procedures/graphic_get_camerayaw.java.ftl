@@ -1,0 +1,1 @@
+/*@float*/(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot())

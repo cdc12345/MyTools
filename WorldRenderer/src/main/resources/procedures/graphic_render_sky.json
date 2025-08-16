@@ -1,0 +1,63 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "deepsky",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "sunlights",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "sun",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "moon",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "stars",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_value",
+      "name": "abyss",
+      "check": "Boolean"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "toolbox_id": "graphicsky",
+    "toolbox_init": [
+      "<value name=\"deepsky\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"sunlights\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"sun\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"moon\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"stars\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>",
+      "<value name=\"abyss\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>"
+    ],
+    "inputs": [
+      "deepsky",
+      "sunlights",
+      "sun",
+      "moon",
+      "stars",
+      "abyss"
+    ]
+  }
+}

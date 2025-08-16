@@ -1,0 +1,1 @@
+renderTexture(${opt.toFloat(input$size)}, ${opt.toFloat(input$yaw)}, ${opt.toFloat(input$pitch)}, ${opt.toFloat(input$roll)}, ${opt.toInt(input$color)}, ${input$constant});

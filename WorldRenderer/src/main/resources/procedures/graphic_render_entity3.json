@@ -1,0 +1,91 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "x",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "y",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "depth",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "yaw",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "pitch",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "roll",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "scale",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "modelonly",
+      "check": "Boolean"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "group": "renderer3",
+    "toolbox_id": "graphicoverlay",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
+      "<value name=\"x\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"y\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"depth\"><block type=\"math_number\"><field name=\"NUM\">-50</field></block></value>",
+      "<value name=\"yaw\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"pitch\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"roll\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>",
+      "<value name=\"scale\"><block type=\"math_number\"><field name=\"NUM\">30</field></block></value>",
+      "<value name=\"modelonly\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value>"
+    ],
+    "inputs": [
+      "entity",
+      "x",
+      "y",
+      "depth",
+      "yaw",
+      "pitch",
+      "roll",
+      "scale",
+      "modelonly"
+    ],
+    "dependencies": [
+      {
+        "name": "world",
+        "type": "world"
+      }
+    ]
+  }
+}

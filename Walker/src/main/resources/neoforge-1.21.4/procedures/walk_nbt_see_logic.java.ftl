@@ -1,3 +1,1 @@
-<#-- ${input$tagName} -->
-<#--  -->
-<#--  -->
+.getBoolean(${input$tagName})

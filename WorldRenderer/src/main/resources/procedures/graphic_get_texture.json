@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "id",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "name",
+      "check": "String"
+    }
+  ],
+  "output": "String",
+  "inputsInline": true,
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "group": "texturedata",
+    "toolbox_id": "graphicdata",
+    "toolbox_init": [
+      "<value name=\"id\"><block type=\"text\"><field name=\"TEXT\">modid</field></block></value>",
+      "<value name=\"name\"><block type=\"text\"><field name=\"TEXT\">image</field></block></value>"
+    ],
+    "inputs": [
+      "id",
+      "name"
+    ]
+  }
+}

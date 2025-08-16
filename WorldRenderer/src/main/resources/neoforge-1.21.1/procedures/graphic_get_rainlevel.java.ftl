@@ -1,0 +1,1 @@
+/*@float*/(((Level) world).getRainLevel((float) partialTick))

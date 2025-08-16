@@ -9,6 +9,11 @@
       <module name="MyTool" options="" />
       <module name="MyTool.ArrayList" options="" />
       <module name="MyTool.ArrayList.main" options="" />
+      <module name="MyTool.ArrayList.src" options="" />
+      <module name="MyTool.ArrayList.src.main" options="" />
+      <module name="MyTool.ArrayList.src.main.WorldRenderer" options="" />
+      <module name="MyTool.ArrayList.src.main.WorldRenderer.main" options="" />
+      <module name="MyTool.ArrayList.src.main.WorldRenderer.test" options="" />
       <module name="MyTool.ArrayList.test" options="" />
       <module name="MyTool.Attributes" options="" />
       <module name="MyTool.Attributes.main" options="" />
@@ -42,6 +47,9 @@
       <module name="MyTool.Walker" options="" />
       <module name="MyTool.Walker.main" options="" />
       <module name="MyTool.Walker.test" options="" />
+      <module name="MyTool.WorldRenderer" options="" />
+      <module name="MyTool.WorldRenderer.main" options="" />
+      <module name="MyTool.WorldRenderer.test" options="" />
       <module name="MyTool.main" options="" />
       <module name="MyTool.test" options="" />
       <module name="helloworld" options="" />

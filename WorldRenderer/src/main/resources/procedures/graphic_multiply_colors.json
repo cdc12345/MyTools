@@ -1,0 +1,30 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "left",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "right",
+      "check": "Number"
+    }
+  ],
+  "output": "Number",
+  "inputsInline": true,
+  "colour": "#888888",
+  "mcreator": {
+    "toolbox_init": [
+      "<value name=\"left\"></value>",
+      "<value name=\"right\"></value>"
+    ],
+    "inputs": [
+      "left",
+      "right"
+    ],
+    "warnings": [
+      "graphic_multiply_colors"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "args0": [
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "output": "Shape",
+  "colour": 120,
+  "mcreator": {
+    "group": "shapegetter",
+    "toolbox_id": "graphicshape"
+  }
+}

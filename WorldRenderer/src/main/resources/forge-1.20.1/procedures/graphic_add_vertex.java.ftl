@@ -1,0 +1,1 @@
+add(${input$x}, ${input$y}, ${input$z}, ${opt.toInt(input$color)});

@@ -1,0 +1,29 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "animal",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "in_love_time",
+      "check": "Number"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "195",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "entitymanagement",
+    "toolbox_init": [
+      "<value name=\"in_love_time\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
+    ],
+    "inputs": [
+      "animal",
+      "in_love_time"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "start",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "end",
+      "check": "Number"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "toolbox_id": "graphicviewport",
+    "toolbox_init": [
+      "<value name=\"start\"><block type=\"math_number\"><field name=\"NUM\">100</field></block></value>",
+      "<value name=\"end\"><block type=\"math_number\"><field name=\"NUM\">150</field></block></value>"
+    ],
+    "inputs": [
+      "start",
+      "end"
+    ]
+  }
+}

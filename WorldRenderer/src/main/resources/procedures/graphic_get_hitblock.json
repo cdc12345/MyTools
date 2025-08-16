@@ -1,0 +1,22 @@
+{
+  "args0": [
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "output": "MCItemBlock",
+  "colour": 60,
+  "mcreator": {
+    "group": "hitdata",
+    "toolbox_id": "graphicdata",
+    "dependencies": [
+      {
+        "name": "world",
+        "type": "world"
+      }
+    ]
+  }
+}

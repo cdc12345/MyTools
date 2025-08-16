@@ -1,0 +1,1 @@
+Blockly.Msg.GRAPHIC_HUE = 120;

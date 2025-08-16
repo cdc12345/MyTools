@@ -1,0 +1,1 @@
+(${input$entity}.getPosition((float) partialTick).y())

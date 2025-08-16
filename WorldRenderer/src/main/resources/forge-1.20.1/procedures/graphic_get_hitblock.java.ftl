@@ -1,0 +1,1 @@
+/*@BlockState*/(Minecraft.getInstance().hitResult instanceof BlockHitResult _blockHitResult ? world.getBlockState(_blockHitResult.getBlockPos()) : Blocks.AIR.defaultBlockState())

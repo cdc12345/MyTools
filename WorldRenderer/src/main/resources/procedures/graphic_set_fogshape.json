@@ -1,0 +1,34 @@
+{
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "shape",
+      "options": [
+        [
+          "CYLINDER",
+          "FogShape.CYLINDER"
+        ],
+        [
+          "SPHERE",
+          "FogShape.SPHERE"
+        ]
+      ]
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_GRAPHIC_HUE}",
+  "mcreator": {
+    "toolbox_id": "graphicviewport",
+    "fields": [
+      "shape"
+    ]
+  }
+}

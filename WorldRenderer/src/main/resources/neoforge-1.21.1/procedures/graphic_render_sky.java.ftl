@@ -1,0 +1,1 @@
+renderSky(${input$deepsky}, ${input$sunlights}, ${input$sun}, ${input$moon}, ${input$stars}, ${input$abyss});

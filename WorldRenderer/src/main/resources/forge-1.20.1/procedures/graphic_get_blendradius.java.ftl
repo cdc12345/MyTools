@@ -1,0 +1,1 @@
+/*@int*/(Minecraft.getInstance().options.biomeBlendRadius().get())

@@ -1,0 +1,1 @@
+setColor(${opt.toFloat(input$level)}, ${opt.toInt(input$color)});

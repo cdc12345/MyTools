@@ -1,0 +1,33 @@
+{
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "hand",
+      "options": [
+        [
+          "LEFT",
+          "LEFT"
+        ],
+        [
+          "RIGHT",
+          "RIGHT"
+        ]
+      ]
+    },
+    {
+      "type": "field_image",
+      "src": "./res/client.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "output": "Boolean",
+  "inputsInline": true,
+  "colour": "%{BKY_LOGIC_HUE}",
+  "mcreator": {
+    "toolbox_id": "graphicdata",
+    "fields": [
+      "hand"
+    ]
+  }
+}

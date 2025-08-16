@@ -28,24 +28,27 @@ public class WalkerDataGen {
 		mcr.getToolKit().createOutputProcedure("walk_nbt_element", (String) null).setToolBoxId("nbt_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("entity", BuiltInTypes.Entity)
 				.appendArgs0StatementInput("walker").statementBuilder().setName("walker")
-				.appendProvide("_walker", "_walker").buildAndReturn()
-				.setLanguage(en, "Walk start with entity %1 %2").initGenerator().buildAndOutput();
+				.appendProvide("_walker", "_walker").buildAndReturn().setLanguage(en, "Journey start with entity %1 %2")
+				.initGenerator().buildAndOutput();
 		mcr.getToolKit().createInputProcedure("walk_nbt_see_compound").appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
-				.setLanguage(en, "walk compound %1").initGenerator().buildAndOutput();
+				.setLanguage(en, "get compound %1").initGenerator().buildAndOutput();
 		mcr.getToolKit().createEndProcedure("walk_nbt_see_number").setToolBoxId("nbt_walker")
 				.setColor(BuiltInBlocklyColor.MATH.toString()).appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
-				.setLanguage(en, "walk number %1").initGenerator().buildAndOutput();
+				.setLanguage(en, "get number %1").initGenerator().buildAndOutput();
 		mcr.getToolKit().createEndProcedure("walk_nbt_see_text").setToolBoxId("nbt_walker")
 				.setColor(BuiltInBlocklyColor.TEXTS.toString()).appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
-				.setLanguage(en, "walk text %1").buildAndOutput();
+				.setLanguage(en, "get text %1").buildAndOutput();
 		mcr.getToolKit().createEndProcedure("walk_nbt_see_logic").setToolBoxId("nbt_walker")
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
-				.setLanguage(en, "walk nbt logic %1").buildAndOutput();
-
+				.setLanguage(en, "get nbt logic %1").buildAndOutput();
+		mcr.getToolKit().createEndProcedure("walk_nbt_contains").setToolBoxId("nbt_walker")
+				.setColor(BuiltInBlocklyColor.LOGIC.toString()).appendDependency("_walker", "_walker")
+				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String).initGenerator()
+				.setLanguage(en, "exist %1").buildAndOutput();
 
 		//		mcr.createProcedure("walk_nbt_into").appendArgs0InputValue("key", BuiltInTypes.String)
 		//				.setLanguage(en, "walk in %1").initGenerator().buildAndOutput();

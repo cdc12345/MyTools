@@ -1,0 +1,1 @@
+setParticles(${generator.map(field$generic, "particles")}, ${generator.map(field$special, "particles")});

@@ -1,0 +1,1 @@
+(GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_MOUSE_BUTTON_${generator.map(field$mouse, "mousebuttons")}) == GLFW.GLFW_PRESS)

@@ -1,0 +1,1 @@
+setSkyColor(${opt.toFloat(input$level)}, ${opt.toInt(input$sky)});

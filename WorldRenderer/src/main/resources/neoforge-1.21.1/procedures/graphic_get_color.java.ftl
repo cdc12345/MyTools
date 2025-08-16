@@ -1,0 +1,1 @@
+/*@int*/(MapColor.${generator.map(field$color, "mapcolors")}.col | 255 << 24)

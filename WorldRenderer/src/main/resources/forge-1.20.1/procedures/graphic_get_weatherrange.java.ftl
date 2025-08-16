@@ -1,0 +1,1 @@
+/*@int*/(Minecraft.useFancyGraphics() ? 10 : 5)

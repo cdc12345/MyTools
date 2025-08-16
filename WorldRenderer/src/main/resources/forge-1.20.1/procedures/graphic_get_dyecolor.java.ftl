@@ -1,0 +1,1 @@
+/*@int*/(255 << 24 | DyeColor.byId(${opt.toInt(input$id)}).getTextColor())
