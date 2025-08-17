@@ -23,7 +23,7 @@ test {
 tasks.jar {
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveFileName.set("attributes.zip")
+    archiveFileName.set("attributemodifier.zip")
 
     doLast {
         copy {

@@ -5,7 +5,6 @@ if (event instanceof ItemAttributeModifierEvent _itemAttributeModifierEvent){
 		<#if field$slot == "ANY">
 		if (_itemAttributeModifierEvent.getSlotType() == EquipmentSlot.${field$slot}){
 		</#if>
-			_itemitemAttributeModifierEvent.addModifier(Attributes.${field$attribute},new AttributeModifier(${input$unique_id},${input$amount},
-					AttributeModifier.Operation.${field$operation}));
+			_itemitemAttributeModifierEvent.addModifier(${generator.map(field$attribute, "attributes")},${input$modifier});
 		<#if field$slot == "ANY">}</#if>
 }
