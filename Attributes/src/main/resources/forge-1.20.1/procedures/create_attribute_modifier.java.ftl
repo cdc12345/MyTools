@@ -1,1 +1,2 @@
-(new AttributeModifier(${input$unique_id},${input$amount},AttributeModifier.Operation.${field$operation}))
+<#assign map={"ADD_MULTIPLIED_TOTAL":"MULTIPLY_TOTAL","ADD_MULTIPLIED_BASE":"MULTIPLY_BASE","ADD_VALUE":"ADDITION"}/>
+(new AttributeModifier(${input$unique_id},${input$amount},AttributeModifier.Operation.${map[field$operation]}))

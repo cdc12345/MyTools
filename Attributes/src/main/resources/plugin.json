@@ -2,7 +2,9 @@
   "id": "attributes",
   "weight": 0,
   "supportedversions": [
-    "2025002"
+    "2025002",
+    "2025001",
+    "2024004"
   ],
   "info": {
     "author": "cdc12345",

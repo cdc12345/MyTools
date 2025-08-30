@@ -1,19 +1,22 @@
 package org.cdc.datagen;
 
+import org.cdc.datagen.categories.ListCategory;
+import org.cdc.datagen.types.ObjectListType;
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.framework.interfaces.IFountainMain;
+import org.cdc.framework.interfaces.annotation.DefaultPluginFolder;
 import org.cdc.framework.utils.*;
 
 import java.awt.*;
-import java.io.File;
 import java.util.Locale;
+import java.util.Map;
 
-public class DataGen {
+@DefaultPluginFolder public class MiscDataGen implements IFountainMain {
 
 	// 我是人
 	private static final String PLUS_SELF = "<block type=\"math_plus_self\"><value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block>";
 
-	public static void main(String[] args) {
-		MCreatorPluginFactory factory = new MCreatorPluginFactory(new File("src/main/resources").getAbsoluteFile());
+	public void generatePlugin(MCreatorPluginFactory factory) {
 		var en = factory.createDefaultLanguage();
 		var zh = factory.createLanguage(Locale.CHINA);
 
@@ -34,6 +37,34 @@ public class DataGen {
 				.appendArgs0InputValueWithDefaultToolboxInit("distance", BuiltInTypes.Number)
 				.setLanguage(en, "get view vector of %1 with distance %2").initGenerator().buildAndOutput();
 
+		//lambda
+		factory.getToolKit().createOutputProcedure("lambda_do", "_lambda")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setColor("15").appendArgs0StatementInput("body")
+				.statementBuilder().setName("body").buildAndReturn().setLanguage(en, "do %1").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createOutputProcedure("lambda_arg", (String) null).appendArgs0FieldInput("index", "1")
+				.setLanguage(en, "lambda parameter %1").setLanguage(zh, "lambda参数%1").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createEndProcedure("lambda_set_result").setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED)
+				.appendArgs0InputValue("result", (String) null).setLanguage(en, "set lambda result %1").initGenerator()
+				.buildAndOutput();
+
+		//list
+		factory.getToolKit().createOutputProcedure("list_stream_to_string_end", BuiltInTypes.String)
+				.setToolBoxId(ListCategory.INSTANCE).setColor(BuiltInBlocklyColor.TEXTS.toString())
+				.appendArgs0InputValue("list", ObjectListType.INSTANCE)
+				.appendArgs0InputValue("delimiter", BuiltInTypes.String).toolBoxInitBuilder().setName("delimiter")
+				.appendConstantString(",").buildAndReturn().appendArgs0InputValue("prefix", BuiltInTypes.String)
+				.toolBoxInitBuilder().setName("prefix").appendConstantString("[").buildAndReturn()
+				.appendArgs0InputValue("suffix", BuiltInTypes.String).toolBoxInitBuilder().setName("suffix")
+				.appendConstantString("]").buildAndReturn().appendArgs0InputValue("decorator", "_lambda")
+				.toolBoxInitBuilder().setName("decorator").appendElement(
+						"<block type=\"lambda_do\"><statement name=\"body\"><block type=\"lambda_set_result\"><value name=\"result\"><block type=\"text_join\"><mutation items=\"1\"></mutation><value name=\"ADD0\"><block type=\"lambda_arg\"><field name=\"index\">1</field></block></value></block></value></block></statement></block>")
+				.buildAndReturn().setLanguage(en, "to Text: %1, delimiter: %2, prefix: %3, suffix: %4, decorator: %5")
+				.setLanguage(zh, "转列表为字符串：%1, 分割符号：%2, 前拽：%3, 后拽：%4, decorator: %5").initGenerator()
+				.buildAndOutput();
+
+		//entity
 		factory.getToolKit().createInputProcedure("entity_set_in_lover")
 				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
 				.appendArgs0InputValue("animal", BuiltInTypes.Entity)
@@ -56,8 +87,10 @@ public class DataGen {
 				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
 				.appendArgs0InputValue("source", BuiltInTypes.String).appendDependency("world", BuiltInTypes.World)
 				.toolBoxInitBuilder().setName("source").appendConstantString("").buildAndReturn()
-				.setLanguage(en, "restore the entity,string: %1").setLanguage(zh, "将字符串%1转换为实体")
-				.initGenerator().buildAndOutput();
+				.appendArgs0InputValue("after", "_lambda").toolBoxInitBuilder().setName("after").appendElement(
+						"<block type=\"lambda_do\"><statement name=\"body\"><block type=\"world_add_entity\"><value name=\"entity\"><block type=\"lambda_arg\"><field name=\"index\">1</field></block></value></block></statement></block>")
+				.buildAndReturn().setLanguage(en, "restore the entity,string: %1 %2")
+				.setLanguage(zh, "将字符串%1转换为实体后 %2").initGenerator().buildAndOutput();
 		factory.getToolKit().createInputProcedure("entity_set_arrow_count")
 				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
 				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
@@ -82,6 +115,24 @@ public class DataGen {
 				.buildAndReturn().setCategory(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT).initGenerator()
 				.setLanguage(en, "set entity %1 invulnerableTime to %2").setLanguage(zh, "设置实体%1的无敌帧为%2")
 				.buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_set_swimming")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().appendArgs0InputValue("swimming", BuiltInTypes.Boolean)
+				.toolBoxInitBuilder().setName("swimming").appendConstantBoolean(false).buildAndReturn()
+				.setLanguage(en, "set entity %1 swimming %2").setLanguage(zh, "使实体 %1 游泳状态为%2").initGenerator()
+				.buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_start_falling_flying")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().setLanguage(en, "entity %1 start fall flying")
+				.setLanguage(zh, "实体%1开始降落飞行").initGenerator().buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_stop_falling_flying")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().setLanguage(en, "entity %1 stop fall flying")
+				.setLanguage(zh, "实体%1停止降落飞行").initGenerator().buildAndOutput();
+
 		factory.getToolKit().createOutputProcedure("entity_nbt_logic_get_advanced", BuiltInTypes.Boolean)
 				.setColor(BuiltInBlocklyColor.LOGIC.toString()).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_DATA)
 				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
@@ -145,6 +196,7 @@ public class DataGen {
 				.setLanguage(en, "append empty compound tag to entity %1 location %2")
 				.setLanguage(zh, "追加空nbt组件到实体%1位置%2").initGenerator().buildAndOutput();
 
+		//item
 		factory.getToolKit().createOutputProcedure("item_player_skull", BuiltInTypes.ItemStack)
 				.setColor(BuiltInBlocklyColor.ITEMSTACK_COLOR).setToolBoxId(BuiltInToolBoxId.Procedure.ITEM_DATA)
 				.appendArgs0InputValue("name", BuiltInTypes.String).toolBoxInitBuilder().setName("name")
@@ -160,11 +212,24 @@ public class DataGen {
 				.setLanguage(en, "make itemstack %1 unbreakable, addToTooltip: %2")
 				.setLanguage(zh, "使物品%1无法破坏，显示在物品tooltip: %2").initGenerator().buildAndOutput();
 
+		//world
+		factory.getToolKit().createInputProcedure("world_add_entity")
+				.setToolBoxId(BuiltInToolBoxId.Procedure.WORLD_MANAGEMENT).appendDependency("world", BuiltInTypes.World)
+				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
+				.appendDefaultEntity().buildAndReturn().setLanguage(en, "world add new entity %1")
+				.setLanguage(zh, "为世界增加新的实体 %1").initGenerator().buildAndOutput();
+
+		//advanced
 		factory.getToolKit().createOutputProcedure("math_plus_self", BuiltInTypes.Number)
 				.setToolBoxId(BuiltInToolBoxId.Procedure.MATH).setColor(BuiltInBlocklyColor.MATH.toString())
 				.appendArgs0InputValue("value", BuiltInTypes.Number).toolBoxInitBuilder().setName("value")
 				.appendConstantNumber(0).buildAndReturn().setLanguage(en, "plus myself %1").setLanguage(zh, "自增%1")
 				.initGenerator().buildAndOutput();
+		factory.getToolKit().createOutputProcedure("options_camera_type", BuiltInTypes.Boolean)
+				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).appendArgs0FieldDropDown("cameraType",
+						Map.of("FIRST_PERSON", "FIRST_PERSON", " THIRD_PERSON_BACK", " THIRD_PERSON_BACK", "THIRD_PERSON_FRONT",
+								"THIRD_PERSON_FRONT")).appendArgs0FieldImage(BuiltInImages.CLIENT, 8, 12)
+				.setLanguage(en, "is Player has %1 %2").setLanguage(zh, "玩家是%1 %2").initGenerator().buildAndOutput();
 		//		factory.getToolKit().createOutputProcedure("advanced_test_lambda",BuiltInTypes.String).setColor(Color.GRAY.darker())
 		//				.appendArgs0StatementInput("statement").statementBuilder().setName("statement").buildAndReturn()
 		//				.setToolBoxId(BuiltInToolBoxId.Procedure.ADVANCED).setLanguage(en, "Do nothing %1").initGenerator()

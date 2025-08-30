@@ -2,6 +2,7 @@ package org.cdc.datagen;
 
 import org.cdc.datagen.types.AttributeModifierType;
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.framework.builder.PluginInfoBuilder;
 import org.cdc.framework.interfaces.IFountainMain;
 import org.cdc.framework.interfaces.annotation.DefaultPluginFolder;
 import org.cdc.framework.utils.BuiltInToolBoxId;
@@ -15,10 +16,13 @@ import java.util.Map;
 
 @DefaultPluginFolder public class AttributeDataGen implements IFountainMain {
 
-	@Override public void generatePlugin(MCreatorPluginFactory plugin) {
-		plugin.createInfo().setAuthor("cdc12345").setName("attributes").setId("attributes").setWeight(0)
-				.addSupportedVersion(MCreatorVersions.V_2025_2).buildAndOutput();
+	@Override public void generatePluginInfo(PluginInfoBuilder infoBuilder) {
+		infoBuilder.setAuthor("cdc12345").setName("attributes").setId("attributes").setWeight(0)
+				.addSupportedVersion(MCreatorVersions.V_2025_2).addSupportedVersion(MCreatorVersions.V_2025_1)
+				.addSupportedVersion(MCreatorVersions.V_2024_4).buildAndOutput();
+	}
 
+	@Override public void generatePlugin(MCreatorPluginFactory plugin) {
 		var en = plugin.createDefaultLanguage();
 		var zh = plugin.createLanguage(Locale.CHINA);
 
@@ -28,7 +32,7 @@ import java.util.Map;
 				.setColor("75").setLanguage(en, "Attribute Modifier").initGenerator().buildAndOutput();
 
 		plugin.createDataList("types").appendElement("_modifiers", null, List.of("List<ItemAttributeModifiers.Entry>"))
-				.initGenerator().build();
+				.initGenerator();
 
 		plugin.createVariable(AttributeModifierType.getInstance()).setColor("76").initGenerator().buildAndOutput();
 
@@ -51,7 +55,9 @@ import java.util.Map;
 				.appendArgs0FieldInput("slot", "ANY")
 				.appendArgs0InputValue("modifier", AttributeModifierType.getInstance())
 				.appendDependency("attributesmodifiers", "_modifiers")
-				.setLanguage(en, "add item attribute %1 modifier %3 with slot: %2").setToolTip(en,"trigger must be the on item attribute modifier registered").initGenerator().buildAndOutput();
+				.setLanguage(en, "add item attribute %1 modifier %3 with slot: %2")
+				.setToolTip(en, "trigger must be the on item attribute modifier registered").initGenerator()
+				.buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("unique_resource_location", "_unique_id").setToolBoxId("attributes")
 				.appendArgs0InputValue("location", BuiltInTypes.String).toolBoxInitBuilder().setName("location")
 				.appendConstantString("namespace:path").buildAndReturn().setLanguage(en, "Resource Location %1")

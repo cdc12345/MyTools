@@ -38,7 +38,7 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("mytools.zip")
+    archiveFileName.set("cdcstoolbox.zip")
 
     from {
         configurations.export.collect { it.isDirectory() ? it : zipTree(it) }

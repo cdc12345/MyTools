@@ -1,0 +1,1 @@
+world.addFreshEntity(${input$entity});

@@ -11,9 +11,9 @@
   "weight": 0,
   "javaplugin": "org.liquid.convenient.TransferMain",
   "info": {
-    "name": "CT",
-    "version": "2025.2.718",
-    "description": "Random",
+    "name": "ConvenientTransfer",
+    "version": "2025.2.826",
+    "description": "copy your elements",
     "author": "liquid"
   }
 }

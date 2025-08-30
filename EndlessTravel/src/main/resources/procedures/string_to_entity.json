@@ -4,6 +4,11 @@
       "type": "input_value",
       "name": "source",
       "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "after",
+      "check": "_lambda"
     }
   ],
   "output": "Entity",
@@ -13,10 +18,12 @@
     "group": "name",
     "toolbox_id": "entitydata",
     "toolbox_init": [
-      "<value name=\"source\"><block type=\"text\"><field name=\"TEXT\"></field></block></value>"
+      "<value name=\"source\"><block type=\"text\"><field name=\"TEXT\"></field></block></value>",
+      "<value name=\"after\"><block type=\"lambda_do\"><statement name=\"body\"><block type=\"world_add_entity\"><value name=\"entity\"><block type=\"lambda_arg\"><field name=\"index\">1</field></block></value></block></statement></block></value>"
     ],
     "inputs": [
-      "source"
+      "source",
+      "after"
     ],
     "dependencies": [
       {
