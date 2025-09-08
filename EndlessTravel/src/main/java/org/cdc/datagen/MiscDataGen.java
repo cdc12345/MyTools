@@ -1,5 +1,6 @@
 package org.cdc.datagen;
 
+import com.google.gson.JsonPrimitive;
 import org.cdc.datagen.categories.ListCategory;
 import org.cdc.datagen.types.ObjectListType;
 import org.cdc.framework.MCreatorPluginFactory;
@@ -24,6 +25,8 @@ import java.util.Map;
 				.appendDependency("path", BuiltInTypes.String).setLanguage(en, "On layer render").setCancelable(true)
 				.setLanguage(zh, "GUI层渲染时").setSide(Side.Client).initGenerator().buildAndOutput();
 
+		factory.createApis("MCreator");
+
 		factory.getToolKit().createOutputProcedure("vec3_create_vec", "_vec3")
 				.setToolBoxId(BuiltInToolBoxId.Procedure.MATH)
 				.appendArgs0InputValueWithDefaultToolboxInit("x", BuiltInTypes.Number)
@@ -36,6 +39,38 @@ import java.util.Map;
 				.appendDefaultEntity().buildAndReturn()
 				.appendArgs0InputValueWithDefaultToolboxInit("distance", BuiltInTypes.Number)
 				.setLanguage(en, "get view vector of %1 with distance %2").initGenerator().buildAndOutput();
+
+		//triggers
+		factory.createTrigger("creativetab_content").appendDependency("tab", BuiltInTypes.String).initGenerator()
+				.setLanguage(en, "BuildCreativeTab").buildAndOutput();
+
+		//creativeTab
+		factory.createProcedure().setName("creativetab").markType().setColor(Color.BLUE.darker())
+				.setLanguage(en, "CreativeTab").initGenerator().buildAndOutput();
+		factory.createProcedure("creativetab_inserbefore").setPreviousStatement(null).setNextStatement(null)
+				.setColor(Color.BLUE).appendArgs0InputValue("before", BuiltInTypes.ItemStack)
+				.appendArgs0InputValue("item", BuiltInTypes.ItemStack)
+				.appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
+						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS"))
+				.appendToolBoxInit(
+						"<value name=\"before\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
+				.appendToolBoxInit(
+						"<value name=\"item\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
+				.setToolBoxId("creativetab").initGenerator()
+				.setLanguage(en, "creativeTab insert %2 before %1,Visible: %3").buildAndOutput();
+		factory.createProcedure("creativetab_insertafter").setPreviousStatement(null).setNextStatement(null)
+				.setColor(Color.BLUE).appendArgs0InputValue("after", BuiltInTypes.ItemStack)
+				.appendArgs0InputValue("item", BuiltInTypes.ItemStack)
+				.appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
+						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS"))
+				.appendToolBoxInit(
+						"<value name=\"after\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
+				.appendToolBoxInit(
+						"<value name=\"item\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
+				.setToolBoxId("creativetab").initGenerator()
+				.setLanguage(en, "creativeTab insert %2 after %1,Visible: %3").buildAndOutput();
+
+
 
 		//lambda
 		factory.getToolKit().createOutputProcedure("lambda_do", "_lambda")

@@ -21,13 +21,7 @@ configurations {
 
 dependencies {
     implementation project(':MCreator')
-
-    project(':MCreator').afterEvaluate(() ->
-            project(":MCreator").configurations.named("implementation").get().dependencies.each {
-                //noinspection ForeignDelegate
-                implementation it
-            }
-    )
+    implementation fileTree(dir: mcreator_lib_path,includes: ["*.jar"])
 
     // Uncomment the following two lines if you need to use JavaFX in your plugin
 //    implementation group: 'org.openjfx', name: 'javafx-web', version: '21.0.7'
@@ -42,6 +36,10 @@ tasks.jar {
 
     from {
         configurations.export.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    manifest{
+        from("src/main/resources/META-INF/MANIFEST.MF")
     }
 }
 
