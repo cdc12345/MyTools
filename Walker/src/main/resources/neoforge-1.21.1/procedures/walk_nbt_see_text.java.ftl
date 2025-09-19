@@ -1,3 +1,1 @@
-<#-- ${input$tagName} -->
-<#--  -->
-<#--  -->
+.getString(${input$tagName})

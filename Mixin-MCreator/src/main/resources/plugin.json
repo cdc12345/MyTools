@@ -1,0 +1,15 @@
+{
+  "id": "mixin",
+  "supportedversions": [
+    2025002,
+    2025001
+  ],
+  "weight": 0,
+  "javaplugin": "net.nerdypuzzle.forgemixins.MixinPluginMain",
+  "info": {
+    "name": "Mixin",
+    "version": "{mainPlugins.version}",
+    "description": "Mixin Support",
+    "author": "cdc12345,nerdypuzzle"
+  }
+}

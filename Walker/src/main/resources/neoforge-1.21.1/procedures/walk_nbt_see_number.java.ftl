@@ -1,3 +1,1 @@
-<#--  -->
-<#--  -->
-<#--  -->
+.getDouble(${input$tagName})

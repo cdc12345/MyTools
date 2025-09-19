@@ -45,7 +45,7 @@ import java.util.Map;
 				.setLanguage(en, "BuildCreativeTab").buildAndOutput();
 
 		//creativeTab
-		factory.createProcedure().setName("creativetab").markType().setColor(Color.BLUE.darker())
+		factory.createProcedure().setName("creativetab").setParentCategory(BuiltInToolBoxId.Procedure.ITEM_PROCEDURES).markType().setColor(Color.BLUE.darker())
 				.setLanguage(en, "CreativeTab").initGenerator().buildAndOutput();
 		factory.createProcedure("creativetab_inserbefore").setPreviousStatement(null).setNextStatement(null)
 				.setColor(Color.BLUE).appendArgs0InputValue("before", BuiltInTypes.ItemStack)

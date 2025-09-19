@@ -1,0 +1,9 @@
+templates:
+  - template: mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixins/@NAMEMixin.java"
+
+global_templates:
+  - template: modbase/mixins.json.ftl
+    writer: json
+    name: "@RESROOT/mixins.@modid.json"

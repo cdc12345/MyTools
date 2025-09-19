@@ -15,6 +15,7 @@ version = new JsonSlurper().parse(file('src/main/resources/plugin.json'))['info'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+
 configurations {
     implementation.extendsFrom export
 }
@@ -22,6 +23,8 @@ configurations {
 dependencies {
     implementation project(':MCreator')
     implementation fileTree(dir: mcreator_lib_path,includes: ["*.jar"])
+
+    export project(':AsYouCanSeeAgent')
 
     // Uncomment the following two lines if you need to use JavaFX in your plugin
 //    implementation group: 'org.openjfx', name: 'javafx-web', version: '21.0.7'
@@ -76,7 +79,7 @@ subprojects { subproject ->
 gradle.taskGraph.whenReady {
     gradle.taskGraph.allTasks.each {
         if (it.project == project(":MCreator")) {
-            it.onlyIf { false }
+            it.onlyIf { true }
         }
     }
 }

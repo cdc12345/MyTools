@@ -1,0 +1,32 @@
+plugins {
+    id("java")
+    id("java-library")
+}
+
+group = "org.liquid"
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.gradle.org/gradle/libs-releases" } // for gradle-tooling-api
+}
+
+dependencies {
+    implementation project(':MCreator')
+
+    project(":MCreator").configurations.named("implementation").get().dependencies.each {
+        //noinspection ForeignDelegate
+        implementation it
+    }
+
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("mixin.zip")
+    doLast {
+        copy {
+            from 'build/libs/mixin.zip'
+            into mcreator_plugins_path
+        }
+    }
+}

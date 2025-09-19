@@ -1,3 +1,1 @@
-<#-- ${input$entity} -->
-<#-- ${statement$walkplace} -->
-<#--  -->
+(${input$entity}.getPersistentData()${statement$walker})

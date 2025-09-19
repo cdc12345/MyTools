@@ -1,0 +1,11 @@
+mixin {
+    add sourceSets.main, 'mixins.${modid}.refmap.json'
+
+    config 'mixins.${modid}.json'
+}
+
+jar {
+    manifest.attributes([
+            "MixinConfigs": "mixins.mymod.json"
+    ])
+}

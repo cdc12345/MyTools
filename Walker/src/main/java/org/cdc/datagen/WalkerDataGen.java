@@ -30,6 +30,8 @@ public class WalkerDataGen {
 				.appendArgs0StatementInput("walker").statementBuilder().setName("walker")
 				.appendProvide("_walker", "_walker").buildAndReturn().setLanguage(en, "Journey start with entity %1 %2")
 				.initGenerator().buildAndOutput();
+
+
 		mcr.getToolKit().createInputProcedure("walk_nbt_see_compound").appendDependency("_walker", "_walker")
 				.appendArgs0InputValueWithDefaultToolboxInit("tagName", BuiltInTypes.String)
 				.setLanguage(en, "get compound %1").initGenerator().buildAndOutput();

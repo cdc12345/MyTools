@@ -12,6 +12,7 @@ import net.mcreator.preferences.PreferencesManager;
 import net.mcreator.preferences.entries.BooleanEntry;
 import net.mcreator.preferences.entries.StringEntry;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.workspace.Workspace;
 import org.apache.logging.log4j.LogManager;
@@ -56,13 +57,14 @@ public class MyToolBoxMain extends JavaPlugin {
 					boolean needJava;
 					needJava = extensions.contains("java");
 					extensions.remove("java");
-					boolean needReloadResource = !extensions.isEmpty() || isDirty(mcreator.getWorkspace());
-					if (needReloadResource) {
+					boolean isDirty = isDirty(mcreator.getWorkspace());
+					boolean needReloadResource = !extensions.isEmpty() || isDirty;
+					if (isDirty) {
 						LocalizationUtils.generateLanguageFiles(mcreator.getGenerator(), mcreator.getWorkspace(),
 								mcreator.getGeneratorConfiguration().getLanguageFileSpecification());
 					}
 					if (enableRedefine.get() && mcreator.getDebugPanel().getDebugClient() != null) {
-						mcreator.getTabs().showTab(mcreator.consoleTab);
+						getTabs(mcreator).showTab(mcreator.consoleTab);
 						mcreator.getGradleConsole().exec("classes", result -> {
 							var PACKAGE_PATH = new File(mcreator.getWorkspaceFolder(), "build/classes/java/main");
 							if (needJava && needVirtualMachine()) {
@@ -74,7 +76,8 @@ public class MyToolBoxMain extends JavaPlugin {
 									if (redefineMethod.get().equals("Retransfer")) {
 										mcreator.getGradleConsole().append("attached " + virtualMachine.version());
 										try {
-											if (AttachUtils.attachWithClass(PACKAGE_PATH.toString(),getPlugin().getFile(), PACKAGE_PATH,
+											if (AttachUtils.attachWithClass(mcreator.getWorkspaceFolder().toString(),
+													getPlugin().getFile(), PACKAGE_PATH,
 													modElementGUI.getModElement().getName())) {
 												LOG.info("Attach Successful");
 											} else {
@@ -116,15 +119,13 @@ public class MyToolBoxMain extends JavaPlugin {
 										LOG.info("redefined all client procedure classes");
 									}
 								}
-								mcreator.getGradleConsole()
-										.appendPlainText("All resources has been updated", Color.WHITE);
 							}
 							if (redefineMethod.get().equals("Retransfer") && needReloadResource) {
 								try {
-									if (AttachUtils.attachToResourcesLoaded(PACKAGE_PATH.toString(),
+									if (AttachUtils.attachToResourcesLoaded(mcreator.getWorkspaceFolder().toString(),
 											getPlugin().getFile(),
 											mcreator.getGeneratorConfiguration().getGeneratorFlavor(),
-											isDirty(mcreator.getWorkspace()))) {
+											isDirty)) {
 										LOG.info("Attach Successful and command reload");
 									} else {
 										LOG.info("Failed with command");
@@ -134,7 +135,9 @@ public class MyToolBoxMain extends JavaPlugin {
 											.appendPlainText(e.getClass().getName() + ":" + e.getMessage(), Color.RED);
 								}
 							}
+							mcreator.getGradleConsole().appendPlainText("All resources has been updated", Color.WHITE);
 
+							mcreator.getGradleConsole().appendPlainText("NeedJava: "+needJava+",NeedReload: "+needReloadResource+",Dirty: "+isDirty+",Extensions: "+extensions, Color.WHITE);
 						});
 						mcreator.getGradleConsole().markRunning();
 					}
@@ -168,5 +171,10 @@ public class MyToolBoxMain extends JavaPlugin {
 
 	public static Logger getLOG() {
 		return LOG;
+	}
+
+	//This will change in 2024.3 # getMCreatorTabs
+	private MCreatorTabs getTabs(MCreator mcreator){
+		return mcreator.getTabs();
 	}
 }

@@ -1,3 +1,1 @@
-<#-- ${input$tagName} -->
-<#--  -->
-<#--  -->
+.getCompound(${input$tagName})

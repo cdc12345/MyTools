@@ -1,7 +1,8 @@
 {
   "id": "subtempplugin%s",
   "supportedversions": [
-    202500199999,
+    202500299999,
+    2025002,
     2025001
   ],
   "weight": 0,
