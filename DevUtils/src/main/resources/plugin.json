@@ -1,0 +1,19 @@
+{
+  "id": "dev",
+  "supportedversions": [
+    202500220614,
+    2025002,
+    202500199999,
+    2025001,
+    2024004,
+    2024003
+  ],
+  "weight": 0,
+  "javaplugin": "org.cdc.dev.utils.PluginMain",
+  "info": {
+    "name": "DevUtils",
+    "version": "1.0",
+    "description": "one of plugins which is in my toolbox",
+    "author": "cdc12345"
+  }
+}

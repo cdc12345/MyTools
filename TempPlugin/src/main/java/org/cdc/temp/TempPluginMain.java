@@ -9,7 +9,10 @@ import net.mcreator.ui.variants.modmaker.ModMaker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.temp.ui.TempAchievementGUI;
+import org.cdc.temp.ui.TempBiomeGUI;
 import org.cdc.temp.ui.TempItemGUI;
+import org.cdc.temp.ui.TempStructureGUI;
 import org.cdc.temp.utils.PluginUtils;
 
 import javax.swing.*;
@@ -58,6 +61,42 @@ public class TempPluginMain extends JavaPlugin {
 
 			});
 			temp.add(addTempItem);
+
+			JMenuItem addTempAchievement = new JMenuItem(L10N.t("menubar.item.addtempachievement"));
+			addTempAchievement.addActionListener(c->{
+				var gui = new TempAchievementGUI(mcreator);
+				var tab = new MCreatorTabs.Tab(gui);
+				gui.setOnSaved(d->{
+					PluginUtils.doCreateAchievement(d);
+					mcreator.getTabs().closeTab(tab);
+				});
+				mcreator.getTabs().addTab(tab);
+			});
+			temp.add(addTempAchievement);
+
+			JMenuItem addTempStructure = new JMenuItem(L10N.t("menubar.item.addtempstructure"));
+			addTempStructure.addActionListener(c->{
+				var gui = new TempStructureGUI(mcreator);
+				var tab = new MCreatorTabs.Tab(gui);
+				gui.setOnSaved(d->{
+					PluginUtils.doCreateStructure(d);
+					mcreator.getTabs().closeTab(tab);
+				});
+				mcreator.getTabs().addTab(tab);
+			});
+			temp.add(addTempStructure);
+
+			JMenuItem addTempBiome = new JMenuItem(L10N.t("menubar.item.addtempbiome"));
+			addTempBiome.addActionListener(c->{
+				var gui = new TempBiomeGUI(mcreator);
+				var tab = new MCreatorTabs.Tab(gui);
+				gui.setOnSaved(d->{
+					PluginUtils.doCreateBiome(d);
+					mcreator.getTabs().closeTab(tab);
+				});
+				mcreator.getTabs().addTab(tab);
+			});
+			temp.add(addTempBiome);
 
 			JMenuItem export = new JMenuItem(L10N.t("menubar.item.build"));
 			export.addActionListener(b -> {

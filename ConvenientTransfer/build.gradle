@@ -24,6 +24,7 @@ dependencies {
                 api it
             }
     )
+    implementation fileTree("lib")
 }
 
 tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {

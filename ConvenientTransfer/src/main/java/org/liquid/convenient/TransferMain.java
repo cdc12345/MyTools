@@ -1,6 +1,8 @@
 package org.liquid.convenient;
 
 import com.google.gson.*;
+import net.mcreator.blockly.java.BlocklyVariables;
+import net.mcreator.blockly.java.ProcedureTemplateIO;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.element.ModElementTypeLoader;
 import net.mcreator.element.types.CustomElement;
@@ -11,22 +13,25 @@ import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.modgui.ProcedureGUI;
 import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.StringUtils;
-import net.mcreator.workspace.elements.FolderElement;
-import net.mcreator.workspace.elements.IElement;
-import net.mcreator.workspace.elements.ModElement;
-import net.mcreator.workspace.elements.ModElementManager;
+import net.mcreator.workspace.elements.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.liquid.convenient.render.TilesModListRender;
 import org.liquid.convenient.utils.JsonUtils;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -34,9 +39,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.ParseException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TransferMain extends JavaPlugin {
 
@@ -45,6 +52,7 @@ public class TransferMain extends JavaPlugin {
 	private static final int PREVIEW_LENGTH = 20;
 
 	private JsonObject descMap = new JsonObject();
+	private JMenu transfer;
 
 	public TransferMain(Plugin plugin) {
 		super(plugin);
@@ -58,7 +66,7 @@ public class TransferMain extends JavaPlugin {
 			if (mcreator instanceof ModMaker) {
 				JMenuBar bar = mcreator.getMainMenuBar();
 
-				JMenu transfer = new JMenu(L10N.t("common.menubar.transfer"));
+				transfer = new JMenu(L10N.t("common.menubar.transfer"));
 
 				// Copy operations
 				transfer.add(buildShallowCopyMenu(mcreator));
@@ -66,6 +74,64 @@ public class TransferMain extends JavaPlugin {
 				transfer.addSeparator();
 				transfer.add(buildDeepCopyMenu(mcreator));
 				transfer.add(buildUnpackMenu(mcreator));
+				transfer.addSeparator();
+				JMenuItem copyProcedure = new JMenuItem("Copy procedure");
+				copyProcedure.addActionListener(action->{
+					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI){
+						try {
+							var tempFile = File.createTempFile("temp",".ptpl");
+							ProcedureTemplateIO.exportBlocklySetup(procedureGUI.getElementFromGUI().procedurexml,tempFile,
+									BlocklyEditorType.PROCEDURE);
+							tempFile.deleteOnExit();
+							var s = new StringSelection(tempFile.getPath());
+							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s,s);
+						} catch (IOException | ParserConfigurationException | ParseException | SAXException e) {
+							throw new RuntimeException(e);
+						}
+
+					}
+				});
+				transfer.add(copyProcedure);
+
+				JMenuItem pasteProcedure = new JMenuItem("Paste procedure");
+				pasteProcedure.addActionListener(action->{
+					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI){
+						try {
+							var data = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(new Object());
+							if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+								var blocklyPanel = procedureGUI.getBlocklyPanels().stream().findFirst().get();
+								var imp = new File(
+										(String) data.getTransferData(DataFlavor.stringFlavor));
+								if (imp.exists()){
+									new Thread(() -> {
+											String procedureXml = ProcedureTemplateIO.importBlocklyXML(imp);
+											Set<VariableElement> localVariables = BlocklyVariables.tryToExtractVariables(
+													procedureXml);
+											List<VariableElement> existingLocalVariables = blocklyPanel.getLocalVariablesList();
+
+											for (VariableElement localVariable : localVariables) {
+												if (existingLocalVariables.contains(localVariable))
+													continue; // skip if variable with this name already exists
+
+												blocklyPanel.addLocalVariable(localVariable.getName(),
+														localVariable.getType().getBlocklyVariableType());
+												procedureGUI.localVars.addElement(localVariable);
+											}
+											blocklyPanel.addBlocksFromXML(procedureXml);
+									}, "Blockly-Template-Import").start();
+								} else {
+									throw new RuntimeException("Not a file");
+								}
+							} else {
+								throw new RuntimeException("Not a string");
+							}
+						} catch (IOException | UnsupportedFlavorException e) {
+							throw new RuntimeException(e);
+						}
+
+					}
+				});
+				transfer.add(pasteProcedure);
 				transfer.addSeparator();
 
 				// Comment and language operations
@@ -405,15 +471,18 @@ public class TransferMain extends JavaPlugin {
 				modElement.setParentFolder(workspacePanel.currentFolder);
 			}
 
-			mcreator.getWorkspace().addModElement(modElement);
-			generatableElement.setModElement(modElement);
-			manager.storeModElement(generatableElement);
+			if (mcreator.getWorkspace().getWorkspaceInfo().hasModElement(name)){
+				showError(mcreator,name+" existed, ignored.");
+			} else {
+				mcreator.getWorkspace().addModElement(modElement);
+				generatableElement.setModElement(modElement);
+				manager.storeModElement(generatableElement);
 
 
-
-			if (mcreator instanceof ModMaker modMaker) {
-				modMaker.getWorkspacePanel()
-						.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
+				if (mcreator instanceof ModMaker modMaker) {
+					modMaker.getWorkspacePanel()
+							.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
+				}
 			}
 
 		}

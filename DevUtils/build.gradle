@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.cdc.mytools'
+version = '1.0'
+
+configurations {
+    implementation.extendsFrom export
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.gradle.org/gradle/libs-releases" } // for gradle-tooling-api
+    flatDir { dirs mcreator_path + '/lib' }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation project(':MCreator')
+
+    project(':MCreator').afterEvaluate(() ->
+            project(":MCreator").configurations.named("implementation").get().dependencies.each {
+                //noinspection ForeignDelegate
+                implementation it
+            }
+    )
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveFileName.set("devutils.zip")
+
+    doLast {
+        copy {
+            from "build/libs/devutils.zip"
+            into mcreator_plugins_path
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

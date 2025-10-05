@@ -1,1 +1,0 @@
-.getBoolean(${input$tagName})

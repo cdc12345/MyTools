@@ -27,6 +27,9 @@
       <module name="MyTool.DataGen" options="" />
       <module name="MyTool.DataGen.main" options="" />
       <module name="MyTool.DataGen.test" options="" />
+      <module name="MyTool.DevUtils" options="" />
+      <module name="MyTool.DevUtils.main" options="" />
+      <module name="MyTool.DevUtils.test" options="" />
       <module name="MyTool.EndlessTravel" options="" />
       <module name="MyTool.EndlessTravel.main" options="" />
       <module name="MyTool.EndlessTravel.test" options="" />
