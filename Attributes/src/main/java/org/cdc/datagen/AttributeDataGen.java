@@ -42,20 +42,18 @@ import java.util.Map;
 
 		plugin.getToolKit().createOutputProcedure("create_attribute_modifier", AttributeModifierType.getInstance())
 				.setToolBoxId("attributes").setColor("75").appendArgs0InputValue("unique_id", "_unique_id")
-				.toolBoxInitBuilder().setName("unique_id").appendElement(
-						"<block type=\"unique_resource_location\"><value name=\"location\"><block type=\"text\"><field name=\"TEXT\">namespace:path</field></block></value></block>")
-				.buildAndReturn().appendArgs0InputValueWithDefaultToolboxInit("amount", BuiltInTypes.Number)
+				.appendArgs0InputValueWithDefaultToolboxInit("amount", BuiltInTypes.Number)
 				.appendArgs0FieldDropDown("operation",
 						Map.of("ADD_VALUE", "ADD_VALUE", "ADD_MULTIPLIED_BASE", "ADD_MULTIPLIED_BASE",
 								"ADD_MULTIPLIED_TOTAL", "ADD_MULTIPLIED_TOTAL"))
 				.setLanguage(en, "Create modifier uniqueId: %1, amount: %2, operation: %3").initGenerator()
-				.buildAndOutput();
+				.setLanguage(zh,"创建属性修饰符UUID: %1,值: %2,操作: %3").buildAndOutput();
 		plugin.getToolKit().createInputProcedure("attribute_add_modifier").setToolBoxId("attributes").setColor("75")
 				.appendArgs0FieldDataListSelector("attribute", "attributes", "ATTACK_DAMAGE")
 				.appendArgs0FieldInput("slot", "ANY")
 				.appendArgs0InputValue("modifier", AttributeModifierType.getInstance())
 				.appendDependency("attributesmodifiers", "_modifiers")
-				.setLanguage(en, "add item attribute %1 modifier %3 with slot: %2")
+				.setLanguage(en, "add item attribute %1 modifier %3 with slot: %2").setLanguage(zh,"添加物品属性 %1 修饰符 %3 于槽位 %2")
 				.setToolTip(en, "trigger must be the on item attribute modifier registered").initGenerator()
 				.buildAndOutput();
 		plugin.getToolKit().createOutputProcedure("unique_resource_location", "_unique_id").setToolBoxId("attributes")
@@ -69,8 +67,6 @@ import java.util.Map;
 		plugin.initGenerator(Generators.FORGE1201);
 		plugin.getToolKit().clearGenerator();
 		plugin.initGenerator(Generators.NEOFORGE1211);
-		plugin.getToolKit().clearGenerator();
-		plugin.initGenerator(Generators.NEOFORGE1214);
 		plugin.getToolKit().clearGenerator();
 
 		en.buildAndOutput();

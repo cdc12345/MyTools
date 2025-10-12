@@ -1,0 +1,21 @@
+{
+  "args0": [
+    {
+      "type": "input_statement",
+      "name": "statement"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "#595959",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "advanced",
+    "statements": [
+      {
+        "name": "statement"
+      }
+    ]
+  }
+}

@@ -19,7 +19,9 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
+    implementation project(':Fountain')
     implementation project(':MCreator')
+    implementation 'com.github.javaparser:javaparser-core:3.27.1'
 
     project(':MCreator').afterEvaluate(() ->
             project(":MCreator").configurations.named("implementation").get().dependencies.each {
@@ -33,6 +35,10 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName.set("devutils.zip")
 
+    from {
+        configurations.export.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
     doLast {
         copy {
             from "build/libs/devutils.zip"
@@ -43,4 +49,11 @@ tasks.jar {
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register("runDataGen",JavaExec).configure {
+    group = "build"
+    main("org.cdc.framework.FountainBaseMain")
+    classpath = sourceSets.main.runtimeClasspath
+    workingDir(projectDir)
 }

@@ -1,6 +1,7 @@
 package org.liquid.convenient;
 
 import com.google.gson.*;
+import net.mcreator.Launcher;
 import net.mcreator.blockly.java.BlocklyVariables;
 import net.mcreator.blockly.java.ProcedureTemplateIO;
 import net.mcreator.element.GeneratableElement;
@@ -75,7 +76,7 @@ public class TransferMain extends JavaPlugin {
 				transfer.add(buildDeepCopyMenu(mcreator));
 				transfer.add(buildUnpackMenu(mcreator));
 				transfer.addSeparator();
-				JMenuItem copyProcedure = new JMenuItem("Copy procedure");
+				JMenuItem copyProcedure = new JMenuItem(L10N.t("mainbar.menu.copyprocedure"));
 				copyProcedure.addActionListener(action->{
 					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI){
 						try {
@@ -83,7 +84,7 @@ public class TransferMain extends JavaPlugin {
 							ProcedureTemplateIO.exportBlocklySetup(procedureGUI.getElementFromGUI().procedurexml,tempFile,
 									BlocklyEditorType.PROCEDURE);
 							tempFile.deleteOnExit();
-							var s = new StringSelection(tempFile.getPath());
+							var s = new StringSelection(Base64.getEncoder().encodeToString(Files.readAllBytes(tempFile.toPath())));
 							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s,s);
 						} catch (IOException | ParserConfigurationException | ParseException | SAXException e) {
 							throw new RuntimeException(e);
@@ -93,16 +94,18 @@ public class TransferMain extends JavaPlugin {
 				});
 				transfer.add(copyProcedure);
 
-				JMenuItem pasteProcedure = new JMenuItem("Paste procedure");
+				JMenuItem pasteProcedure = new JMenuItem(L10N.t("mainbar.menu.pasteprocedure"));
 				pasteProcedure.addActionListener(action->{
 					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI){
 						try {
 							var data = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(new Object());
 							if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 								var blocklyPanel = procedureGUI.getBlocklyPanels().stream().findFirst().get();
-								var imp = new File(
-										(String) data.getTransferData(DataFlavor.stringFlavor));
+								File imp = File.createTempFile("tem",".temp");
+								Files.write(imp.toPath(),Base64.getDecoder().decode(
+										(String) data.getTransferData(DataFlavor.stringFlavor)));
 								if (imp.exists()){
+									imp.deleteOnExit();
 									new Thread(() -> {
 											String procedureXml = ProcedureTemplateIO.importBlocklyXML(imp);
 											Set<VariableElement> localVariables = BlocklyVariables.tryToExtractVariables(
@@ -346,7 +349,9 @@ public class TransferMain extends JavaPlugin {
 			}
 
 			descMap.add(modElement.getName(), new JsonPrimitive(comment));
-			workspacePanel.list.setCellRenderer(new TilesModListRender(this));
+			if (Launcher.version.majorlong > 2025000) {
+				workspacePanel.list.setCellRenderer(new TilesModListRender(this));
+			}
 
 			try {
 				Files.writeString(new File(mcreator.getWorkspaceFolder(), "comments.json").toPath(), descMap.toString(),

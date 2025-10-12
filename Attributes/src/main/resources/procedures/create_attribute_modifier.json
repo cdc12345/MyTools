@@ -36,7 +36,6 @@
     "group": "name",
     "toolbox_id": "attributes",
     "toolbox_init": [
-      "<value name=\"unique_id\"><block type=\"unique_resource_location\"><value name=\"location\"><block type=\"text\"><field name=\"TEXT\">namespace:path</field></block></value></block></value>",
       "<value name=\"amount\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
     ],
     "inputs": [

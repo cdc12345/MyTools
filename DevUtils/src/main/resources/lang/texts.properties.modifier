@@ -1,0 +1,18 @@
+devutils.workspaceoperation.name=Workspace operation
+devutils.workspaceoperation.rmsrc.name=Remove src
+devutils.consoleoperation.name=Console operation
+devutils.workspaceoperation.rmdf.name=Remove datapack directory
+devutils.workspaceoperation.rmwdf.name=Remove whole datapack directory
+devutils.workspaceoperation.rmaf.name=Remove assets directory
+devutils.workspaceoperation.rmajf.name=Remove all json files from assets directory
+devutils.workspaceoperation.rmwaf.name=Remove whole assets directory
+devutils.workspaceoperation.ews.name=Export workspace snapshot to clipboard
+devutils.workspaceoperation.ewd.name=Edit workspace definition file（Restart）
+devutils.elementoperation.name=Element operation
+devutils.elementoperation.ecef.name=Edit element operation
+devutils.elementoperation.re.name=Invalid the elements cache
+
+preferences.section.devUtilsSection=DevUtils controls
+preferences.section.devUtilsSection.description=Configuration panel for DevUtils plugin
+preferences.devUtilsSection.exportPluginsSensitives=Export plugin sensitives with snapshot
+preferences.devUtilsSection.exportPluginsSensitives.description=""
