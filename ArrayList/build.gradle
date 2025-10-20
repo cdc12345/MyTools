@@ -26,6 +26,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.jar {
+    dependsOn("runDataGen")
+
     exclude("org/cdc/datagen/**")
 
     inputs.dir(mcreator_plugins_path)
@@ -41,10 +43,22 @@ tasks.jar {
     }
 }
 
+tasks.processResources{
+    exclude "lang/*.modifier"
+}
+
 tasks.register("runDataGen",JavaExec).configure {
     group = "build"
     main("org.cdc.framework.FountainBaseMain")
-    setArgs(List.of("src/main/resources"))
     classpath = sourceSets.main.runtimeClasspath
     workingDir(projectDir)
+    setArgs(List.of("src/main/resources"))
+
+    doLast{
+        copy {
+            from sourceSets.main.resources
+            into project.layout.buildDirectory.file("resources/main")
+            exclude "lang/*.modifier"
+        }
+    }
 }

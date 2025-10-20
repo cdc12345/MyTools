@@ -49,6 +49,18 @@ public class WorkspaceManager {
 		}
 	}
 
+	public static void removeModifiersFolder(IMCreator mcreator) {
+		try {
+			int option = JOptionPane.showConfirmDialog(mcreator.getOrigin(), "Are you sure?", "Confirm",
+					JOptionPane.YES_NO_OPTION);
+			if (option == JOptionPane.YES_OPTION) {
+				org.apache.commons.io.FileUtils.forceDelete(new File(mcreator.getWorkspace().getWorkspaceFolder(),"modifiers"));
+			}
+		} catch (IOException e) {
+			LOGGER.info(e);
+		}
+	}
+
 	public static void removeDataPack(IMCreator mcreator) {
 		try {
 			org.apache.commons.io.FileUtils.forceDelete(
@@ -211,15 +223,15 @@ public class WorkspaceManager {
 		JsonObject pluginInfo = new JsonObject();
 		pluginInfo.addProperty("id", plugin.getID());
 		pluginInfo.addProperty("path", plugin.getFile().getPath());
-		pluginInfo.addProperty("builtIn", plugin.isBuiltin());
-		pluginInfo.addProperty("isLoaded", plugin.isLoaded());
+//		pluginInfo.addProperty("builtIn", plugin.isBuiltin());
+		pluginInfo.addProperty("version",plugin.getPluginVersion());
+		pluginInfo.addProperty("weight",plugin.getWeight());
 		pluginInfo.addProperty("sha-1", FileUtils.getFileSha1(plugin.getFile()));
-		if (!plugin.isLoaded())
-			pluginInfo.addProperty("loadFailure", plugin.getLoadFailure());
 
-		if (!plugin.getFile().getName().startsWith("mcreator-")) {
+		if (!plugin.getFile().getName().startsWith("mcreator-") && plugin.getFile().isFile()) {
 			var languageSupport = new JsonArray();
 			var sensitives = new JsonArray();
+			var common = new JsonArray();
 			try (ZipFile zipFile1 = new ZipFile(plugin.getFile())) {
 				var iterator = zipFile1.entries();
 				while (iterator.hasMoreElements()) {
@@ -237,11 +249,15 @@ public class WorkspaceManager {
 						var set = findEntryInAllPlugins(name);
 						if (set.size() > 1) {
 							LOGGER.info(set.stream().map(ZipEntry::getName).collect(Collectors.joining(", ")));
-							JsonObject sensitive = new JsonObject();
-							sensitive.addProperty("action", "overwrite " + entry.getName());
-							sensitive.addProperty("relationPlugins",
+							JsonObject action = new JsonObject();
+							action.addProperty("action", "overwrite " + entry.getName());
+							action.addProperty("relationPlugins",
 									set.stream().map(ZipEntry::getComment).collect(Collectors.joining(", ")));
-							sensitives.add(sensitive);
+							if (name.contains("/mappings/") || name.startsWith("datalists/")){
+								common.add(action);
+							} else {
+								sensitives.add(action);
+							}
 						}
 					}
 				}
@@ -249,6 +265,7 @@ public class WorkspaceManager {
 
 			}
 			pluginInfo.add("sensitives", sensitives);
+			pluginInfo.add("common",common);
 			pluginInfo.add("languageSupport", languageSupport);
 		}
 		return pluginInfo;

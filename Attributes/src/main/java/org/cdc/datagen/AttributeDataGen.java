@@ -10,7 +10,6 @@ import org.cdc.framework.utils.BuiltInTypes;
 import org.cdc.framework.utils.Generators;
 import org.cdc.framework.utils.MCreatorVersions;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ import java.util.Map;
 		plugin.createProcedureCategory("attributes").setParentCategory(BuiltInToolBoxId.Procedure.ITEM_PROCEDURES)
 				.setColor("75").setLanguage(en, "Attribute Modifier").initGenerator().buildAndOutput();
 
-		plugin.createDataList("types").appendElement("_modifiers", null, List.of("List<ItemAttributeModifiers.Entry>"))
+		plugin.createDataList("types").appendElement("_modifiers", "List.of()")
 				.initGenerator();
 
 		plugin.createVariable(AttributeModifierType.getInstance()).setColor("76").initGenerator().buildAndOutput();
@@ -67,6 +66,8 @@ import java.util.Map;
 		plugin.initGenerator(Generators.FORGE1201);
 		plugin.getToolKit().clearGenerator();
 		plugin.initGenerator(Generators.NEOFORGE1211);
+		plugin.getToolKit().clearGenerator();
+		plugin.initGenerator(Generators.NEOFORGE1218);
 		plugin.getToolKit().clearGenerator();
 
 		en.buildAndOutput();

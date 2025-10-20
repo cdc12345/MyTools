@@ -1,5 +1,6 @@
 package org.cdc.interfaces;
 
+import net.mcreator.generator.Generator;
 import net.mcreator.generator.GeneratorConfiguration;
 import net.mcreator.ui.*;
 import net.mcreator.ui.gradle.GradleConsole;
@@ -69,5 +70,9 @@ public class MCreatorImpl implements IMCreator{
 
 	public ModElementManager getModElementManager(){
 		return origin.getModElementManager();
+	}
+
+	@Override public Generator getGenerator() {
+		return origin.getGenerator();
 	}
 }

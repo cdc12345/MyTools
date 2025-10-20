@@ -48,7 +48,7 @@ public class PluginUtils {
 						  readable_name: "%s"
 						  type: %s
 						""", StringUtils.uppercaseFirstLetter(type) + "s" + "." + JavaConventions.convertToValidClassName(
-						readableName), readableName, type),null,
+						readableName), readableName, type),
 
 				List.of(code, registryName)).initGenerator().buildAndOutput();
 

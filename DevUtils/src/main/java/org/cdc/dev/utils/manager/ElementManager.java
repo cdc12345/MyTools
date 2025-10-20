@@ -5,40 +5,55 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.ast.nodeTypes.NodeWithType;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import net.mcreator.element.GeneratableElement;
+import net.mcreator.element.ModElementType;
 import net.mcreator.element.parts.procedure.Procedure;
+import net.mcreator.generator.Generator;
+import net.mcreator.generator.GeneratorFile;
+import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
 import net.mcreator.io.FileIO;
 import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.ide.CodeEditorView;
+import net.mcreator.workspace.Workspace;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.references.ReferencesFinder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cdc.dev.sections.DevUtilsSection;
 import org.cdc.dev.utils.FileUtils;
 import org.cdc.interfaces.IMCreator;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class ElementManager {
 	private static final Logger LOGGER = LogManager.getLogger(ElementManager.class);
+
+	public static void openElementTypeDefinition(IMCreator mcreator, ModElement modElement) {
+		var map = mcreator.getGeneratorConfiguration().getDefinitionsProvider()
+				.getModElementDefinition(modElement.getType());
+		mcreator.getTabs().addTab(new MCreatorTabs.Tab(new CodeEditorView(mcreator.getOrigin(),
+				new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(map),
+				"Type" + modElement.getTypeString() + ".json", null, true)));
+	}
 
 	public static void openElementDefinition(IMCreator mCreator, ModElement modElement) {
 		File genFile = new File(mCreator.getFolderManager().getModElementsDir(), modElement.getName() + ".mod.json");
@@ -94,207 +109,443 @@ public class ElementManager {
 		return List.of();
 	}
 
-	public static void createModifiersThroughElement(GeneratableElement generatable) throws TemplateGeneratorException {
-		File parentModifier = FileUtils.getModifiersPath(generatable.getModElement().getWorkspace());
-		var gen = generatable.getModElement().getGenerator().generateElement(generatable, false, false);
+	public static void createModifiers(Workspace workspace, @Nullable GeneratableElement generatable, String... limit)
+			throws TemplateGeneratorException {
+		if (generatable != null && generatable.getModElement().getType() == ModElementType.CODE) {
+			return;
+		}
+		File parentModifier = FileUtils.getModifiersPath(workspace);
+		var gen = new ArrayList<GeneratorFile>();
+		if (generatable != null) {
+			gen.addAll(generatable.getModElement().getGenerator().generateElement(generatable, false, false));
+		}
+		gen.addAll(generateBase(workspace.getGenerator()));
 		var parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
 		var sourceParser = new JavaParser(parserConfiguration);
 		var templateParser = new JavaParser(parserConfiguration);
 		gen.forEach(a -> {
-			if (Files.getFileExtension(a.getFile().getName()).equals("java")) {
+			if (Files.getFileExtension(a.getFile().getName()).equals("java") && (limit.length == 0 || Arrays.stream(
+					limit).anyMatch(s -> s.equals(a.getFile().getName())))) {
 				try {
-					var className = Files.getNameWithoutExtension(a.getFile().getName());
-					var imports = sourceParser.parse(a.getFile()).getResult().orElseThrow();
-					var sourceClass = imports.getClassByName(className).orElseThrow();
-					var modifier = new File(parentModifier, sourceClass.getFullyQualifiedName().get());
-					var templateClass = templateParser.parse(a.contents()).getResult().orElseThrow()
-							.getClassByName(className).orElseThrow();
-					var modifierContent = new JsonObject();
-					var constructors = new JsonArray();
-					AtomicBoolean modifierFlag = new AtomicBoolean(false);
-					sourceClass.getConstructors().forEach(constructorDeclaration -> {
-						var targetConstructor = templateClass.getConstructorByParameterTypes(
-								constructorDeclaration.getParameters().stream()
-										.map(typeParameter -> typeParameter.getType().asString()).toArray(String[]::new));
-						if (targetConstructor.isPresent()) {
-							if (!targetConstructor.get().getBody().equals(constructorDeclaration.getBody())) {
+					var source = sourceParser.parse(a.getFile()).getResult().orElseThrow();
+					for (TypeDeclaration<?> sourceClass : source.getTypes()) {
+						var modifier = new File(parentModifier, sourceClass.getFullyQualifiedName().orElseThrow());
+						var templateClass = templateParser.parse(a.contents()).getResult()
+								.orElseThrow(() -> new NoSuchElementException("No Result")).getTypes().stream()
+								.filter(typeDeclaration -> typeDeclaration.getFullyQualifiedName()
+										.equals(sourceClass.getFullyQualifiedName())).findFirst().orElseThrow();
+						var modifierContent = new JsonObject();
+						AtomicBoolean modifierFlag = new AtomicBoolean(false);
+						var extendsTypes = new JsonArray();
+						var implementationTypes = new JsonArray();
+						if (sourceClass instanceof ClassOrInterfaceDeclaration _cls
+								&& templateClass instanceof ClassOrInterfaceDeclaration _tem) {
+							if (!_cls.getExtendedTypes().isEmpty() || !_cls.getImplementedTypes().isEmpty()) {
+
+								for (ClassOrInterfaceType extendedType : _cls.getExtendedTypes()) {
+									if (!_tem.getExtendedTypes().contains(extendedType)) {
+										modifierFlag.set(true);
+										extendsTypes.add(extendedType.toString());
+									}
+								}
+								for (ClassOrInterfaceType implementedType : _cls.getImplementedTypes()) {
+									if (!_tem.getImplementedTypes().contains(implementedType)) {
+										modifierFlag.set(true);
+										implementationTypes.add(implementedType.toString());
+									}
+								}
+							}
+
+						}
+						modifierContent.add("extends", extendsTypes);
+						modifierContent.add("implements", implementationTypes);
+						var fields = new JsonArray();
+
+						for (FieldDeclaration field : sourceClass.getFields()) {
+							var fieldDeclaration1 = templateClass.getFieldByName(
+									field.getVariable(0).getNameAsString());
+							var fieldInfo = new JsonObject();
+							if (fieldDeclaration1.isPresent()) {
+								var fieldDeclaration = fieldDeclaration1.get();
+								if (!Objects.equals(fieldDeclaration, field)) {
+									fieldInfo.addProperty("name", field.getVariable(0).getNameAsString());
+									fieldInfo.addProperty("index", sourceClass.getMembers().indexOf(field));
+									fieldInfo.addProperty("originalBody", fieldDeclaration.toString());
+									fieldInfo.addProperty("body", field.toString());
+								}
+							} else {
+								fieldInfo.addProperty("name", field.getVariable(0).getNameAsString());
+								fieldInfo.addProperty("body", field.toString());
+							}
+							if (!fieldInfo.isEmpty())
+								fields.add(fieldInfo);
+						}
+
+						modifierContent.add("fields", fields);
+						var constructors = new JsonArray();
+						sourceClass.getConstructors().forEach(sourceConstructor -> {
+							var targetConstructor = templateClass.getConstructorByParameterTypes(
+									sourceConstructor.getParameters().stream()
+											.map(typeParameter -> typeParameter.getType().asString())
+											.toArray(String[]::new));
+							if (targetConstructor.isPresent()) {
+								if (!targetConstructor.get().getBody().equals(sourceConstructor.getBody())) {
+									var constructor = new JsonObject();
+									modifierFlag.set(true);
+									constructor.addProperty("signature", sourceConstructor.getSignature().asString());
+									constructor.addProperty("originalBody",
+											Objects.toString(targetConstructor.get().getBody()));
+									var head = sourceConstructor.getBody().getStatement(0);
+									head.getComment().ifPresent(comment -> {
+										if (comment.getContent().equalsIgnoreCase("Head")) {
+											if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
+													.isMethodCallExpr() && head.asExpressionStmt().getExpression()
+													.asMethodCallExpr().getScope().isEmpty())
+												constructor.addProperty("head", head.toString());
+										}
+									});
+									var tail = sourceConstructor.getBody().getStatements().getLast()
+											.orElseThrow(() -> new NoSuchElementException("No Last Element"));
+									tail.getComment().ifPresent(comment -> {
+										if (comment.getContent().equalsIgnoreCase("Tail")) {
+											if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
+													.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
+													.asMethodCallExpr().getScope().isEmpty())
+												constructor.addProperty("tail", tail.toString());
+										}
+									});
+									constructor.addProperty("body", Objects.toString(sourceConstructor));
+									constructors.add(constructor);
+								}
+							} else {
 								var constructor = new JsonObject();
 								modifierFlag.set(true);
-								constructor.addProperty("signature", constructorDeclaration.getSignature().asString());
-								constructor.addProperty("originalBody",
-										Objects.toString(targetConstructor.get().getBody()));
-								constructor.addProperty("body", Objects.toString(constructorDeclaration));
+								constructor.addProperty("signature", sourceConstructor.getSignature().asString());
+								constructor.addProperty("body", Objects.toString(sourceConstructor.toString()));
 								constructors.add(constructor);
 							}
-						} else {
-							var constructor = new JsonObject();
-							modifierFlag.set(true);
-							constructor.addProperty("signature", constructorDeclaration.getSignature().asString());
-							constructor.addProperty("body", Objects.toString(constructorDeclaration.toString()));
-							constructors.add(constructor);
-						}
-					});
-					var methods = new JsonObject();
-					sourceClass.getMethods().forEach(b -> {
-						AtomicReference<MethodDeclaration> result = new AtomicReference<>();
-						if (templateClass.getMethodsByName(b.getNameAsString()).stream()
-								.noneMatch(methodDeclaration -> {
-									if (methodDeclaration.getSignature().equals(b.getSignature())) {
-										result.set(methodDeclaration);
-										return true;
-									}
-									return false;
-								})) {
-							modifierFlag.set(true);
-							var method = new JsonObject();
-							method.addProperty("signature", b.getSignature().asString());
-							method.addProperty("body", b.toString());
-							methods.add(b.getNameAsString(), method);
-						} else {
-							var method = new JsonObject();
-							var re = result.get();
-							if (!re.getBody().equals(b.getBody())) {
+						});
+						var methods = new JsonObject();
+						sourceClass.getMethods().forEach(sourceMethod -> {
+							AtomicReference<MethodDeclaration> result = new AtomicReference<>();
+							if (templateClass.getMethodsByName(sourceMethod.getNameAsString()).stream()
+									.noneMatch(methodDeclaration -> {
+										if (methodDeclaration.getSignature().equals(sourceMethod.getSignature())) {
+											result.set(methodDeclaration);
+											return true;
+										}
+										return false;
+									})) {
 								modifierFlag.set(true);
-								method.addProperty("signature", b.getSignature().asString());
-								method.addProperty("originalBody", Objects.toString(re.getBody().get()));
-								method.addProperty("body", Objects.toString(b.getBody().get()));
-								methods.add(b.getNameAsString(), method);
-							}
-						}
-					});
-					if (modifierFlag.get()) {
-						var importsJsonArray = new JsonArray();
-						for (ImportDeclaration anImport : imports.getImports()) {
-							importsJsonArray.add(anImport.getNameAsString());
-						}
-						modifierContent.add("imports", importsJsonArray);
-						LOGGER.info("Saved to {}", modifier.getPath());
-						modifierContent.add("methods", methods);
-						modifierContent.add("constructors",constructors);
-						java.nio.file.Files.copy(
-								new ByteArrayInputStream(modifierContent.toString().getBytes(StandardCharsets.UTF_8)),
-								modifier.toPath(), StandardCopyOption.REPLACE_EXISTING);
+								var method = new JsonObject();
+								method.addProperty("signature", sourceMethod.getSignature().asString());
+								method.addProperty("body", sourceMethod.toString());
+								methods.add(sourceMethod.getNameAsString(), method);
+							} else {
+								var method = new JsonObject();
+								var generatedMethod = result.get();
+								if (!generatedMethod.getBody().equals(sourceMethod.getBody())) {
+									modifierFlag.set(true);
+									method.addProperty("signature", sourceMethod.getSignature().asString());
+									method.addProperty("originalBody",
+											Objects.toString(generatedMethod.getBody().orElseThrow()));
+									var head = sourceMethod.getBody()
+											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatement(0);
+									head.getComment().ifPresent(comment -> {
+										if (comment.getContent().equalsIgnoreCase("Head")) {
+											if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
+													.isMethodCallExpr() && head.asExpressionStmt().getExpression()
+													.asMethodCallExpr().getScope().isEmpty())
+												method.addProperty("head", head.toString());
+										}
+									});
+									var tail = sourceMethod.getBody()
+											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatements()
+											.getLast().orElseThrow(() -> new NoSuchElementException("No Last Element"));
+									tail.getComment().ifPresent(comment -> {
+										if (comment.getContent().equalsIgnoreCase("Tail")) {
+											if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
+													.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
+													.asMethodCallExpr().getScope().isEmpty())
+												method.addProperty("tail", tail.toString());
+										}
+									});
 
-					} else {
-						modifier.delete();
+									method.addProperty("body", Objects.toString(sourceMethod.getBody().orElseThrow()));
+									methods.add(sourceMethod.getNameAsString(), method);
+								}
+							}
+						});
+						if (modifierFlag.get()) {
+							var importsJsonArray = new JsonArray();
+							for (ImportDeclaration anImport : source.getImports()) {
+								importsJsonArray.add(anImport.getNameAsString());
+							}
+							modifierContent.add("imports", importsJsonArray);
+							LOGGER.info("Saved to {}", modifier.getPath());
+							modifierContent.add("methods", methods);
+							modifierContent.add("constructors", constructors);
+							java.nio.file.Files.copy(new ByteArrayInputStream(
+											modifierContent.toString().getBytes(StandardCharsets.UTF_8)), modifier.toPath(),
+									StandardCopyOption.REPLACE_EXISTING);
+						} else {
+							modifier.delete();
+						}
 					}
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					LOGGER.info("Error {} in {}, content {}", e, a.getFile(), a.contents());
+					e.printStackTrace();
 				}
 			}
 		});
 	}
 
-	public static boolean applyPatchesToElement(GeneratableElement generatable) throws TemplateGeneratorException {
-		File parentModifier = FileUtils.getModifiersPath(generatable.getModElement().getWorkspace());
-		var gen = generatable.getModElement().getGenerator().generateElement(generatable, false, false);
+	public static boolean applyPatchesToElement(Workspace workspace, @Nullable GeneratableElement generatable)
+			throws TemplateGeneratorException {
+		File parentModifier = FileUtils.getModifiersPath(workspace);
+		var gen = new ArrayList<GeneratorFile>();
+		if (generatable != null) {
+			gen.addAll(generatable.getModElement().getGenerator().generateElement(generatable, false, false));
+		} else {
+			gen.addAll(generateBase(workspace.getGenerator()));
+		}
 		var parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
 		StaticJavaParser.setConfiguration(parserConfiguration);
 		var sourceParser = new JavaParser(parserConfiguration);
 		AtomicBoolean modifierApplied = new AtomicBoolean(false);
-		gen.forEach(a -> {
-			if (Files.getFileExtension(a.getFile().getName()).equals("java")) {
+		gen.forEach(generatorFile -> {
+			if (Files.getFileExtension(generatorFile.getFile().getName()).equals("java")) {
 				try {
-					var className = Files.getNameWithoutExtension(a.getFile().getName());
-					var resul = sourceParser.parse(a.getFile()).getResult().orElseThrow();
-					var sourceClass = resul.getClassByName(className).orElseThrow();
-					var modifier = new File(parentModifier, sourceClass.getFullyQualifiedName().get());
-					if (modifier.exists()) {
-						modifierApplied.set(true);
-						var modifierContent = new Gson().fromJson(java.nio.file.Files.readString(modifier.toPath()),
-								JsonObject.class);
-						var imports = modifierContent.getAsJsonArray("imports");
-						imports.forEach(anImport -> {
-							resul.addImport(anImport.getAsString());
-						});
-						try {
-							var constructors = modifierContent.getAsJsonArray("constructors");
-							for (JsonElement constructor : constructors) {
-								var jsonObject = constructor.getAsJsonObject();
-								if (jsonObject.has("originalBody")) {
-									boolean checkFlag = false;
-									for (ConstructorDeclaration generatedConstructor : sourceClass.getConstructors()) {
-										if (generatedConstructor.getSignature().asString()
-												.equals(jsonObject.get("signature").getAsString())) {
-											checkFlag = true;
-											if (Objects.toString(generatedConstructor.getBody())
-													.equals(jsonObject.get("originalBody").getAsString())) {
-												var cons = sourceParser.parseBodyDeclaration(
-																jsonObject.get("body").getAsString()).getResult().orElseThrow()
-														.asConstructorDeclaration();
-												generatedConstructor.setBody(cons.getBody());
-											} else {
-												generatedConstructor.setBlockComment("""
-														Missing Body:
-														
-														""" + jsonObject.get("body").getAsString());
-											}
-										}
+					var parse = sourceParser.parse(generatorFile.getFile());
+					var resul = parse.getResult()
+							.orElseThrow(() -> new NoSuchElementException(parse.getProblems().toString()));
+					for (TypeDeclaration<?> sourceClass : resul.getTypes()) {
+						var modifier = new File(parentModifier, sourceClass.getFullyQualifiedName()
+								.orElseThrow(() -> new NoSuchElementException("No full quilified name")));
+						if (modifier.exists()) {
+							modifierApplied.set(true);
+							var modifierContent = new Gson().fromJson(java.nio.file.Files.readString(modifier.toPath()),
+									JsonObject.class);
+							var imports = modifierContent.getAsJsonArray("imports");
+							imports.forEach(anImport -> {
+								resul.addImport(anImport.getAsString());
+							});
+							//apply extends
+							if (sourceClass instanceof ClassOrInterfaceDeclaration _cls) {
+								var extended = modifierContent.getAsJsonArray("extends");
+								if (!extended.isEmpty()) {
+									_cls.getExtendedTypes().clear();
+									extended.forEach(a -> {
+										_cls.addExtendedType(a.getAsString());
+									});
+								}
+								var implemented = modifierContent.getAsJsonArray("implements");
+								var implementedClasses = _cls.getImplementedTypes().stream().map(Node::toString)
+										.collect(Collectors.toSet());
+								for (JsonElement jsonElement : implemented) {
+									if (!implementedClasses.contains(jsonElement.getAsString())) {
+										_cls.addImplementedType(jsonElement.getAsString());
 									}
-									if (!checkFlag) {
-										sourceClass.addOrphanComment(new JavadocComment(
-												"Missing constructor:" + jsonObject.get("signature").getAsString()
-														+ jsonObject.get("body").getAsString()));
-									}
-								} else {
-									ConstructorDeclaration constructorDeclaration = StaticJavaParser.parseBodyDeclaration(
-													jsonObject.get("body").getAsString()).toConstructorDeclaration()
-											.orElseThrow();
-									sourceClass.addMember(constructorDeclaration);
 								}
 							}
-						} catch (NoSuchElementException | ParseProblemException e) {
-							LOGGER.error(e);
-						}
-						try {
-							var methods = modifierContent.getAsJsonObject("methods");
-							methods.entrySet().forEach(b -> {
-								var jsonObject = b.getValue().getAsJsonObject();
-								if (jsonObject.has("originalBody")) {
-									boolean checkFlag = false;
-									for (MethodDeclaration generatedMethod : sourceClass.getMethodsByName(b.getKey())) {
-										if (generatedMethod.getSignature().asString()
-												.equals(jsonObject.get("signature").getAsString())) {
-											checkFlag = true;
-											if (Objects.toString(generatedMethod.getBody().get())
-													.equals(jsonObject.get("originalBody").getAsString())) {
+							// apply fields
+							var fields = modifierContent.getAsJsonArray("fields");
+							for (JsonElement field : fields) {
+								var fieldInfo = field.getAsJsonObject();
+								var oldField = sourceClass.getFieldByName(fieldInfo.get("name").getAsString());
+								var body = fieldInfo.get("body").getAsString();
+								if (fieldInfo.has("originalBody")) {
+									if (oldField.isPresent()) {
+										if (oldField.get().toString()
+												.equals(fieldInfo.get("originalBody").getAsString())) {
+											sourceClass.remove(oldField.get());
+											var newField = StaticJavaParser.parseBodyDeclaration(body);
 
-												generatedMethod.setBody(StaticJavaParser.parseBlock(
-														jsonObject.get("body").getAsString()));
-											} else {
-												generatedMethod.setBlockComment("""
-														Missing Body:
-														
-														""" + jsonObject.get("body").getAsString());
-											}
+											sourceClass.getMembers()
+													.add(Math.clamp(fieldInfo.get("index").getAsInt(), 0,
+															sourceClass.getMembers().size() - 1), newField);
+										} else {
+											oldField.get().setBlockComment("""
+													Missing Body:
+													
+													""" + body);
 										}
-									}
-									if (!checkFlag) {
-										sourceClass.addOrphanComment(new JavadocComment(
-												"Missing method:" + jsonObject.get("signature").getAsString()
-														+ jsonObject.get("body").getAsString()));
+									} else {
+										sourceClass.addOrphanComment(new BlockComment("""
+												Missing Field:
+												
+												""" + body));
 									}
 								} else {
-									MethodDeclaration methodDeclaration = sourceParser.parseMethodDeclaration(
-											jsonObject.get("body").getAsString()).getResult().orElseThrow();
-									sourceClass.addMember(methodDeclaration);
+									if (oldField.isEmpty()) {
+										var newField = StaticJavaParser.parseBodyDeclaration(body);
+										sourceClass.addMember(newField);
+									} else {
+										sourceClass.addOrphanComment(new BlockComment("""
+												Missing Field:
+												
+												""" + body));
+									}
 								}
-							});
-						} catch (NoSuchElementException | ParseProblemException e){
-							LOGGER.error(e);
+							}
+							// apply constructors
+							try {
+								var constructors = modifierContent.getAsJsonArray("constructors");
+								for (JsonElement constructor : constructors) {
+									var jsonObject = constructor.getAsJsonObject();
+									var bodystring = jsonObject.get("body").getAsString();
+									if (jsonObject.has("originalBody")) {
+										boolean checkFlag = false;
+										for (ConstructorDeclaration generatedConstructor : sourceClass.getConstructors()) {
+											if (generatedConstructor.getSignature().asString()
+													.equals(jsonObject.get("signature").getAsString())) {
+												checkFlag = true;
+												if (Objects.toString(generatedConstructor.getBody())
+														.equals(jsonObject.get("originalBody").getAsString())) {
+													var cons = sourceParser.parseBodyDeclaration(bodystring).getResult()
+															.orElseThrow().asConstructorDeclaration();
+													generatedConstructor.setBody(cons.getBody());
+												} else {
+													generatedConstructor.setBlockComment("""
+															Missing Body:
+															
+															""" + jsonObject.get("body").getAsString());
+													var body = generatedConstructor.getBody();
+													if (jsonObject.has("head")) {
+														var sta = StaticJavaParser.parseStatement(
+																jsonObject.get("head").getAsString());
+														body.addStatement(0, sta);
+														sta.setLineComment("Head");
+													}
+													if (jsonObject.has("tail")) {
+														var sta = StaticJavaParser.parseStatement(
+																jsonObject.get("tail").getAsString());
+														body.addStatement(sta);
+														sta.setLineComment("Tail");
+													}
+												}
+											}
+										}
+										if (!checkFlag) {
+											sourceClass.addOrphanComment(new JavadocComment(
+													"Missing constructor:" + jsonObject.get("signature").getAsString()
+															+ bodystring));
+										}
+									} else {
+										ConstructorDeclaration constructorDeclaration = StaticJavaParser.parseBodyDeclaration(
+												bodystring).toConstructorDeclaration().orElseThrow();
+										if (sourceClass.getConstructorByParameterTypes(
+														constructorDeclaration.getParameters().stream()
+																.map(NodeWithType::getTypeAsString).toArray(String[]::new))
+												.isEmpty()) {
+											sourceClass.addMember(constructorDeclaration);
+										} else {
+											sourceClass.addOrphanComment(new BlockComment("""
+													Missing constructor
+													""" + bodystring));
+										}
+									}
+								}
+							} catch (NoSuchElementException | ParseProblemException e) {
+								LOGGER.error(e);
+								e.printStackTrace();
+							}
+							// apply methods
+							try {
+								var methods = modifierContent.getAsJsonObject("methods");
+								methods.entrySet().forEach(b -> {
+									var jsonObject = b.getValue().getAsJsonObject();
+									if (jsonObject.has("originalBody")) {
+										boolean checkFlag = false;
+										for (MethodDeclaration generatedMethod : sourceClass.getMethodsByName(
+												b.getKey())) {
+											if (generatedMethod.getSignature().asString()
+													.equals(jsonObject.get("signature").getAsString())) {
+												checkFlag = true;
+												if (Objects.toString(generatedMethod.getBody().get())
+														.equals(jsonObject.get("originalBody").getAsString())) {
+
+													generatedMethod.setBody(StaticJavaParser.parseBlock(
+															jsonObject.get("body").getAsString()));
+												} else {
+													generatedMethod.setBlockComment("""
+															Missing Body:
+															
+															""" + jsonObject.get("body").getAsString());
+													var body = generatedMethod.getBody()
+															.orElseThrow(() -> new NoSuchElementException("No body"));
+													if (jsonObject.has("head")) {
+														var sta = StaticJavaParser.parseStatement(
+																jsonObject.get("head").getAsString());
+														body.addStatement(0, sta);
+														sta.setLineComment("Head");
+													}
+													if (jsonObject.has("tail")) {
+														var sta = StaticJavaParser.parseStatement(
+																jsonObject.get("tail").getAsString());
+														body.addStatement(sta);
+														sta.setLineComment("Tail");
+													}
+
+												}
+											}
+										}
+										if (!checkFlag) {
+											sourceClass.addOrphanComment(new JavadocComment(
+													"Missing method:" + jsonObject.get("signature").getAsString()
+															+ jsonObject.get("body").getAsString()));
+										}
+									} else {
+										var bodystring = jsonObject.get("body").getAsString();
+										MethodDeclaration methodDeclaration = sourceParser.parseMethodDeclaration(
+												bodystring).getResult().orElseThrow();
+										if (sourceClass.getMethodsBySignature(methodDeclaration.getNameAsString(),
+												methodDeclaration.getSignature().getParameterTypes().stream()
+														.map(Type::asString).toArray(String[]::new)).isEmpty()) {
+											sourceClass.addMember(methodDeclaration);
+										} else {
+											sourceClass.addOrphanComment(new BlockComment("""
+													Missing constructor
+													""" + bodystring));
+										}
+									}
+								});
+							} catch (NoSuchElementException | ParseProblemException e) {
+								LOGGER.error(e);
+								e.printStackTrace();
+							}
+							String code1 = resul.toString();
+							var code = new CodeCleanup().reformatTheCodeAndOrganiseImports(workspace, code1);
+							FileIO.writeStringToFile(code, generatorFile.getFile());
 						}
-						String code1 = resul.toString();
-						var code = new CodeCleanup().reformatTheCodeAndOrganiseImports(
-								generatable.getModElement().getWorkspace(), code1);
-						FileIO.writeStringToFile(code, a.getFile());
 					}
+
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					LOGGER.info("Error {} in {}", e, generatorFile);
 				}
 			}
 		});
 		return modifierApplied.get();
+	}
+
+	private static List<GeneratorFile> generateBase(Generator generator) {
+		if (!DevUtilsSection.getInstance().getRecordBase().get()) {
+			return new ArrayList<>();
+		}
+		TemplateGenerator templateGenerator = generator.getTemplateGeneratorFromName("templates");
+
+		return generator.getModBaseGeneratorTemplatesList(false).stream().map(generatorTemplate -> {
+			try {
+				String code = templateGenerator.generateBaseFromTemplate(
+						(String) generatorTemplate.getTemplateDefinition().get("template"),
+						generatorTemplate.getDataModel(),
+						(String) generatorTemplate.getTemplateDefinition().get("variables"));
+				return generatorTemplate.toGeneratorFile(code);
+			} catch (TemplateGeneratorException e) {
+				return null;
+			}
+		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 }

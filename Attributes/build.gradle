@@ -21,7 +21,7 @@ test {
 }
 
 tasks.jar {
-
+    dependsOn("runDataGen")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName.set("attributemodifier.zip")
 
@@ -34,9 +34,21 @@ tasks.jar {
 }
 
 
+tasks.processResources{
+    exclude "lang/*.modifier"
+}
+
 tasks.register("runDataGen",JavaExec).configure {
     group = "build"
-    main = "org.cdc.framework.FountainBaseMain"
+    main("org.cdc.framework.FountainBaseMain")
     classpath = sourceSets.main.runtimeClasspath
     workingDir(projectDir)
+
+    doLast{
+        copy {
+            from sourceSets.main.resources
+            into project.layout.buildDirectory.file("resources/main")
+            exclude "lang/*.modifier"
+        }
+    }
 }

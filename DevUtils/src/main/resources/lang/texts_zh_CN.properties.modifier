@@ -10,4 +10,5 @@ devutils.workspaceoperation.ewd.name=编辑工作区定义文件（编辑后重�
 devutils.workspaceoperation.ews.name=导出工作区快照到剪贴板
 devutils.elementoperation.name=元素手术
 devutils.elementoperation.ecef.name=打开元素实例文件
+devutils.elementoperation.rotd.name=阅读元素定义文件
 devutils.elementoperation.re.name=无效化工作区元素缓存

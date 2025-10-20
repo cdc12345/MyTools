@@ -6,18 +6,23 @@ import net.mcreator.plugin.DynamicURLClassLoader;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
+import net.mcreator.plugin.events.WorkspaceBuildStartedEvent;
 import net.mcreator.plugin.events.ui.ModElementGUIEvent;
+import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.preferences.PreferencesManager;
 import net.mcreator.ui.component.ConsolePane;
 import net.mcreator.ui.gradle.GradleConsole;
+import net.mcreator.ui.ide.CodeEditorView;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.dev.Constants;
+import org.cdc.dev.FileWatcher;
 import org.cdc.dev.sections.DevUtilsSection;
 import org.cdc.dev.utils.manager.ElementManager;
 import org.cdc.dev.utils.manager.WorkspaceManager;
@@ -30,6 +35,7 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -50,6 +56,8 @@ public class PluginMain extends JavaPlugin {
 	private String currentElement = "";
 	private Iterator<Field> fields;
 	private List<Field> fieldList = Collections.emptyList();
+
+	private FileWatcher fileWatcher;
 
 	public PluginMain(Plugin plugin) throws IOException, URISyntaxException {
 		super(plugin);
@@ -73,6 +81,7 @@ public class PluginMain extends JavaPlugin {
 	}
 
 	private void registerEventListeners() {
+
 		// Pre-generators loading event
 		this.addListener(PreGeneratorsLoadingEvent.class, event -> {
 			DevUtilsSection.getInstance();
@@ -86,7 +95,99 @@ public class PluginMain extends JavaPlugin {
 
 		// MCreator loaded event
 		this.addListener(MCreatorLoadedEvent.class, event -> {
-			initializeUI(new MCreatorImpl(event.getMCreator()));
+			var mcreator = new MCreatorImpl(event.getMCreator());
+			initializeUI(mcreator);
+			if (DevUtilsSection.getInstance().isAutoGenerateModifier() && DevUtilsSection.getInstance()
+					.isWatchedFileChanged()) {
+				fileWatcher = new FileWatcher();
+				resetWatcher(mcreator);
+			}
+		});
+
+		this.addListener(ModElementGUIEvent.WhenSaving.class,even->{
+			if (DevUtilsSection.getInstance().isAutoGenerateModifier() && DevUtilsSection.getInstance()
+					.isWatchedFileChanged()) {
+				fileWatcher = new FileWatcher();
+				resetWatcher(new MCreatorImpl(even.getMCreator()));
+			}
+		});
+
+		this.addListener(WorkspaceBuildStartedEvent.class, event -> {
+			try {
+				ElementManager.applyPatchesToElement(event.getMCreator().getWorkspace(), null);
+			} catch (TemplateGeneratorException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
+		this.addListener(TabEvent.Added.class, event -> {
+			if (event.getTab().getContent() instanceof CodeEditorView codeEditorView) {
+				if (codeEditorView.fileWorkingOn.getName().endsWith(".java") && DevUtilsSection.getInstance()
+						.isAutoGenerateModifier() && !DevUtilsSection.getInstance().isWatchedFileChanged()) {
+					LOGGER.info("Tracked java file in tab");
+					var cl = codeEditorView.cl;
+					codeEditorView.setChangeListener(event1 -> {
+						cl.stateChanged(event1);
+						if (codeEditorView.changed) {
+							return;
+						}
+						Field owner;
+						try {
+							owner = codeEditorView.getClass().getDeclaredField("fileOwner");
+							owner.setAccessible(true);
+							ModElement modElement = (ModElement) owner.get(codeEditorView);
+							owner.setAccessible(false);
+							ElementManager.createModifiers(codeEditorView.getMCreator().getWorkspace(),
+									modElement == null ? null : modElement.getGeneratableElement(),
+									codeEditorView.fileWorkingOn.getName());
+						} catch (NoSuchFieldException | IllegalAccessException | TemplateGeneratorException e) {
+							throw new RuntimeException(e);
+						}
+					});
+
+				}
+			}
+		});
+	}
+
+	private void resetWatcher(IMCreator mcreator) {
+		SwingUtilities.invokeLater(() -> {
+			var src = mcreator.getGenerator().getGeneratorPackageRoot();
+			for (File file : FileUtils.listFiles(src, new String[] { "java" }, true)) {
+				fileWatcher.watchFolder(file.getParentFile());
+			}
+		});
+
+		fileWatcher.addListener(changedFiles -> {
+			if (changedFiles.size() == 1 || changedFiles.stream()
+					.anyMatch(fileChange -> fileChange.file().getName().endsWith(".java~"))) {
+				var first = changedFiles.stream()
+						.filter(fileChange -> fileChange.file().getName().endsWith(".java")).findFirst();
+				if (first.isPresent()) {
+					var file = first.get().file();
+					LOGGER.info("Tracked file {}", file);
+					var modElement = mcreator.getWorkspace().getModElements().stream()
+							.filter(modElement1 -> ElementManager.getAssociatedFiles(modElement1)
+									.contains(file)).findFirst();
+					modElement.ifPresent(a -> {
+						LOGGER.info("Tracked element: {}", modElement.get().getName());
+						try {
+							ElementManager.createModifiers(mcreator.getWorkspace(),
+									a.getGeneratableElement(), file.getName());
+						} catch (TemplateGeneratorException e) {
+							throw new RuntimeException(e);
+						}
+					});
+					if (modElement.isEmpty()) {
+						try {
+							ElementManager.createModifiers(mcreator.getWorkspace(), null,
+									file.getName());
+						} catch (TemplateGeneratorException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+			}
 		});
 	}
 
@@ -94,7 +195,8 @@ public class PluginMain extends JavaPlugin {
 		SwingUtilities.invokeLater(() -> {
 			try {
 				var element = modElementGUI.getModElement().getGeneratableElement();
-				if (element != null && ElementManager.applyPatchesToElement(element)) {
+				if (element != null && ElementManager.applyPatchesToElement(element.getModElement().getWorkspace(),
+						element)) {
 					LOGGER.info("Modifier for {} applied", element.getModElement().getName());
 					modElementGUI.getMCreator().getStatusBar().setPersistentMessage("Modifier applied");
 				}
@@ -172,6 +274,16 @@ public class PluginMain extends JavaPlugin {
 		editCurrentElementFile.addActionListener(e -> openCurrentElementDefinition(mcreator));
 		elementMenu.add(editCurrentElementFile);
 
+		// Read type definition
+		JMenuItem readOnlyTypeDefinition = new JMenuItem(L10N.t("devutils.elementoperation.rotd.name"));
+		readOnlyTypeDefinition.addActionListener(event -> {
+			var element = getCurrentGeneratableElement(mcreator);
+			if (element != null) {
+				ElementManager.openElementTypeDefinition(mcreator, element.getModElement());
+			}
+		});
+		elementMenu.add(readOnlyTypeDefinition);
+
 		// Reload elements
 		JMenuItem reloadElements = new JMenuItem(L10N.t("devutils.elementoperation.re.name"));
 		reloadElements.addActionListener(e -> mcreator.getModElementManager().invalidateCache());
@@ -195,6 +307,11 @@ public class PluginMain extends JavaPlugin {
 		JMenuItem removeSrc = new JMenuItem(L10N.t("devutils.workspaceoperation.rmsrc.name"));
 		removeSrc.addActionListener(e -> WorkspaceManager.removeSrc(mcreator));
 		workspaceMenu.add(removeSrc);
+
+		// Clear modifiers
+		JMenuItem removeModifiers = new JMenuItem("Clear modifiers");
+		removeModifiers.addActionListener(e -> WorkspaceManager.removeModifiersFolder(mcreator));
+		workspaceMenu.add(removeModifiers);
 		workspaceMenu.addSeparator();
 
 		// Data pack removal
@@ -266,9 +383,7 @@ public class PluginMain extends JavaPlugin {
 		LOGGER.info("Found keywords: {}", keyWords);
 		updateErrorResults(results, keyWords);
 
-		var resultRules = results.stream()
-				.map(result -> result.getRule().name())
-				.toList();
+		var resultRules = results.stream().map(result -> result.getRule().name()).toList();
 		JOptionPane.showMessageDialog(null, resultRules);
 	}
 
@@ -288,7 +403,7 @@ public class PluginMain extends JavaPlugin {
 				return;
 			}
 
-			ElementManager.createModifiersThroughElement(element);
+			ElementManager.createModifiers(mcreator.getWorkspace(), element);
 			JOptionPane.showMessageDialog(mcreator.getOrigin(),
 					"Modifier for element " + element.getModElement().getName() + " created");
 		} catch (TemplateGeneratorException e) {
@@ -300,8 +415,7 @@ public class PluginMain extends JavaPlugin {
 	// Field extraction methods
 	private MouseAdapter createExtractElementMouseListener(IMCreator mcreator) {
 		return new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
+			@Override public void mouseEntered(MouseEvent e) {
 				SwingUtilities.invokeLater(() -> updateExtractElement(mcreator));
 			}
 		};
@@ -398,8 +512,7 @@ public class PluginMain extends JavaPlugin {
 	// Workspace definition methods
 	private MouseAdapter createWorkspaceDefinitionMouseListener(IMCreator mcreator) {
 		return new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
+			@Override public void mouseEntered(MouseEvent e) {
 				updateWorkspaceSelector(mcreator);
 			}
 		};
@@ -409,8 +522,7 @@ public class PluginMain extends JavaPlugin {
 		editWorkspaceDefinition.removeAll();
 		mcreator.getApplication().getWorkspaceSelector().getRecentWorkspaces().getList().forEach(workspace -> {
 			JMenuItem menuItem = new JMenuItem(workspace.getName());
-			menuItem.addActionListener(e ->
-					WorkspaceManager.openWorkspaceDefinition(mcreator, workspace.getPath()));
+			menuItem.addActionListener(e -> WorkspaceManager.openWorkspaceDefinition(mcreator, workspace.getPath()));
 			editWorkspaceDefinition.add(menuItem);
 		});
 	}
@@ -421,15 +533,13 @@ public class PluginMain extends JavaPlugin {
 
 		// Add keyword menu item
 		var keywordsItem = new JMenuItem("key_words");
-		keywordsItem.addActionListener(e ->
-				JOptionPane.showMessageDialog(null, keyWords.toString()));
+		keywordsItem.addActionListener(e -> JOptionPane.showMessageDialog(null, keyWords.toString()));
 		resultsInspect.add(keywordsItem);
 
 		// Add result menu items
 		for (CrashReportAnalyzer.Result result : results) {
 			JMenuItem menuItem = new JMenuItem(result.getRule().name());
-			menuItem.addActionListener(e ->
-					JOptionPane.showMessageDialog(null, result.getMatcher().group()));
+			menuItem.addActionListener(e -> JOptionPane.showMessageDialog(null, result.getMatcher().group()));
 			resultsInspect.add(menuItem);
 		}
 	}
@@ -440,7 +550,8 @@ public class PluginMain extends JavaPlugin {
 
 		if (content instanceof ModElementGUI<?> modElementGUI) {
 			return modElementGUI.getElementFromGUI();
-		} else if (content instanceof WorkspacePanel panel && panel.list.getSelectedValue() instanceof ModElement modElement) {
+		} else if (content instanceof WorkspacePanel panel
+				&& panel.list.getSelectedValue() instanceof ModElement modElement) {
 			return modElement.getGeneratableElement();
 		}
 

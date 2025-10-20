@@ -9,16 +9,23 @@ public class DevUtilsSection extends PreferencesSection {
 
 	public static DevUtilsSection getInstance() {
 		if (INSTANCE == null)
-			INSTANCE = new DevUtilsSection("devutils");;
+			INSTANCE = new DevUtilsSection("devutils");
+		;
 		return INSTANCE;
 	}
 
-	private BooleanEntry exportPluginsSensitives;
+	private final BooleanEntry exportPluginsSensitives;
+	private final BooleanEntry autoGenerateModifier;
+	private final BooleanEntry watchFileChanged;
+	private final BooleanEntry recordBase;
 
 	public DevUtilsSection(String preferencesIdentifier) {
 		super(preferencesIdentifier);
 
-		this.addEntry(exportPluginsSensitives = new BooleanEntry("exportPluginsSensitives",false));
+		this.addEntry(autoGenerateModifier = new BooleanEntry("autoGenerateModifier", true));
+		this.addEntry(watchFileChanged = new BooleanEntry("watchFileChanged", false));
+		this.addEntry(recordBase = new BooleanEntry("recordBase", true));
+		this.addEntry(exportPluginsSensitives = new BooleanEntry("exportPluginsSensitives", false));
 	}
 
 	@Override public String getSectionKey() {
@@ -27,5 +34,17 @@ public class DevUtilsSection extends PreferencesSection {
 
 	public BooleanEntry getExportPluginsSensitives() {
 		return exportPluginsSensitives;
+	}
+
+	public BooleanEntry getRecordBase() {
+		return recordBase;
+	}
+
+	public boolean isAutoGenerateModifier() {
+		return autoGenerateModifier.get();
+	}
+
+	public boolean isWatchedFileChanged() {
+		return watchFileChanged.get();
 	}
 }

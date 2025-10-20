@@ -1,5 +1,6 @@
 package org.cdc.interfaces;
 
+import net.mcreator.generator.Generator;
 import net.mcreator.generator.GeneratorConfiguration;
 import net.mcreator.ui.*;
 import net.mcreator.ui.gradle.GradleConsole;
@@ -28,4 +29,6 @@ public interface IMCreator {
 	ModElementManager getModElementManager();
 
 	GradleConsole getGradleConsole();
+
+	Generator getGenerator();
 }

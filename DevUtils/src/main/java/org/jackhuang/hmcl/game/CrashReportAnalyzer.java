@@ -884,12 +884,10 @@ public final class CrashReportAnalyzer {
 
 	public static Set<Result> analyze(String log) {
 		Set<Result> results = new HashSet<>();
-		LOGGER.info(log);
 		for (Rule rule : Rule.values()) {
 			Matcher matcher = rule.pattern.matcher(log);
-			LOGGER.info(rule.name());
 			if (matcher.find()) {
-				LOGGER.info("true");
+				LOGGER.info(rule.name()+": Matched");
 				results.add(new Result(rule, log, matcher));
 			}
 		}
@@ -933,7 +931,6 @@ public final class CrashReportAnalyzer {
 	));
 
 	public static Set<String> findKeywordsFromCrashReport(String crashReport) {
-		LOGGER.info(crashReport);
 		Matcher matcher = CRASH_REPORT_STACK_TRACE_PATTERN.matcher(crashReport);
 		Set<String> result = new HashSet<>();
 		if (matcher.find()) {
