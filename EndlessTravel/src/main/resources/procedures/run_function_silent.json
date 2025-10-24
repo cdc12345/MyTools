@@ -1,0 +1,56 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "function",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "x",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "y",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "z",
+      "check": "Number"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/server.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "inputsInline": true,
+  "colour": 35,
+  "previousStatement": null,
+  "nextStatement": null,
+  "mcreator": {
+    "toolbox_id": "worldmanagement",
+    "toolbox_init": [
+      "<value name=\"function\"><block type=\"text\"><field name=\"TEXT\">namespace:function</field></block></value>",
+      "<value name=\"x\"><block type=\"coord_x\"></block></value>",
+      "<value name=\"y\"><block type=\"coord_y\"></block></value>",
+      "<value name=\"z\"><block type=\"coord_z\"></block></value>"
+    ],
+    "group": "name",
+    "inputs": [
+      "function",
+      "x",
+      "y",
+      "z"
+    ],
+    "dependencies": [
+      {
+        "name": "world",
+        "type": "world"
+      }
+    ]
+  }
+}

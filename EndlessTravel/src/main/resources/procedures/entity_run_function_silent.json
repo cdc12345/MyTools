@@ -1,0 +1,36 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "function",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "field_image",
+      "src": "./res/server.png",
+      "width": 8,
+      "height": 24
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "195",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "entitymanagement",
+    "toolbox_init": [
+      "<value name=\"function\"><block type=\"text\"><field name=\"TEXT\">function</field></block></value>",
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>"
+    ],
+    "inputs": [
+      "function",
+      "entity"
+    ]
+  }
+}
