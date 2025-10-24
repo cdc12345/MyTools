@@ -25,6 +25,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -54,7 +55,8 @@ public class WorkspaceManager {
 			int option = JOptionPane.showConfirmDialog(mcreator.getOrigin(), "Are you sure?", "Confirm",
 					JOptionPane.YES_NO_OPTION);
 			if (option == JOptionPane.YES_OPTION) {
-				org.apache.commons.io.FileUtils.forceDelete(new File(mcreator.getWorkspace().getWorkspaceFolder(),"modifiers"));
+				org.apache.commons.io.FileUtils.forceDelete(
+						new File(mcreator.getWorkspace().getWorkspaceFolder(), "modifiers"));
 			}
 		} catch (IOException e) {
 			LOGGER.info(e);
@@ -223,9 +225,9 @@ public class WorkspaceManager {
 		JsonObject pluginInfo = new JsonObject();
 		pluginInfo.addProperty("id", plugin.getID());
 		pluginInfo.addProperty("path", plugin.getFile().getPath());
-//		pluginInfo.addProperty("builtIn", plugin.isBuiltin());
-		pluginInfo.addProperty("version",plugin.getPluginVersion());
-		pluginInfo.addProperty("weight",plugin.getWeight());
+		//		pluginInfo.addProperty("builtIn", plugin.isBuiltin());
+		pluginInfo.addProperty("version", plugin.getPluginVersion());
+		pluginInfo.addProperty("weight", plugin.getWeight());
 		pluginInfo.addProperty("sha-1", FileUtils.getFileSha1(plugin.getFile()));
 
 		if (!plugin.getFile().getName().startsWith("mcreator-") && plugin.getFile().isFile()) {
@@ -253,7 +255,7 @@ public class WorkspaceManager {
 							action.addProperty("action", "overwrite " + entry.getName());
 							action.addProperty("relationPlugins",
 									set.stream().map(ZipEntry::getComment).collect(Collectors.joining(", ")));
-							if (name.contains("/mappings/") || name.startsWith("datalists/")){
+							if (name.contains("/mappings/") || name.startsWith("datalists/")) {
 								common.add(action);
 							} else {
 								sensitives.add(action);
@@ -265,7 +267,7 @@ public class WorkspaceManager {
 
 			}
 			pluginInfo.add("sensitives", sensitives);
-			pluginInfo.add("common",common);
+			pluginInfo.add("common", common);
 			pluginInfo.add("languageSupport", languageSupport);
 		}
 		return pluginInfo;
@@ -294,5 +296,29 @@ public class WorkspaceManager {
 		});
 		cache.put(name, set);
 		return set;
+	}
+
+	public static void syncLocalLanguageFiles(Workspace workspace, String condition) {
+		String configurationFile = (String) workspace.getGeneratorConfiguration().getLanguageFileSpecification()
+				.get("langfile_name");
+		for (Map.Entry<String, LinkedHashMap<String, String>> entry : workspace.getLanguageMap()
+				.entrySet()) {
+			var fileName = FileUtils.getLanguageFile(workspace, entry.getKey(), configurationFile);
+			if (condition == null || condition.contains(fileName)) {
+				if (fileName.endsWith(".json")) {
+					try {
+						LOGGER.info(fileName);
+						JsonObject jsonObject = new Gson().fromJson(Files.readString(
+										Path.of(workspace.getGenerator().getLangFilesRoot().getPath(), fileName)),
+								JsonObject.class);
+						jsonObject.entrySet().forEach(entry1 -> {
+							entry.getValue().put(entry1.getKey(), entry1.getValue().getAsString());
+						});
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
 	}
 }

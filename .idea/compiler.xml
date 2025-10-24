@@ -4,69 +4,21 @@
     <bytecodeTargetLevel target="21" />
   </component>
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding gbk" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value=" " />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="MyTool" options="" />
-      <module name="MyTool.ArrayList" options="" />
-      <module name="MyTool.ArrayList.main" options="" />
       <module name="MyTool.ArrayList.src" options="" />
       <module name="MyTool.ArrayList.src.main" options="" />
       <module name="MyTool.ArrayList.src.main.WorldRenderer" options="" />
       <module name="MyTool.ArrayList.src.main.WorldRenderer.main" options="" />
       <module name="MyTool.ArrayList.src.main.WorldRenderer.test" options="" />
-      <module name="MyTool.ArrayList.test" options="" />
-      <module name="MyTool.AsYouCanSeeAgent" options="" />
-      <module name="MyTool.AsYouCanSeeAgent.main" options="" />
-      <module name="MyTool.AsYouCanSeeAgent.test" options="" />
-      <module name="MyTool.Attributes" options="" />
-      <module name="MyTool.Attributes.main" options="" />
-      <module name="MyTool.Attributes.test" options="" />
-      <module name="MyTool.ConvenientTransfer" options="" />
-      <module name="MyTool.ConvenientTransfer.main" options="" />
-      <module name="MyTool.ConvenientTransfer.test" options="" />
-      <module name="MyTool.DataGen" options="" />
-      <module name="MyTool.DataGen.main" options="" />
-      <module name="MyTool.DataGen.test" options="" />
-      <module name="MyTool.DevUtils" options="" />
-      <module name="MyTool.DevUtils.main" options="" />
-      <module name="MyTool.DevUtils.test" options="" />
-      <module name="MyTool.EndlessTravel" options="" />
-      <module name="MyTool.EndlessTravel.main" options="" />
-      <module name="MyTool.EndlessTravel.test" options="" />
-      <module name="MyTool.Fountain" options="" />
-      <module name="MyTool.Fountain.main" options="" />
-      <module name="MyTool.Fountain.test" options="" />
-      <module name="MyTool.JDKVendor" options="" />
-      <module name="MyTool.JDKVendor.main" options="" />
-      <module name="MyTool.JDKVendor.test" options="" />
-      <module name="MyTool.LootModifier" options="" />
-      <module name="MyTool.LootModifier.main" options="" />
-      <module name="MyTool.LootModifier.test" options="" />
-      <module name="MyTool.MCreator" options="" />
-      <module name="MyTool.MCreator.main" options="" />
-      <module name="MyTool.MCreator.test" options="" />
-      <module name="MyTool.Mixin-MCreator" options="" />
-      <module name="MyTool.Mixin-MCreator.main" options="" />
-      <module name="MyTool.Mixin-MCreator.test" options="" />
       <module name="MyTool.StdLib.main" options="" />
       <module name="MyTool.StdLib.test" options="" />
-      <module name="MyTool.TempPlugin" options="" />
-      <module name="MyTool.TempPlugin.main" options="" />
-      <module name="MyTool.TempPlugin.test" options="" />
       <module name="MyTool.Walker" options="" />
       <module name="MyTool.Walker.main" options="" />
       <module name="MyTool.Walker.test" options="" />
-      <module name="MyTool.WorldRenderer" options="" />
-      <module name="MyTool.WorldRenderer.main" options="" />
-      <module name="MyTool.WorldRenderer.test" options="" />
-      <module name="MyTool.main" options="" />
-      <module name="MyTool.test" options="" />
       <module name="helloworld" options="" />
       <module name="helloworld.main" options="" />
       <module name="helloworld.test" options="" />
-      <module name="helloworldo" options="" />
-      <module name="helloworldo.main" options="" />
-      <module name="helloworldo.test" options="" />
     </option>
   </component>
 </project>

@@ -1,5 +1,6 @@
 package org.cdc.dev.utils;
 
+import net.mcreator.generator.GeneratorTokens;
 import net.mcreator.workspace.Workspace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 public class FileUtils {
 
@@ -62,5 +64,15 @@ public class FileUtils {
 			path.mkdir();
 		}
 		return path;
+	}
+
+	public static String getLanguageFile(Workspace workspace,String langKey, String configurationValue){
+		String uppercaseLangName =
+				langKey.split("_")[0] + "_" + langKey.split("_")[1].toUpperCase(Locale.ENGLISH);
+
+		String fileName = GeneratorTokens.replaceTokens(workspace,
+				configurationValue.replace("@langname", langKey).replace("@lang_NAME", uppercaseLangName));
+
+		return fileName;
 	}
 }

@@ -1,20 +1,10 @@
-- Text:
-  readable_name: "Text"
-- Number:
-  readable_name: "Number"
-- Entity:
-  readable_name: "Entity"
-- BlockState:
-  readable_name: "BlockState"
-- Logic:
-  readable_name: "Logic"
-- Direction:
-  readable_name: "Direction"
-- DamageSource:
-  readable_name: "DamageSource"
-- ItemStack:
-  readable_name: "ItemStack"
-- ObjectList:
-  readable_name: "ObjectList"
-- ObjectMap:
-  readable_name: "ObjectMap"
+- Text
+- Number
+- Entity
+- BlockState
+- Logic
+- Direction
+- DamageSource
+- ItemStack
+- ObjectList
+- ObjectMap

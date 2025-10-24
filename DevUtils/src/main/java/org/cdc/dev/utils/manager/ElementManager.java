@@ -39,7 +39,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -109,8 +112,8 @@ public class ElementManager {
 		return List.of();
 	}
 
-	public static void createModifiers(Workspace workspace, @Nullable GeneratableElement generatable, String... limit)
-			throws TemplateGeneratorException {
+	public static void createModifiers(Workspace workspace, @Nullable GeneratableElement generatable,
+			List<String> limit) throws TemplateGeneratorException {
 		if (generatable != null && generatable.getModElement().getType() == ModElementType.CODE) {
 			return;
 		}
@@ -125,8 +128,8 @@ public class ElementManager {
 		var sourceParser = new JavaParser(parserConfiguration);
 		var templateParser = new JavaParser(parserConfiguration);
 		gen.forEach(a -> {
-			if (Files.getFileExtension(a.getFile().getName()).equals("java") && (limit.length == 0 || Arrays.stream(
-					limit).anyMatch(s -> s.equals(a.getFile().getName())))) {
+			if (Files.getFileExtension(a.getFile().getName()).equals("java") && (limit.isEmpty() || limit.contains(
+					a.getFile().getName()))) {
 				try {
 					var source = sourceParser.parse(a.getFile()).getResult().orElseThrow();
 					for (TypeDeclaration<?> sourceClass : source.getTypes()) {
@@ -199,9 +202,10 @@ public class ElementManager {
 									var head = sourceConstructor.getBody().getStatement(0);
 									head.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Head")) {
-											if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
-													.isMethodCallExpr() && head.asExpressionStmt().getExpression()
-													.asMethodCallExpr().getScope().isEmpty())
+											if (head.isExpressionStmt()
+													&& head.asExpressionStmt().getExpression().isMethodCallExpr()
+													&& head.asExpressionStmt().getExpression().asMethodCallExpr()
+													.getScope().isEmpty())
 												constructor.addProperty("head", head.toString());
 										}
 									});
@@ -209,9 +213,10 @@ public class ElementManager {
 											.orElseThrow(() -> new NoSuchElementException("No Last Element"));
 									tail.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Tail")) {
-											if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
-													.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
-													.asMethodCallExpr().getScope().isEmpty())
+											if (tail.isExpressionStmt()
+													&& tail.asExpressionStmt().getExpression().isMethodCallExpr()
+													&& tail.asExpressionStmt().getExpression().asMethodCallExpr()
+													.getScope().isEmpty())
 												constructor.addProperty("tail", tail.toString());
 										}
 									});
@@ -254,9 +259,10 @@ public class ElementManager {
 											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatement(0);
 									head.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Head")) {
-											if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
-													.isMethodCallExpr() && head.asExpressionStmt().getExpression()
-													.asMethodCallExpr().getScope().isEmpty())
+											if (head.isExpressionStmt()
+													&& head.asExpressionStmt().getExpression().isMethodCallExpr()
+													&& head.asExpressionStmt().getExpression().asMethodCallExpr()
+													.getScope().isEmpty())
 												method.addProperty("head", head.toString());
 										}
 									});
@@ -265,9 +271,10 @@ public class ElementManager {
 											.getLast().orElseThrow(() -> new NoSuchElementException("No Last Element"));
 									tail.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Tail")) {
-											if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
-													.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
-													.asMethodCallExpr().getScope().isEmpty())
+											if (tail.isExpressionStmt()
+													&& tail.asExpressionStmt().getExpression().isMethodCallExpr()
+													&& tail.asExpressionStmt().getExpression().asMethodCallExpr()
+													.getScope().isEmpty())
 												method.addProperty("tail", tail.toString());
 										}
 									});
@@ -369,14 +376,14 @@ public class ElementManager {
 										} else {
 											oldField.get().setBlockComment("""
 													Missing Body:
-													
-													""" + body);
+													%s
+													""".formatted(body));
 										}
 									} else {
 										sourceClass.addOrphanComment(new BlockComment("""
 												Missing Field:
-												
-												""" + body));
+												%s
+												""".formatted(body)));
 									}
 								} else {
 									if (oldField.isEmpty()) {
@@ -385,8 +392,8 @@ public class ElementManager {
 									} else {
 										sourceClass.addOrphanComment(new BlockComment("""
 												Missing Field:
-												
-												""" + body));
+												%s
+												""".formatted(body)));
 									}
 								}
 							}
@@ -430,8 +437,7 @@ public class ElementManager {
 										}
 										if (!checkFlag) {
 											sourceClass.addOrphanComment(new JavadocComment(
-													"Missing constructor:" + jsonObject.get("signature").getAsString()
-															+ bodystring));
+													"Missing constructor: %s %s".formatted(jsonObject.get("signature").getAsString(),bodystring)));
 										}
 									} else {
 										ConstructorDeclaration constructorDeclaration = StaticJavaParser.parseBodyDeclaration(
@@ -444,7 +450,8 @@ public class ElementManager {
 										} else {
 											sourceClass.addOrphanComment(new BlockComment("""
 													Missing constructor
-													""" + bodystring));
+													%s
+													""".formatted(bodystring)));
 										}
 									}
 								}
@@ -472,8 +479,8 @@ public class ElementManager {
 												} else {
 													generatedMethod.setBlockComment("""
 															Missing Body:
-															
-															""" + jsonObject.get("body").getAsString());
+															%s
+															""".formatted(jsonObject.get("body").getAsString()));
 													var body = generatedMethod.getBody()
 															.orElseThrow(() -> new NoSuchElementException("No body"));
 													if (jsonObject.has("head")) {

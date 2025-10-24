@@ -15,12 +15,12 @@
       "name": "operation",
       "options": [
         [
-          "ADD_VALUE",
-          "ADD_VALUE"
-        ],
-        [
           "ADD_MULTIPLIED_BASE",
           "ADD_MULTIPLIED_BASE"
+        ],
+        [
+          "ADD_VALUE",
+          "ADD_VALUE"
         ],
         [
           "ADD_MULTIPLIED_TOTAL",

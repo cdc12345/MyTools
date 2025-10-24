@@ -17,12 +17,12 @@ dependencies {
 
     implementation project(':MCreator')
 
-    project(':MCreator').afterEvaluate(() ->
-            project(":MCreator").configurations.named("implementation").get().dependencies.each {
-                //noinspection ForeignDelegate
-                implementation it
-            }
-    )
+    project(":MCreator").afterEvaluate {
+        project(":MCreator").configurations.named("implementation").get().dependencies.each {
+            //noinspection ForeignDelegate
+            implementation it
+        }
+    }
 }
 
 test {

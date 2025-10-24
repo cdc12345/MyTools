@@ -104,7 +104,7 @@ public class PluginMain extends JavaPlugin {
 			}
 		});
 
-		this.addListener(ModElementGUIEvent.WhenSaving.class,even->{
+		this.addListener(ModElementGUIEvent.WhenSaving.class, even -> {
 			if (DevUtilsSection.getInstance().isAutoGenerateModifier() && DevUtilsSection.getInstance()
 					.isWatchedFileChanged()) {
 				fileWatcher = new FileWatcher();
@@ -122,29 +122,42 @@ public class PluginMain extends JavaPlugin {
 
 		this.addListener(TabEvent.Added.class, event -> {
 			if (event.getTab().getContent() instanceof CodeEditorView codeEditorView) {
-				if (codeEditorView.fileWorkingOn.getName().endsWith(".java") && DevUtilsSection.getInstance()
-						.isAutoGenerateModifier() && !DevUtilsSection.getInstance().isWatchedFileChanged()) {
-					LOGGER.info("Tracked java file in tab");
-					var cl = codeEditorView.cl;
-					codeEditorView.setChangeListener(event1 -> {
-						cl.stateChanged(event1);
-						if (codeEditorView.changed) {
-							return;
-						}
-						Field owner;
-						try {
-							owner = codeEditorView.getClass().getDeclaredField("fileOwner");
-							owner.setAccessible(true);
-							ModElement modElement = (ModElement) owner.get(codeEditorView);
-							owner.setAccessible(false);
-							ElementManager.createModifiers(codeEditorView.getMCreator().getWorkspace(),
-									modElement == null ? null : modElement.getGeneratableElement(),
-									codeEditorView.fileWorkingOn.getName());
-						} catch (NoSuchFieldException | IllegalAccessException | TemplateGeneratorException e) {
-							throw new RuntimeException(e);
-						}
-					});
+				if (DevUtilsSection.getInstance().isAutoGenerateModifier()) {
+					if (codeEditorView.fileWorkingOn.getName().endsWith(".java") && !DevUtilsSection.getInstance()
+							.isWatchedFileChanged()) {
+						LOGGER.info("Tracked java file in tab");
+						var cl = codeEditorView.cl;
+						codeEditorView.setChangeListener(event1 -> {
+							cl.stateChanged(event1);
+							if (codeEditorView.changed) {
+								return;
+							}
+							Field owner;
+							try {
+								owner = codeEditorView.getClass().getDeclaredField("fileOwner");
+								owner.setAccessible(true);
+								ModElement modElement = (ModElement) owner.get(codeEditorView);
+								owner.setAccessible(false);
+								ElementManager.createModifiers(codeEditorView.getMCreator().getWorkspace(),
+										modElement == null ? null : modElement.getGeneratableElement(),
+										Collections.singletonList(codeEditorView.fileWorkingOn.getName()));
+							} catch (NoSuchFieldException | IllegalAccessException | TemplateGeneratorException e) {
+								throw new RuntimeException(e);
+							}
+						});
 
+					} else if (codeEditorView.fileWorkingOn.getName().endsWith(".json")) {
+						var cl = codeEditorView.cl;
+						codeEditorView.setChangeListener(event1 -> {
+							cl.stateChanged(event1);
+							//确定改变了
+							if (codeEditorView.changed) {
+								return;
+							}
+							WorkspaceManager.syncLocalLanguageFiles(codeEditorView.getMCreator().getWorkspace(),
+									codeEditorView.fileWorkingOn.getName());
+						});
+					}
 				}
 			}
 		});
@@ -156,24 +169,35 @@ public class PluginMain extends JavaPlugin {
 			for (File file : FileUtils.listFiles(src, new String[] { "java" }, true)) {
 				fileWatcher.watchFolder(file.getParentFile());
 			}
+
+			fileWatcher.watchFolder(mcreator.getGenerator().getLangFilesRoot());
+		});
+
+		fileWatcher.addListener(changedFiles -> {
+			for (FileWatcher.FileChange changedFile : changedFiles) {
+				if (changedFile.file().getParentFile().equals(mcreator.getGenerator().getLangFilesRoot())) {
+					WorkspaceManager.syncLocalLanguageFiles(mcreator.getWorkspace(), null);
+					break;
+				}
+			}
 		});
 
 		fileWatcher.addListener(changedFiles -> {
 			if (changedFiles.size() == 1 || changedFiles.stream()
 					.anyMatch(fileChange -> fileChange.file().getName().endsWith(".java~"))) {
-				var first = changedFiles.stream()
-						.filter(fileChange -> fileChange.file().getName().endsWith(".java")).findFirst();
+				var first = changedFiles.stream().filter(fileChange -> fileChange.file().getName().endsWith(".java"))
+						.findFirst();
 				if (first.isPresent()) {
 					var file = first.get().file();
 					LOGGER.info("Tracked file {}", file);
 					var modElement = mcreator.getWorkspace().getModElements().stream()
-							.filter(modElement1 -> ElementManager.getAssociatedFiles(modElement1)
-									.contains(file)).findFirst();
+							.filter(modElement1 -> ElementManager.getAssociatedFiles(modElement1).contains(file))
+							.findFirst();
 					modElement.ifPresent(a -> {
 						LOGGER.info("Tracked element: {}", modElement.get().getName());
 						try {
-							ElementManager.createModifiers(mcreator.getWorkspace(),
-									a.getGeneratableElement(), file.getName());
+							ElementManager.createModifiers(mcreator.getWorkspace(), a.getGeneratableElement(),
+									Collections.singletonList(file.getName()));
 						} catch (TemplateGeneratorException e) {
 							throw new RuntimeException(e);
 						}
@@ -181,7 +205,7 @@ public class PluginMain extends JavaPlugin {
 					if (modElement.isEmpty()) {
 						try {
 							ElementManager.createModifiers(mcreator.getWorkspace(), null,
-									file.getName());
+									Collections.singletonList(file.getName()));
 						} catch (TemplateGeneratorException e) {
 							throw new RuntimeException(e);
 						}
@@ -253,6 +277,13 @@ public class PluginMain extends JavaPlugin {
 		// Source removal operations
 		addWorkspaceRemovalOperations(workspaceMenu, mcreator);
 
+		//Sync language file from local langauge
+		JMenuItem syncLanguage = new JMenuItem(L10N.t("devutils.workspaceoperation.synclocallanguagefile.name"));
+		syncLanguage.addActionListener(event -> {
+			WorkspaceManager.syncLocalLanguageFiles(mcreator.getWorkspace(), null);
+		});
+		workspaceMenu.add(syncLanguage);
+
 		// Workspace definition editing
 		editWorkspaceDefinition = new JMenu(L10N.t("devutils.workspaceoperation.ewd.name"));
 		editWorkspaceDefinition.addMouseListener(createWorkspaceDefinitionMouseListener(mcreator));
@@ -260,7 +291,7 @@ public class PluginMain extends JavaPlugin {
 
 		// Workspace snapshot export
 		JMenuItem exportWorkspaceReport = new JMenuItem(L10N.t("devutils.workspaceoperation.ews.name"));
-		exportWorkspaceReport.addActionListener(e -> exportWorkspaceSnapshot(mcreator));
+		exportWorkspaceReport.addActionListener(event -> exportWorkspaceSnapshot(mcreator));
 		workspaceMenu.add(exportWorkspaceReport);
 
 		return workspaceMenu;
@@ -309,7 +340,7 @@ public class PluginMain extends JavaPlugin {
 		workspaceMenu.add(removeSrc);
 
 		// Clear modifiers
-		JMenuItem removeModifiers = new JMenuItem("Clear modifiers");
+		JMenuItem removeModifiers = new JMenuItem(L10N.t("devutils.workspaceoperation.clear_modifiers.name"));
 		removeModifiers.addActionListener(e -> WorkspaceManager.removeModifiersFolder(mcreator));
 		workspaceMenu.add(removeModifiers);
 		workspaceMenu.addSeparator();
@@ -403,7 +434,7 @@ public class PluginMain extends JavaPlugin {
 				return;
 			}
 
-			ElementManager.createModifiers(mcreator.getWorkspace(), element);
+			ElementManager.createModifiers(mcreator.getWorkspace(), element, Collections.emptyList());
 			JOptionPane.showMessageDialog(mcreator.getOrigin(),
 					"Modifier for element " + element.getModElement().getName() + " created");
 		} catch (TemplateGeneratorException e) {

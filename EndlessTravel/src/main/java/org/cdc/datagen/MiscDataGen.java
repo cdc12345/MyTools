@@ -45,8 +45,9 @@ import java.util.Map;
 				.setLanguage(en, "BuildCreativeTab").buildAndOutput();
 
 		//creativeTab
-		factory.createProcedure().setName("creativetab").setParentCategory(BuiltInToolBoxId.Procedure.ITEM_PROCEDURES).markType().setColor(Color.BLUE.darker())
-				.setLanguage(en, "CreativeTab").initGenerator().buildAndOutput();
+		factory.createProcedure().setName("creativetab").setParentCategory(BuiltInToolBoxId.Procedure.ITEM_PROCEDURES)
+				.markType().setColor(Color.BLUE.darker()).setLanguage(en, "CreativeTab").initGenerator()
+				.buildAndOutput();
 		factory.createProcedure("creativetab_inserbefore").setPreviousStatement(null).setNextStatement(null)
 				.setColor(Color.BLUE).appendArgs0InputValue("before", BuiltInTypes.ItemStack)
 				.appendArgs0InputValue("item", BuiltInTypes.ItemStack)
@@ -69,8 +70,6 @@ import java.util.Map;
 						"<value name=\"item\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
 				.setToolBoxId("creativetab").initGenerator()
 				.setLanguage(en, "creativeTab insert %2 after %1,Visible: %3").buildAndOutput();
-
-
 
 		//lambda
 		factory.getToolKit().createOutputProcedure("lambda_do", "_lambda")
@@ -230,6 +229,14 @@ import java.util.Map;
 				.toolBoxInitBuilder().setName("tagName").appendConstantString("").buildAndReturn()
 				.setLanguage(en, "append empty compound tag to entity %1 location %2")
 				.setLanguage(zh, "追加空nbt组件到实体%1位置%2").initGenerator().buildAndOutput();
+		factory.getToolKit().createInputProcedure("entity_run_function_silent")
+				.setColor(BuiltInBlocklyColor.ENTITY_COLOR).setToolBoxId(BuiltInToolBoxId.Procedure.ENTITY_MANAGEMENT)
+				.appendArgs0InputValue("function", BuiltInTypes.String).toolBoxInitBuilder().setName("function")
+				.appendConstantString("function").buildAndReturn()
+				.appendArgs0InputValueWithDefaultToolboxInit("entity", BuiltInTypes.Entity)
+				.appendArgs0FieldImage(BuiltInImages.SERVER, 8, 24)
+				.setLanguage(en, "Run function silent %1 in the name %2 %3").setLanguage(zh, "使%2%3静默运行函数%1")
+				.initGenerator().buildAndOutput();
 
 		//item
 		factory.getToolKit().createOutputProcedure("item_player_skull", BuiltInTypes.ItemStack)
@@ -253,6 +260,18 @@ import java.util.Map;
 				.appendArgs0InputValue("entity", BuiltInTypes.Entity).toolBoxInitBuilder().setName("entity")
 				.appendDefaultEntity().buildAndReturn().setLanguage(en, "world add new entity %1")
 				.setLanguage(zh, "为世界增加新的实体 %1").initGenerator().buildAndOutput();
+		factory.createProcedure("run_function_silent").appendArgs0InputValue("function", BuiltInTypes.String)
+				.appendArgs0InputValue("x", "Number").appendArgs0InputValue("y", "Number")
+				.appendArgs0InputValue("z", "Number").appendArgs0FieldImage("./res/server.png", 8, 24)
+				.setInputsInline(true).setColor(35).setPreviousStatement(null).setNextStatement(null)
+				.setToolBoxId("worldmanagement").appendToolBoxInit(
+						"<value name=\"function\"><block type=\"text\"><field name=\"TEXT\">namespace:function</field></block></value>")
+				.appendToolBoxInit("<value name=\"x\"><block type=\"coord_x\"></block></value>")
+				.appendToolBoxInit("<value name=\"y\"><block type=\"coord_y\"></block></value>")
+				.appendToolBoxInit("<value name=\"z\"><block type=\"coord_z\"></block></value>")
+				.appendDependency("world", BuiltInTypes.World)
+				.setLanguage(en, "Run function silent %1 at x: %2 y: %3 z: %4 %5")
+				.setLanguage(zh, "在x:%2 y:%3 z:%4%5处运行函数%1").initGenerator().buildAndOutput();
 
 		//advanced
 		factory.getToolKit().createOutputProcedure("math_plus_self", BuiltInTypes.Number)
