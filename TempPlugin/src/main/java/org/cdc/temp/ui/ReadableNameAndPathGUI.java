@@ -28,6 +28,7 @@ public abstract class ReadableNameAndPathGUI<T> extends TempElementGUI<T>{
 
 		path = new VTextField();
 		path.setOpaque(false);
+		path.setText("minecraft:");
 		config.add(new JLabel(L10N.t("gui.generally.registry_name")));
 		config.add(path);
 
@@ -45,5 +46,15 @@ public abstract class ReadableNameAndPathGUI<T> extends TempElementGUI<T>{
 
 	public String getRegistryName(){
 		return path.getText();
+	}
+
+	protected abstract String getDefaultViewName();
+
+	@Override public String getViewName() {
+		if (readableName.getText().isEmpty()){
+			return getDefaultViewName();
+		} else {
+			return readableName.getText();
+		}
 	}
 }

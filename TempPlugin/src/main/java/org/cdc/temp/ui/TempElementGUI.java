@@ -14,13 +14,16 @@ import java.util.function.Consumer;
 public abstract class TempElementGUI<G> extends ViewBase {
 	protected Consumer<G> consumer;
 
+	private Runnable redo;
+
 	protected TempElementGUI(MCreator mcreator) {
 		super(mcreator);
+		redo = () -> {};
 	}
 
 	abstract void initGUI();
 
-	protected final void finalizeGUI(){
+	protected final void finalizeGUI() {
 		JButton save = L10N.button("elementgui.save_mod_element");
 		save.setMargin(new Insets(1, 40, 1, 40));
 		save.setBackground(Theme.current().getInterfaceAccentColor());
@@ -34,14 +37,21 @@ public abstract class TempElementGUI<G> extends ViewBase {
 		toolBar.add(save);
 
 		add("North",
-				ComponentUtils.applyPadding(PanelUtils.westAndEastElement(toolBarLeft, toolBar), 5, true, false,
-						true, false));
+				ComponentUtils.applyPadding(PanelUtils.westAndEastElement(toolBarLeft, toolBar), 5, true, false, true,
+						false));
 	}
 
-	public void setOnSaved(Consumer<G> consumer){
+	public void setOnSaved(Consumer<G> consumer) {
 		this.consumer = consumer;
 	}
 
 	abstract G getElementFromGUI();
 
+	public Runnable getRedo() {
+		return redo;
+	}
+
+	public void setRedo(Runnable redo) {
+		this.redo = redo;
+	}
 }

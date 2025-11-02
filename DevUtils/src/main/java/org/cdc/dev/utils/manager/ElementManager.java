@@ -10,6 +10,7 @@ import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.nodeTypes.NodeWithType;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.google.common.io.Files;
@@ -255,20 +256,22 @@ public class ElementManager {
 									method.addProperty("signature", sourceMethod.getSignature().asString());
 									method.addProperty("originalBody",
 											Objects.toString(generatedMethod.getBody().orElseThrow()));
-									var head = sourceMethod.getBody()
-											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatement(0);
+									var statements = sourceMethod.getBody()
+											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatements();
+									var head = statements.getFirst().orElse(new EmptyStmt());
 									head.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Head")) {
 											if (head.isExpressionStmt()
 													&& head.asExpressionStmt().getExpression().isMethodCallExpr()
 													&& head.asExpressionStmt().getExpression().asMethodCallExpr()
-													.getScope().isEmpty())
+													.getScope().isEmpty()/*ensure that it is a method call like method()*/) {
 												method.addProperty("head", head.toString());
+											}
 										}
 									});
-									var tail = sourceMethod.getBody()
-											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatements()
-											.getLast().orElseThrow(() -> new NoSuchElementException("No Last Element"));
+
+									var tail = statements.stream().filter(statement -> !statement.isReturnStmt()).toList()
+											.getLast();
 									tail.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Tail")) {
 											if (tail.isExpressionStmt()

@@ -239,7 +239,7 @@ public class WorkspaceManager {
 				while (iterator.hasMoreElements()) {
 					var entry = iterator.nextElement();
 					if (entry.isDirectory() || entry.getName().endsWith("plugin.json") || entry.getName()
-							.startsWith("META-INF")) {
+							.startsWith("META-INF") || entry.getName().endsWith("LICENSE")) {
 						continue;
 					}
 					var name = entry.getName();
@@ -250,7 +250,6 @@ public class WorkspaceManager {
 					if (DevUtilsSection.getInstance().getExportPluginsSensitives().get()) {
 						var set = findEntryInAllPlugins(name);
 						if (set.size() > 1) {
-							LOGGER.info(set.stream().map(ZipEntry::getName).collect(Collectors.joining(", ")));
 							JsonObject action = new JsonObject();
 							action.addProperty("action", "overwrite " + entry.getName());
 							action.addProperty("relationPlugins",
@@ -279,6 +278,7 @@ public class WorkspaceManager {
 		if (cache.containsKey(name)) {
 			return cache.get(name);
 		}
+		LOGGER.info(name);
 		var set = new HashSet<ZipEntry>();
 		PluginLoader.INSTANCE.getPlugins().forEach(a -> {
 			ZipFile zipFile;

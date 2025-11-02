@@ -79,6 +79,9 @@ public class TempItemGUI extends TempElementGUI<TempItem> {
 
     @Override
     public String getViewName() {
-        return "TempPlugin";
+        if (readableName.getText().isEmpty()) {
+            return "TempPlugin";
+        }
+        return readableName.getText();
     }
 }

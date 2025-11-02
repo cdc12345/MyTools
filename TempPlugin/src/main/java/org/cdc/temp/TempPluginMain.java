@@ -1,5 +1,6 @@
 package org.cdc.temp;
 
+import net.mcreator.io.FileIO;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
@@ -9,25 +10,28 @@ import net.mcreator.ui.variants.modmaker.ModMaker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.framework.MCreatorPluginFactory;
-import org.cdc.temp.ui.TempAchievementGUI;
-import org.cdc.temp.ui.TempBiomeGUI;
-import org.cdc.temp.ui.TempItemGUI;
-import org.cdc.temp.ui.TempStructureGUI;
+import org.cdc.temp.ui.*;
 import org.cdc.temp.utils.PluginUtils;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class TempPluginMain extends JavaPlugin {
 	private static TempPluginMain INSTANCE;
 	public static final Logger LOG = LogManager.getLogger(TempPluginMain.class);
+
 	private final MCreatorPluginFactory mCreatorPluginFactory;
+
+	private final ArrayList<TempElementGUI<?>> tempElementHistory = new ArrayList<>();
 
 	public TempPluginMain(Plugin plugin) {
 		super(plugin);
@@ -54,8 +58,10 @@ public class TempPluginMain extends JavaPlugin {
 				var gui = new TempItemGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
 				gui.setOnSaved(c->{
-					PluginUtils.doCreateItem(c);
-					mcreator.getTabs().closeTab(tab);
+					gui.getRedo().run();
+					gui.setRedo(PluginUtils.doCreateItem(c));
+					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
+					tempElementHistory.add(gui);
 				});
 				mcreator.getTabs().addTab(tab);
 
@@ -67,8 +73,10 @@ public class TempPluginMain extends JavaPlugin {
 				var gui = new TempAchievementGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
 				gui.setOnSaved(d->{
-					PluginUtils.doCreateAchievement(d);
-					mcreator.getTabs().closeTab(tab);
+					gui.getRedo().run();
+					gui.setRedo(PluginUtils.doCreateAchievement(d));
+					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
+					tempElementHistory.add(gui);
 				});
 				mcreator.getTabs().addTab(tab);
 			});
@@ -79,8 +87,10 @@ public class TempPluginMain extends JavaPlugin {
 				var gui = new TempStructureGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
 				gui.setOnSaved(d->{
-					PluginUtils.doCreateStructure(d);
-					mcreator.getTabs().closeTab(tab);
+					gui.getRedo().run();
+					gui.setRedo(PluginUtils.doCreateStructure(d));
+					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
+					tempElementHistory.add(gui);
 				});
 				mcreator.getTabs().addTab(tab);
 			});
@@ -91,8 +101,10 @@ public class TempPluginMain extends JavaPlugin {
 				var gui = new TempBiomeGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
 				gui.setOnSaved(d->{
-					PluginUtils.doCreateBiome(d);
-					mcreator.getTabs().closeTab(tab);
+					gui.getRedo().run();
+					gui.setRedo(PluginUtils.doCreateBiome(d));
+					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
+					tempElementHistory.add(gui);
 				});
 				mcreator.getTabs().addTab(tab);
 			});
@@ -116,6 +128,40 @@ public class TempPluginMain extends JavaPlugin {
 				JOptionPane.showMessageDialog(mcreator, "Build Successful");
 			});
 			temp.add(export);
+
+			JMenu tempHistory = L10N.menu("menubar.item.temphistory");
+			tempHistory.addMouseListener(new MouseAdapter() {
+				@Override public void mouseEntered(MouseEvent e) {
+					tempHistory.removeAll();
+					for (TempElementGUI<?> elementGUI : tempElementHistory) {
+						JMenuItem menuItem = new JMenuItem(elementGUI.getViewName());
+						menuItem.addActionListener(action->{
+							var tab = new MCreatorTabs.Tab(elementGUI);
+							mcreator.getTabs().addTab(tab);
+							tempElementHistory.remove(elementGUI);
+						});
+						tempHistory.add(menuItem);
+					}
+				}
+			});
+			temp.add(tempHistory);
+
+			JMenu deleteTempPlugin = L10N.menu("menubar.item.deleteTempPlugin");
+			deleteTempPlugin.addMouseListener(new MouseAdapter() {
+				@Override public void mouseEntered(MouseEvent e) {
+					for (File file : Objects.requireNonNull(pluginFolder.getParentFile().listFiles())) {
+						deleteTempPlugin.removeAll();
+						if (file.isDirectory() && file.getName().startsWith("tempplugin")){
+							var menuItem = new JMenuItem(file.getName());
+							menuItem.addActionListener(actionEvent -> {
+								FileIO.deleteDir(file);
+							});
+							deleteTempPlugin.add(menuItem);
+						}
+					}
+				}
+			});
+			temp.add(deleteTempPlugin);
 		});
 	}
 
