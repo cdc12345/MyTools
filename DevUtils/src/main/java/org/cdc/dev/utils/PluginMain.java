@@ -15,6 +15,7 @@ import net.mcreator.ui.component.ConsolePane;
 import net.mcreator.ui.gradle.GradleConsole;
 import net.mcreator.ui.ide.CodeEditorView;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
@@ -22,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.dev.Constants;
+import org.cdc.dev.DevAPIS;
 import org.cdc.dev.FileWatcher;
 import org.cdc.dev.sections.DevUtilsSection;
 import org.cdc.dev.utils.manager.ElementManager;
@@ -65,11 +67,11 @@ public class PluginMain extends JavaPlugin {
 	}
 
 	private void initializePlugin() throws IOException, URISyntaxException {
-		loadJavaParserDependency();
+		loadDependencies();
 		registerEventListeners();
 	}
 
-	private void loadJavaParserDependency() throws IOException, URISyntaxException {
+	private void loadDependencies() throws IOException, URISyntaxException {
 		var javaParserPath = Constants.getCacheFile().toPath().resolve("javaparser.jar");
 		if (Files.notExists(javaParserPath)) {
 			Files.copy(new URI(Constants.JAVAPARSER_URL).toURL().openStream(), javaParserPath);
@@ -237,7 +239,7 @@ public class PluginMain extends JavaPlugin {
 	}
 
 	private JMenu createDevUtilsMenu(IMCreator mcreator) {
-		JMenu devUtils = new JMenu("DevUtils");
+		var devUtils = DevAPIS.devUtils = new JMenu("DevUtils");
 
 		// Console operations
 		devUtils.add(createConsoleOperationsMenu(mcreator));
@@ -246,7 +248,14 @@ public class PluginMain extends JavaPlugin {
 		devUtils.add(createWorkspaceOperationsMenu(mcreator));
 
 		// Element operations
-		devUtils.add(createElementOperationsMenu(mcreator));
+		JMenu elementOperation = createElementOperationsMenu(mcreator);
+		devUtils.add(elementOperation);
+
+		devUtils.addMouseListener(new MouseAdapter() {
+			@Override public void mouseEntered(MouseEvent e) {
+				elementOperation.setEnabled(getCurrentGeneratableElement(mcreator) != null);
+			}
+		});
 
 		return devUtils;
 	}
@@ -261,6 +270,7 @@ public class PluginMain extends JavaPlugin {
 
 		// Crash report analysis
 		JMenuItem analyseErrorReport = new JMenuItem("Analyse the crash report");
+		analyseErrorReport.setIcon(UIRES.get("16px.search"));
 		analyseErrorReport.addActionListener(e -> analyzeCrashReport(mcreator));
 		consoleMenu.add(analyseErrorReport);
 
@@ -336,6 +346,7 @@ public class PluginMain extends JavaPlugin {
 	private void addWorkspaceRemovalOperations(JMenu workspaceMenu, IMCreator mcreator) {
 		// Source removal
 		JMenuItem removeSrc = new JMenuItem(L10N.t("devutils.workspaceoperation.rmsrc.name"));
+		removeSrc.setIcon(UIRES.get("16px.mod"));
 		removeSrc.addActionListener(e -> WorkspaceManager.removeSrc(mcreator));
 		workspaceMenu.add(removeSrc);
 
@@ -357,6 +368,7 @@ public class PluginMain extends JavaPlugin {
 
 		// Assets removal
 		JMenuItem removeAssetsFolder = new JMenuItem(L10N.t("devutils.workspaceoperation.rmaf.name"));
+		removeAssetsFolder.setIcon(UIRES.get("16px.resources"));
 		removeAssetsFolder.addActionListener(e -> WorkspaceManager.removeAssets(mcreator));
 		workspaceMenu.add(removeAssetsFolder);
 

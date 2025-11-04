@@ -1,14 +1,15 @@
 package org.liquid.convenient;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import net.mcreator.Launcher;
 import net.mcreator.blockly.java.BlocklyVariables;
 import net.mcreator.blockly.java.ProcedureTemplateIO;
 import net.mcreator.element.GeneratableElement;
-import net.mcreator.element.ModElementTypeLoader;
 import net.mcreator.element.types.CustomElement;
 import net.mcreator.generator.GeneratorTemplate;
-import net.mcreator.java.CodeCleanup;
 import net.mcreator.java.ImportFormat;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
@@ -20,7 +21,10 @@ import net.mcreator.ui.modgui.ProcedureGUI;
 import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.StringUtils;
-import net.mcreator.workspace.elements.*;
+import net.mcreator.workspace.elements.FolderElement;
+import net.mcreator.workspace.elements.IElement;
+import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.elements.VariableElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.liquid.convenient.render.TilesModListRender;
@@ -46,10 +50,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.liquid.convenient.TransferAPI.*;
+import static org.liquid.convenient.utils.JsonUtils.GSON;
+
 public class TransferMain extends JavaPlugin {
 
 	public static final Logger LOG = LogManager.getLogger("TransferMain");
-	private static final Gson GSON = new Gson();
+
 	private static final int PREVIEW_LENGTH = 20;
 
 	private JsonObject descMap = new JsonObject();
@@ -68,6 +75,7 @@ public class TransferMain extends JavaPlugin {
 				JMenuBar bar = mcreator.getMainMenuBar();
 
 				transfer = new JMenu(L10N.t("common.menubar.transfer"));
+				var procedure = new JMenu("Procedure Utils");
 
 				// Copy operations
 				transfer.add(buildShallowCopyMenu(mcreator));
@@ -76,51 +84,52 @@ public class TransferMain extends JavaPlugin {
 				transfer.add(buildDeepCopyMenu(mcreator));
 				transfer.add(buildUnpackMenu(mcreator));
 				transfer.addSeparator();
+
 				JMenuItem copyProcedure = new JMenuItem(L10N.t("mainbar.menu.copyprocedure"));
-				copyProcedure.addActionListener(action->{
-					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI){
+				copyProcedure.addActionListener(action -> {
+					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
 						try {
-							var tempFile = File.createTempFile("temp",".ptpl");
-							ProcedureTemplateIO.exportBlocklySetup(procedureGUI.getElementFromGUI().procedurexml,tempFile,
-									BlocklyEditorType.PROCEDURE);
+							var tempFile = File.createTempFile("temp", ".ptpl");
+							ProcedureTemplateIO.exportBlocklySetup(procedureGUI.getElementFromGUI().procedurexml,
+									tempFile, BlocklyEditorType.PROCEDURE);
 							tempFile.deleteOnExit();
-							var s = new StringSelection(Base64.getEncoder().encodeToString(Files.readAllBytes(tempFile.toPath())));
-							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s,s);
+							var s = new StringSelection(
+									Base64.getEncoder().encodeToString(Files.readAllBytes(tempFile.toPath())));
+							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
 						} catch (IOException | ParserConfigurationException | ParseException | SAXException e) {
 							throw new RuntimeException(e);
 						}
 
 					}
 				});
-				transfer.add(copyProcedure);
-
+				procedure.add(copyProcedure);
 				JMenuItem pasteProcedure = new JMenuItem(L10N.t("mainbar.menu.pasteprocedure"));
-				pasteProcedure.addActionListener(action->{
-					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI){
+				pasteProcedure.addActionListener(action -> {
+					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
 						try {
 							var data = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(new Object());
 							if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 								var blocklyPanel = procedureGUI.getBlocklyPanels().stream().findFirst().get();
-								File imp = File.createTempFile("tem",".temp");
-								Files.write(imp.toPath(),Base64.getDecoder().decode(
-										(String) data.getTransferData(DataFlavor.stringFlavor)));
-								if (imp.exists()){
+								File imp = File.createTempFile("tem", ".temp");
+								Files.write(imp.toPath(), Base64.getDecoder()
+										.decode((String) data.getTransferData(DataFlavor.stringFlavor)));
+								if (imp.exists()) {
 									imp.deleteOnExit();
 									new Thread(() -> {
-											String procedureXml = ProcedureTemplateIO.importBlocklyXML(imp);
-											Set<VariableElement> localVariables = BlocklyVariables.tryToExtractVariables(
-													procedureXml);
-											List<VariableElement> existingLocalVariables = blocklyPanel.getLocalVariablesList();
+										String procedureXml = ProcedureTemplateIO.importBlocklyXML(imp);
+										Set<VariableElement> localVariables = BlocklyVariables.tryToExtractVariables(
+												procedureXml);
+										List<VariableElement> existingLocalVariables = blocklyPanel.getLocalVariablesList();
 
-											for (VariableElement localVariable : localVariables) {
-												if (existingLocalVariables.contains(localVariable))
-													continue; // skip if variable with this name already exists
+										for (VariableElement localVariable : localVariables) {
+											if (existingLocalVariables.contains(localVariable))
+												continue; // skip if variable with this name already exists
 
-												blocklyPanel.addLocalVariable(localVariable.getName(),
-														localVariable.getType().getBlocklyVariableType());
-												procedureGUI.localVars.addElement(localVariable);
-											}
-											blocklyPanel.addBlocksFromXML(procedureXml);
+											blocklyPanel.addLocalVariable(localVariable.getName(),
+													localVariable.getType().getBlocklyVariableType());
+											procedureGUI.localVars.addElement(localVariable);
+										}
+										blocklyPanel.addBlocksFromXML(procedureXml);
 									}, "Blockly-Template-Import").start();
 								} else {
 									throw new RuntimeException("Not a file");
@@ -134,15 +143,24 @@ public class TransferMain extends JavaPlugin {
 
 					}
 				});
-				transfer.add(pasteProcedure);
-				transfer.addSeparator();
+				procedure.add(pasteProcedure);
 
 				// Comment and language operations
 				transfer.add(buildAddCommentMenu(mcreator));
 				transfer.add(buildLanguageMenu(mcreator, false));
 				transfer.add(buildLanguageMenu(mcreator, true));
 
+				mcreator.getTabs().addTabShownListener(tab -> {
+					var procedureTab = tab.getContent() instanceof ProcedureGUI;
+					procedure.setVisible(procedureTab);
+					var workspaceTab = tab == mcreator.workspaceTab;
+					transfer.setVisible(workspaceTab);
+				});
+
 				bar.add(transfer);
+				bar.add(procedure);
+
+				procedure.setVisible(false);
 			}
 		});
 	}
@@ -225,7 +243,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
+				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -250,13 +268,13 @@ public class TransferMain extends JavaPlugin {
 						return;
 					}
 
-					processMultipleElementsCreation(mcreator, elements);
+					processMultipleElementsCreation(mcreator, elements, false);
 					showPreview(workspacePanel, elements.toString());
 				} catch (Exception ex) {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
+				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -295,7 +313,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
+				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -307,7 +325,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel){
+			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 				List<IElement> elements = workspacePanel.list.getSelectedValuesList();
 				if (elements == null || elements.isEmpty()) {
 					showError(mcreator, L10N.t("common.tip.notselected"));
@@ -323,7 +341,7 @@ public class TransferMain extends JavaPlugin {
 					handleProcessingError(workspacePanel, ex);
 				}
 			} else {
-				showError(mcreator.workspaceTab.getContent(),L10N.t("dialog.error.workspacetab"));
+				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
 			}
 		});
 
@@ -388,7 +406,7 @@ public class TransferMain extends JavaPlugin {
 		}
 	}
 
-	private void processElementReplacement(MCreator mcreator, ModElement element, JsonObject object) {
+	public static void processElementReplacement(MCreator mcreator, ModElement element, JsonObject object) {
 		var manager = element.getModElementManager();
 		GeneratableElement generatableElement = createGeneratableElement(manager, element, object);
 
@@ -406,125 +424,16 @@ public class TransferMain extends JavaPlugin {
 		manager.storeModElement(generatableElement);
 	}
 
-	private GeneratableElement createGeneratableElement(ModElementManager manager, ModElement element,
-			JsonObject object) {
-		if (JsonUtils.isDeepCopyData(object)) {
-			JsonObject content = JsonUtils.unmap(object.get("content").getAsJsonObject());
-			return manager.fromJSONtoGeneratableElement(content.toString(), element);
-		}
-		return manager.fromJSONtoGeneratableElement(object.toString(), element);
-	}
-
-	private void processCodeElement(MCreator mcreator, ModElement element, GeneratableElement generatableElement,
-			String code) {
-		element.setCodeLock(true);
-		List<File> modElementFiles = mcreator.getGenerator().getModElementGeneratorTemplatesList(generatableElement)
-				.stream().map(GeneratorTemplate::getFile).toList();
-
-		CodeCleanup codeCleanup = new CodeCleanup();
-		code = codeCleanup.reformatTheCodeAndOrganiseImports(mcreator.getWorkspace(), code);
-
-		try {
-			Files.writeString(modElementFiles.getFirst().toPath(), code, StandardCharsets.UTF_8,
-					StandardOpenOption.WRITE);
-		} catch (IOException ex) {
-			LOG.error("Failed to write code file", ex);
-		}
-	}
-
-	private void processMultipleElementsCreation(MCreator mcreator, JsonArray jsonElements) {
-		var manager = mcreator.getModElementManager();
-
-		for (JsonElement jsonElement : jsonElements) {
-			JsonObject object = JsonUtils.unmap(jsonElement.getAsJsonObject());
-			JsonObject elementJson = JsonUtils.unmap(GSON.fromJson(object.has("content") ?
-					object.get("content").getAsString() :
-					JsonUtils.getContent(object), JsonObject.class));
-
-			if (!JsonUtils.isDeepCopyData(object)) {
-				LOG.warn("{}: {}",L10N.t("dialog.error.invalidelement"), object);
-				continue;
-			}
-
-			String name = object.has("name") ?
-					object.get("name").getAsString() :
-					object.get(JsonUtils.NAME).getAsString();
-			String type = object.has("type") ?
-					object.get("type").getAsString() :
-					elementJson.get("_type").getAsString();
-
-			var type1 = ModElementTypeLoader.getModElementType(type);
-			ModElement modElement = new ModElement(mcreator.getWorkspace(), name, type1);
-
-			GeneratableElement generatableElement = manager.fromJSONtoGeneratableElement(elementJson.toString(),
-					modElement);
-
-			if (object.has("code") || object.has(JsonUtils.CODE)) {
-				generatableElement =
-						generatableElement != null ? generatableElement : modElement.getGeneratableElement();
-				processCodeElementForCreation(mcreator, modElement, generatableElement, object.has("code") ?
-						object.get("code").getAsString() :
-						object.get(JsonUtils.CODE).getAsString());
-			}
-
-			if (generatableElement == null) {
-				showError(mcreator, L10N.t("dialog.error.invalidelement"));
-				return;
-			}
-
-			if (mcreator.getWorkspacePanel() instanceof WorkspacePanel workspacePanel){
-				modElement.setParentFolder(workspacePanel.currentFolder);
-			}
-
-			if (mcreator.getWorkspace().getWorkspaceInfo().hasModElement(name)){
-				showError(mcreator,name+" existed, ignored.");
-			} else {
-				mcreator.getWorkspace().addModElement(modElement);
-				generatableElement.setModElement(modElement);
-				manager.storeModElement(generatableElement);
-
-
-				if (mcreator instanceof ModMaker modMaker) {
-					modMaker.getWorkspacePanel()
-							.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
-				}
-			}
-
-		}
-
-		mcreator.reloadWorkspaceTabContents();
-		//		RegenerateCodeAction.regenerateCode(mcreator, false, false);
-
-	}
-
-	private void processCodeElementForCreation(MCreator mcreator, ModElement modElement,
-			GeneratableElement generatableElement, String code) {
-		modElement.setCodeLock(true);
-		List<File> modElementFiles = mcreator.getGenerator().getModElementGeneratorTemplatesList(generatableElement)
-				.stream().map(GeneratorTemplate::getFile).toList();
-
-		CodeCleanup codeCleanup = new CodeCleanup();
-		code = codeCleanup.reformatTheCodeAndOrganiseImports(mcreator.getWorkspace(), code);
-		File modElementFile = modElementFiles.getFirst();
-
-		try {
-			Files.createDirectories(modElementFile.getParentFile().toPath());
-			Files.writeString(modElementFile.toPath(), code, StandardCharsets.UTF_8);
-		} catch (IOException ex) {
-			LOG.error("Failed to create code file", ex);
-		}
-	}
-
 	private JsonArray createJsonForElements(MCreator mcreator, List<IElement> elements) throws IOException {
 		JsonArray jsonElements = new JsonArray();
 
 		for (IElement element : elements) {
 			if (element instanceof ModElement modElement) {
 				jsonElements.add(createElementJson(mcreator, modElement));
-			} else if (element instanceof FolderElement folderElement){
-				for (ModElement element1:mcreator.getWorkspace().getModElements()){
-					if (folderElement.getPath().equals(element1.getFolderPath())){
-						jsonElements.add(createElementJson(mcreator,element1));
+			} else if (element instanceof FolderElement folderElement) {
+				for (ModElement element1 : mcreator.getWorkspace().getModElements()) {
+					if (folderElement.getPath().equals(element1.getFolderPath())) {
+						jsonElements.add(createElementJson(mcreator, element1));
 					}
 				}
 			}
@@ -577,8 +486,9 @@ public class TransferMain extends JavaPlugin {
 		JOptionPane.showMessageDialog(parent, preview.toString());
 	}
 
-	private void showError(Component parent, String message) {
+	public static void showError(Component parent, String message) {
 		JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
+		LOG.error("[ErrorMessageShow] {}", message);
 	}
 
 	private void handleProcessingError(Component parent, Exception ex) {
@@ -590,7 +500,7 @@ public class TransferMain extends JavaPlugin {
 		return descMap.has(key) ? descMap.get(key).getAsString() : defaultValue;
 	}
 
-	public boolean isEmpty(){
+	public boolean isEmptyComments() {
 		return descMap.isEmpty();
 	}
 }

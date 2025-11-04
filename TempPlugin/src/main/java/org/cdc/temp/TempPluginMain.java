@@ -6,7 +6,9 @@ import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.variants.modmaker.ModMaker;
+import net.mcreator.util.image.IconUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.framework.MCreatorPluginFactory;
@@ -14,6 +16,7 @@ import org.cdc.temp.ui.*;
 import org.cdc.temp.utils.PluginUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
@@ -24,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class TempPluginMain extends JavaPlugin {
 	private static TempPluginMain INSTANCE;
@@ -49,15 +53,28 @@ public class TempPluginMain extends JavaPlugin {
 			}
 
 			var mainMenuBar = mcreator.getMainMenuBar();
+			Consumer<JMenu> consumer = mainMenuBar::add;
+
+			for (Component component : mainMenuBar.getComponents()) {
+				if (component instanceof JMenu menu) {
+					if (menu.getText().equals("DevUtils")) {
+						consumer = item -> menu.insert(item, 0);
+						break;
+					}
+				}
+			}
 
 			JMenu temp = new JMenu("TempPlugin");
-			mainMenuBar.add(temp);
+			consumer.accept(temp);
+
+			JMenu createTempElements = L10N.menu("menubar.item.createelement");
 
 			JMenuItem addTempItem = new JMenuItem(L10N.t("menubar.item.addtempitem"));
+			addTempItem.setIcon(UIRES.get("mod_types.item"));
 			addTempItem.addActionListener(b -> {
 				var gui = new TempItemGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(c->{
+				gui.setOnSaved(c -> {
 					gui.getRedo().run();
 					gui.setRedo(PluginUtils.doCreateItem(c));
 					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
@@ -66,13 +83,14 @@ public class TempPluginMain extends JavaPlugin {
 				mcreator.getTabs().addTab(tab);
 
 			});
-			temp.add(addTempItem);
+			createTempElements.add(addTempItem);
 
 			JMenuItem addTempAchievement = new JMenuItem(L10N.t("menubar.item.addtempachievement"));
-			addTempAchievement.addActionListener(c->{
+			addTempAchievement.setIcon(UIRES.get("mod_types.achievement"));
+			addTempAchievement.addActionListener(c -> {
 				var gui = new TempAchievementGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(d->{
+				gui.setOnSaved(d -> {
 					gui.getRedo().run();
 					gui.setRedo(PluginUtils.doCreateAchievement(d));
 					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
@@ -80,13 +98,14 @@ public class TempPluginMain extends JavaPlugin {
 				});
 				mcreator.getTabs().addTab(tab);
 			});
-			temp.add(addTempAchievement);
+			createTempElements.add(addTempAchievement);
 
 			JMenuItem addTempStructure = new JMenuItem(L10N.t("menubar.item.addtempstructure"));
-			addTempStructure.addActionListener(c->{
+			addTempStructure.setIcon(UIRES.get("mod_types.structure"));
+			addTempStructure.addActionListener(c -> {
 				var gui = new TempStructureGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(d->{
+				gui.setOnSaved(d -> {
 					gui.getRedo().run();
 					gui.setRedo(PluginUtils.doCreateStructure(d));
 					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
@@ -94,13 +113,14 @@ public class TempPluginMain extends JavaPlugin {
 				});
 				mcreator.getTabs().addTab(tab);
 			});
-			temp.add(addTempStructure);
+			createTempElements.add(addTempStructure);
 
 			JMenuItem addTempBiome = new JMenuItem(L10N.t("menubar.item.addtempbiome"));
-			addTempBiome.addActionListener(c->{
+			addTempBiome.setIcon(UIRES.get("mod_types.biome"));
+			addTempBiome.addActionListener(c -> {
 				var gui = new TempBiomeGUI(mcreator);
 				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(d->{
+				gui.setOnSaved(d -> {
 					gui.getRedo().run();
 					gui.setRedo(PluginUtils.doCreateBiome(d));
 					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
@@ -108,9 +128,12 @@ public class TempPluginMain extends JavaPlugin {
 				});
 				mcreator.getTabs().addTab(tab);
 			});
-			temp.add(addTempBiome);
+			createTempElements.add(addTempBiome);
+
+			temp.add(createTempElements);
 
 			JMenuItem export = new JMenuItem(L10N.t("menubar.item.build"));
+			export.setIcon(UIRES.get("16px.build"));
 			export.addActionListener(b -> {
 				mCreatorPluginFactory.initGenerator(mcreator.getGenerator().getGeneratorName(), true);
 				mCreatorPluginFactory.getToolKit().clearGenerator(mcreator.getGenerator().getGeneratorName());
@@ -125,7 +148,7 @@ public class TempPluginMain extends JavaPlugin {
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-				JOptionPane.showMessageDialog(mcreator, "Build Successful");
+				JOptionPane.showMessageDialog(mcreator, "Build Successful " + uuid);
 			});
 			temp.add(export);
 
@@ -135,7 +158,8 @@ public class TempPluginMain extends JavaPlugin {
 					tempHistory.removeAll();
 					for (TempElementGUI<?> elementGUI : tempElementHistory) {
 						JMenuItem menuItem = new JMenuItem(elementGUI.getViewName());
-						menuItem.addActionListener(action->{
+						menuItem.setIcon(IconUtils.resize(elementGUI.getViewIcon(), 24, 24));
+						menuItem.addActionListener(action -> {
 							var tab = new MCreatorTabs.Tab(elementGUI);
 							mcreator.getTabs().addTab(tab);
 							tempElementHistory.remove(elementGUI);
@@ -149,9 +173,9 @@ public class TempPluginMain extends JavaPlugin {
 			JMenu deleteTempPlugin = L10N.menu("menubar.item.deleteTempPlugin");
 			deleteTempPlugin.addMouseListener(new MouseAdapter() {
 				@Override public void mouseEntered(MouseEvent e) {
+					deleteTempPlugin.removeAll();
 					for (File file : Objects.requireNonNull(pluginFolder.getParentFile().listFiles())) {
-						deleteTempPlugin.removeAll();
-						if (file.isDirectory() && file.getName().startsWith("tempplugin")){
+						if (file.isDirectory() && file.getName().startsWith("tempplugin")) {
 							var menuItem = new JMenuItem(file.getName());
 							menuItem.addActionListener(actionEvent -> {
 								FileIO.deleteDir(file);

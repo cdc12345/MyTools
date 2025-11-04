@@ -1,8 +1,8 @@
 package org.cdc.interfaces;
 
-import net.mcreator.generator.Generator;
 import net.mcreator.generator.GeneratorConfiguration;
 import net.mcreator.ui.*;
+import net.mcreator.ui.browser.WorkspaceFileBrowser;
 import net.mcreator.ui.gradle.GradleConsole;
 import net.mcreator.workspace.Workspace;
 import net.mcreator.workspace.WorkspaceFolderManager;
@@ -30,5 +30,7 @@ public interface IMCreator {
 
 	GradleConsole getGradleConsole();
 
-	Generator getGenerator();
+	IGenerator getGenerator();
+
+	WorkspaceFileBrowser getProjectBrowser();
 }

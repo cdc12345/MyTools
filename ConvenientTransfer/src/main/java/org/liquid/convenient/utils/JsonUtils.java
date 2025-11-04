@@ -25,6 +25,8 @@ public abstract class JsonUtils {
 	public static final String _TYPE = "4";
 	public static final String TEXTURE = "5";
 
+	public static final Gson GSON = new Gson();
+
 	public static boolean isDeepCopyData(JsonObject jsonObject) {
 		return jsonObject.has("name") || jsonObject.has(JsonUtils.NAME);
 	}

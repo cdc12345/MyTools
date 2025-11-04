@@ -18,7 +18,6 @@ import com.google.gson.*;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.element.ModElementType;
 import net.mcreator.element.parts.procedure.Procedure;
-import net.mcreator.generator.Generator;
 import net.mcreator.generator.GeneratorFile;
 import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
@@ -26,6 +25,7 @@ import net.mcreator.io.FileIO;
 import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.ide.CodeEditorView;
+import net.mcreator.util.DesktopUtils;
 import net.mcreator.workspace.Workspace;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.references.ReferencesFinder;
@@ -33,6 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.dev.sections.DevUtilsSection;
 import org.cdc.dev.utils.FileUtils;
+import org.cdc.interfaces.GeneratorImpl;
+import org.cdc.interfaces.IGenerator;
 import org.cdc.interfaces.IMCreator;
 
 import javax.annotation.Nullable;
@@ -62,6 +64,7 @@ public class ElementManager {
 	public static void openElementDefinition(IMCreator mCreator, ModElement modElement) {
 		File genFile = new File(mCreator.getFolderManager().getModElementsDir(), modElement.getName() + ".mod.json");
 		mCreator.getTabs().addTab(new MCreatorTabs.Tab(new CodeEditorView(mCreator.getOrigin(), genFile)));
+		DesktopUtils.openSafe(genFile, true);
 	}
 
 	public static String toReadableString(Object object) {
@@ -123,7 +126,7 @@ public class ElementManager {
 		if (generatable != null) {
 			gen.addAll(generatable.getModElement().getGenerator().generateElement(generatable, false, false));
 		}
-		gen.addAll(generateBase(workspace.getGenerator()));
+		gen.addAll(generateBase(new GeneratorImpl(workspace.getGenerator())));
 		var parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
 		var sourceParser = new JavaParser(parserConfiguration);
@@ -203,10 +206,9 @@ public class ElementManager {
 									var head = sourceConstructor.getBody().getStatement(0);
 									head.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Head")) {
-											if (head.isExpressionStmt()
-													&& head.asExpressionStmt().getExpression().isMethodCallExpr()
-													&& head.asExpressionStmt().getExpression().asMethodCallExpr()
-													.getScope().isEmpty())
+											if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
+													.isMethodCallExpr() && head.asExpressionStmt().getExpression()
+													.asMethodCallExpr().getScope().isEmpty())
 												constructor.addProperty("head", head.toString());
 										}
 									});
@@ -214,10 +216,9 @@ public class ElementManager {
 											.orElseThrow(() -> new NoSuchElementException("No Last Element"));
 									tail.getComment().ifPresent(comment -> {
 										if (comment.getContent().equalsIgnoreCase("Tail")) {
-											if (tail.isExpressionStmt()
-													&& tail.asExpressionStmt().getExpression().isMethodCallExpr()
-													&& tail.asExpressionStmt().getExpression().asMethodCallExpr()
-													.getScope().isEmpty())
+											if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
+													.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
+													.asMethodCallExpr().getScope().isEmpty())
 												constructor.addProperty("tail", tail.toString());
 										}
 									});
@@ -258,29 +259,30 @@ public class ElementManager {
 											Objects.toString(generatedMethod.getBody().orElseThrow()));
 									var statements = sourceMethod.getBody()
 											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatements();
-									var head = statements.getFirst().orElse(new EmptyStmt());
-									head.getComment().ifPresent(comment -> {
-										if (comment.getContent().equalsIgnoreCase("Head")) {
-											if (head.isExpressionStmt()
-													&& head.asExpressionStmt().getExpression().isMethodCallExpr()
-													&& head.asExpressionStmt().getExpression().asMethodCallExpr()
-													.getScope().isEmpty()/*ensure that it is a method call like method()*/) {
-												method.addProperty("head", head.toString());
+									if (statements.isNonEmpty()) {
+										var head = statements.getFirst().orElse(new EmptyStmt());
+										head.getComment().ifPresent(comment -> {
+											if (comment.getContent().equalsIgnoreCase("Head")) {
+												if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
+														.isMethodCallExpr() && head.asExpressionStmt().getExpression()
+														.asMethodCallExpr().getScope()
+														.isEmpty()/*ensure that it is a method call like method()*/) {
+													method.addProperty("head", head.toString());
+												}
 											}
-										}
-									});
+										});
 
-									var tail = statements.stream().filter(statement -> !statement.isReturnStmt()).toList()
-											.getLast();
-									tail.getComment().ifPresent(comment -> {
-										if (comment.getContent().equalsIgnoreCase("Tail")) {
-											if (tail.isExpressionStmt()
-													&& tail.asExpressionStmt().getExpression().isMethodCallExpr()
-													&& tail.asExpressionStmt().getExpression().asMethodCallExpr()
-													.getScope().isEmpty())
-												method.addProperty("tail", tail.toString());
-										}
-									});
+										var tail = statements.stream().filter(statement -> !statement.isReturnStmt())
+												.toList().getLast();
+										tail.getComment().ifPresent(comment -> {
+											if (comment.getContent().equalsIgnoreCase("Tail")) {
+												if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
+														.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
+														.asMethodCallExpr().getScope().isEmpty())
+													method.addProperty("tail", tail.toString());
+											}
+										});
+									}
 
 									method.addProperty("body", Objects.toString(sourceMethod.getBody().orElseThrow()));
 									methods.add(sourceMethod.getNameAsString(), method);
@@ -318,7 +320,7 @@ public class ElementManager {
 		if (generatable != null) {
 			gen.addAll(generatable.getModElement().getGenerator().generateElement(generatable, false, false));
 		} else {
-			gen.addAll(generateBase(workspace.getGenerator()));
+			gen.addAll(generateBase(new GeneratorImpl(workspace.getGenerator())));
 		}
 		var parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
@@ -440,7 +442,8 @@ public class ElementManager {
 										}
 										if (!checkFlag) {
 											sourceClass.addOrphanComment(new JavadocComment(
-													"Missing constructor: %s %s".formatted(jsonObject.get("signature").getAsString(),bodystring)));
+													"Missing constructor: %s %s".formatted(
+															jsonObject.get("signature").getAsString(), bodystring)));
 										}
 									} else {
 										ConstructorDeclaration constructorDeclaration = StaticJavaParser.parseBodyDeclaration(
@@ -540,13 +543,13 @@ public class ElementManager {
 		return modifierApplied.get();
 	}
 
-	private static List<GeneratorFile> generateBase(Generator generator) {
+	private static List<GeneratorFile> generateBase(IGenerator generator) {
 		if (!DevUtilsSection.getInstance().getRecordBase().get()) {
 			return new ArrayList<>();
 		}
 		TemplateGenerator templateGenerator = generator.getTemplateGeneratorFromName("templates");
 
-		return generator.getModBaseGeneratorTemplatesList(false).stream().map(generatorTemplate -> {
+		return generator.getModBaseGeneratorTemplatesList().stream().map(generatorTemplate -> {
 			try {
 				String code = templateGenerator.generateBaseFromTemplate(
 						(String) generatorTemplate.getTemplateDefinition().get("template"),

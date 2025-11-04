@@ -103,7 +103,6 @@ public class MyToolBoxMain extends JavaPlugin {
 													LOG.info(e);
 												}
 											}
-
 										});
 										if (!map.isEmpty()) {
 											try {

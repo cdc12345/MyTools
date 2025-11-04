@@ -42,7 +42,7 @@ public class TilesModListRender extends JPanel implements ListCellRenderer<IElem
 
 	public static void updateRenderer(MCreator mcreator, TransferMain transferMain){
 		if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-			if (mcreator.getWorkspaceUserSettings().workspacePanelIconSize == WorkspaceUserSettings.IconSize.TILES && !(workspacePanel.list.getCellRenderer() instanceof TilesModListRender) && !transferMain.isEmpty()) {
+			if (mcreator.getWorkspaceUserSettings().workspacePanelIconSize == WorkspaceUserSettings.IconSize.TILES && !(workspacePanel.list.getCellRenderer() instanceof TilesModListRender) && !transferMain.isEmptyComments()) {
 				LOG.info("Renderer update");
 				workspacePanel.list.setCellRenderer(new TilesModListRender(transferMain));
 			}

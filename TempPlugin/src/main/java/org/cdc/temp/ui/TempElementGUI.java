@@ -54,4 +54,8 @@ public abstract class TempElementGUI<G> extends ViewBase {
 	public void setRedo(Runnable redo) {
 		this.redo = redo;
 	}
+
+	@Override public ImageIcon getViewIcon() {
+		return super.getViewIcon();
+	}
 }

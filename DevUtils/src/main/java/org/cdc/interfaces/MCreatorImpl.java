@@ -1,8 +1,8 @@
 package org.cdc.interfaces;
 
-import net.mcreator.generator.Generator;
 import net.mcreator.generator.GeneratorConfiguration;
 import net.mcreator.ui.*;
+import net.mcreator.ui.browser.WorkspaceFileBrowser;
 import net.mcreator.ui.gradle.GradleConsole;
 import net.mcreator.workspace.Workspace;
 import net.mcreator.workspace.WorkspaceFolderManager;
@@ -72,7 +72,11 @@ public class MCreatorImpl implements IMCreator{
 		return origin.getModElementManager();
 	}
 
-	@Override public Generator getGenerator() {
-		return origin.getGenerator();
+	@Override public IGenerator getGenerator() {
+		return new GeneratorImpl(origin.getGenerator());
+	}
+
+	@Override public WorkspaceFileBrowser getProjectBrowser() {
+		return origin.getProjectBrowser();
 	}
 }
