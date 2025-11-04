@@ -4,6 +4,7 @@
     "2023.3",
     "2023.2"
   ],
+  "minversion": 202300100000,
   "weight": 0,
   "javaplugin": "org.liquid.convenient.TransferMain",
   "info": {

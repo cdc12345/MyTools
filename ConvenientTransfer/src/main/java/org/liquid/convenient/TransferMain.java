@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import net.mcreator.blockly.java.BlocklyVariables;
-import net.mcreator.blockly.java.ProcedureTemplateIO;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.element.types.CustomElement;
 import net.mcreator.generator.GeneratorTemplate;
@@ -14,39 +12,26 @@ import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.init.L10N;
-import net.mcreator.ui.modgui.ProcedureGUI;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.FolderElement;
 import net.mcreator.workspace.elements.IElement;
 import net.mcreator.workspace.elements.ModElement;
-import net.mcreator.workspace.elements.VariableElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.liquid.convenient.render.TilesModListRender;
 import org.liquid.convenient.utils.JsonUtils;
-import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.text.ParseException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.liquid.convenient.TransferAPI.*;
 import static org.liquid.convenient.utils.JsonUtils.GSON;
@@ -57,13 +42,11 @@ public class TransferMain extends JavaPlugin {
 
 	private static final int PREVIEW_LENGTH = 20;
 
-	private JsonObject descMap = new JsonObject();
 	private JMenu transfer;
 
 	public TransferMain(Plugin plugin) {
 		super(plugin);
 		initializeMenu();
-		initializeComments();
 	}
 
 	private void initializeMenu() {
@@ -75,7 +58,6 @@ public class TransferMain extends JavaPlugin {
 				JMenuBar bar = mcreator.getMainMenuBar();
 
 				transfer = new JMenu(L10N.t("common.menubar.transfer"));
-				var procedure = new JMenu("Procedure Utils");
 
 				// Copy operations
 				transfer.add(buildShallowCopyMenu(mcreator));
@@ -85,100 +67,16 @@ public class TransferMain extends JavaPlugin {
 				transfer.add(buildUnpackMenu(mcreator));
 				transfer.addSeparator();
 
-				JMenuItem copyProcedure = new JMenuItem(L10N.t("mainbar.menu.copyprocedure"));
-				copyProcedure.addActionListener(action -> {
-					if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
-						try {
-							var tempFile = File.createTempFile("temp", ".ptpl");
-							ProcedureTemplateIO.exportBlocklySetup(procedureGUI.getElementFromGUI().procedurexml,
-									tempFile, BlocklyEditorType.PROCEDURE);
-							tempFile.deleteOnExit();
-							var s = new StringSelection(
-									Base64.getEncoder().encodeToString(Files.readAllBytes(tempFile.toPath())));
-							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
-						} catch (IOException | ParserConfigurationException | ParseException | SAXException e) {
-							throw new RuntimeException(e);
-						}
-
-					}
-				});
-				procedure.add(copyProcedure);
-				JMenuItem pasteProcedure = new JMenuItem(L10N.t("mainbar.menu.pasteprocedure"));
-				pasteProcedure.addActionListener(action -> {
-					if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
-						try {
-							var data = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(new Object());
-							if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-								var blocklyPanel = procedureGUI.getBlocklyPanels().stream().findFirst().get();
-								File imp = File.createTempFile("tem", ".temp");
-								Files.write(imp.toPath(), Base64.getDecoder()
-										.decode((String) data.getTransferData(DataFlavor.stringFlavor)));
-								if (imp.exists()) {
-									imp.deleteOnExit();
-									new Thread(() -> {
-										String procedureXml = ProcedureTemplateIO.importBlocklyXML(imp);
-										Set<VariableElement> localVariables = BlocklyVariables.tryToExtractVariables(
-												procedureXml);
-										List<VariableElement> existingLocalVariables = blocklyPanel.getLocalVariablesList();
-
-										for (VariableElement localVariable : localVariables) {
-											if (existingLocalVariables.contains(localVariable))
-												continue; // skip if variable with this name already exists
-
-											blocklyPanel.addLocalVariable(localVariable.getName(),
-													localVariable.getType().getBlocklyVariableType());
-											procedureGUI.localVars.addElement(localVariable);
-										}
-										blocklyPanel.addBlocksFromXML(procedureXml);
-									}, "Blockly-Template-Import").start();
-								} else {
-									throw new RuntimeException("Not a file");
-								}
-							} else {
-								throw new RuntimeException("Not a string");
-							}
-						} catch (IOException | UnsupportedFlavorException e) {
-							throw new RuntimeException(e);
-						}
-
-					}
-				});
-				procedure.add(pasteProcedure);
-
 				// Comment and language operations
-				transfer.add(buildAddCommentMenu(mcreator));
 				transfer.add(buildLanguageMenu(mcreator, false));
 				transfer.add(buildLanguageMenu(mcreator, true));
 
 				mcreator.getMCreatorTabs().addTabShownListener(tab -> {
-					var procedureTab = tab.getContent() instanceof ProcedureGUI;
-					procedure.setVisible(procedureTab);
 					var workspaceTab = tab == mcreator.workspaceTab;
 					transfer.setVisible(workspaceTab);
 				});
 
 				bar.add(transfer);
-				bar.add(procedure);
-
-				procedure.setVisible(false);
-			}
-		});
-	}
-
-	private void initializeComments() {
-		this.addListener(MCreatorLoadedEvent.class, event -> {
-			MCreator mcreator = event.getMCreator();
-			Path commentsPath = new File(mcreator.getWorkspaceFolder(), "comments.json").toPath();
-
-			try (Reader reader = Files.newBufferedReader(commentsPath)) {
-				this.descMap = GSON.fromJson(reader, JsonObject.class);
-			} catch (IOException e) {
-				this.descMap = new JsonObject();
-			}
-
-			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				workspacePanel.list.addListSelectionListener(e -> TilesModListRender.updateRenderer(mcreator, this));
-				TilesModListRender.updateRenderer(mcreator, this);
 			}
 		});
 	}
@@ -219,8 +117,8 @@ public class TransferMain extends JavaPlugin {
 		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.pastereplace"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
-
+			if (mcreator.getMCreatorTabs().getCurrentTab() == mcreator.workspaceTab) {
+				var workspacePanel = mcreator.mv;
 				ModElement element = getSelectedModElement(workspacePanel);
 				if (element == null) {
 					showError(mcreator, L10N.t("common.tip.notselected"));
@@ -255,8 +153,8 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
-
+			if (mcreator.getMCreatorTabs().getCurrentTab() == mcreator.workspaceTab) {
+				var workspacePanel = mcreator.mv;
 				try {
 					String input = getBase64Input();
 					if (input == null)
@@ -286,7 +184,8 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (mcreator.getMCreatorTabs().getCurrentTab() == mcreator.workspaceTab) {
+				var workspacePanel = mcreator.mv;
 				ModElement element = getSelectedModElement(workspacePanel);
 				if (element == null) {
 					showError(workspacePanel, L10N.t("common.tip.notselected"));
@@ -325,7 +224,8 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (mcreator.getMCreatorTabs().getCurrentTab() == mcreator.workspaceTab) {
+				var workspacePanel = mcreator.mv;
 				List<IElement> elements = workspacePanel.list.getSelectedValuesList();
 				if (elements == null || elements.isEmpty()) {
 					showError(mcreator, L10N.t("common.tip.notselected"));
@@ -342,38 +242,6 @@ public class TransferMain extends JavaPlugin {
 				}
 			} else {
 				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
-			}
-		});
-
-		return menuItem;
-	}
-
-	private JMenuItem buildAddCommentMenu(MCreator mcreator) {
-		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.addcomment"));
-
-		menuItem.addActionListener(e -> {
-			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
-				return;
-			}
-
-			IElement element = workspacePanel.list.getSelectedValue();
-			if (!(element instanceof ModElement modElement)) {
-				return;
-			}
-
-			String comment = JOptionPane.showInputDialog("Input your comment");
-			if (comment == null || comment.trim().isEmpty()) {
-				return;
-			}
-
-			descMap.add(modElement.getName(), new JsonPrimitive(comment));
-
-			try {
-				Files.writeString(new File(mcreator.getWorkspaceFolder(), "comments.json").toPath(), descMap.toString(),
-						StandardCharsets.UTF_8, StandardOpenOption.WRITE);
-			} catch (IOException ex) {
-				LOG.error("Failed to save comments", ex);
-				throw new RuntimeException(ex);
 			}
 		});
 
@@ -491,13 +359,5 @@ public class TransferMain extends JavaPlugin {
 	private void handleProcessingError(Component parent, Exception ex) {
 		showError(parent, "Processing error: " + ex.getMessage());
 		LOG.error("Processing error", ex);
-	}
-
-	public String getOrDefault(String key, String defaultValue) {
-		return descMap.has(key) ? descMap.get(key).getAsString() : defaultValue;
-	}
-
-	public boolean isEmptyComments() {
-		return descMap.isEmpty();
 	}
 }
