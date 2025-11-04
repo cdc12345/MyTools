@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import net.mcreator.Launcher;
 import net.mcreator.blockly.java.BlocklyVariables;
 import net.mcreator.blockly.java.ProcedureTemplateIO;
 import net.mcreator.element.GeneratableElement;
@@ -18,7 +17,6 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.modgui.ProcedureGUI;
-import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.FolderElement;
@@ -71,7 +69,9 @@ public class TransferMain extends JavaPlugin {
 	private void initializeMenu() {
 		this.addListener(MCreatorLoadedEvent.class, event -> {
 			MCreator mcreator = event.getMCreator();
-			if (mcreator instanceof ModMaker) {
+
+			//keep same code style with 2025.3+
+			if (true) {
 				JMenuBar bar = mcreator.getMainMenuBar();
 
 				transfer = new JMenu(L10N.t("common.menubar.transfer"));
@@ -87,7 +87,7 @@ public class TransferMain extends JavaPlugin {
 
 				JMenuItem copyProcedure = new JMenuItem(L10N.t("mainbar.menu.copyprocedure"));
 				copyProcedure.addActionListener(action -> {
-					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
+					if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
 						try {
 							var tempFile = File.createTempFile("temp", ".ptpl");
 							ProcedureTemplateIO.exportBlocklySetup(procedureGUI.getElementFromGUI().procedurexml,
@@ -105,7 +105,7 @@ public class TransferMain extends JavaPlugin {
 				procedure.add(copyProcedure);
 				JMenuItem pasteProcedure = new JMenuItem(L10N.t("mainbar.menu.pasteprocedure"));
 				pasteProcedure.addActionListener(action -> {
-					if (mcreator.getTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
+					if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof ProcedureGUI procedureGUI) {
 						try {
 							var data = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(new Object());
 							if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {
@@ -150,7 +150,7 @@ public class TransferMain extends JavaPlugin {
 				transfer.add(buildLanguageMenu(mcreator, false));
 				transfer.add(buildLanguageMenu(mcreator, true));
 
-				mcreator.getTabs().addTabShownListener(tab -> {
+				mcreator.getMCreatorTabs().addTabShownListener(tab -> {
 					var procedureTab = tab.getContent() instanceof ProcedureGUI;
 					procedure.setVisible(procedureTab);
 					var workspaceTab = tab == mcreator.workspaceTab;
@@ -219,7 +219,7 @@ public class TransferMain extends JavaPlugin {
 		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.pastereplace"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 
 				ModElement element = getSelectedModElement(workspacePanel);
 				if (element == null) {
@@ -255,7 +255,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 
 				try {
 					String input = getBase64Input();
@@ -286,7 +286,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 				ModElement element = getSelectedModElement(workspacePanel);
 				if (element == null) {
 					showError(workspacePanel, L10N.t("common.tip.notselected"));
@@ -325,7 +325,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (mcreator.getMCreatorTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
 				List<IElement> elements = workspacePanel.list.getSelectedValuesList();
 				if (elements == null || elements.isEmpty()) {
 					showError(mcreator, L10N.t("common.tip.notselected"));
@@ -367,9 +367,6 @@ public class TransferMain extends JavaPlugin {
 			}
 
 			descMap.add(modElement.getName(), new JsonPrimitive(comment));
-			if (Launcher.version.majorlong > 2025000) {
-				workspacePanel.list.setCellRenderer(new TilesModListRender(this));
-			}
 
 			try {
 				Files.writeString(new File(mcreator.getWorkspaceFolder(), "comments.json").toPath(), descMap.toString(),

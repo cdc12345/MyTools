@@ -12,7 +12,6 @@ import net.mcreator.plugin.MCREvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.action.impl.workspace.RegenerateCodeAction;
 import net.mcreator.ui.init.L10N;
-import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.ModElementManager;
@@ -34,16 +33,16 @@ public class TransferAPI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TransferAPI.class);
 
-	public static void processMultipleElementsCreation(MCreator mcreator, JsonArray jsonElements,boolean regenerate) {
+	public static void processMultipleElementsCreation(MCreator mcreator, JsonArray jsonElements, boolean regenerate) {
 		var manager = mcreator.getModElementManager();
 
 		for (JsonElement jsonElement : jsonElements) {
 			JsonObject object = JsonUtils.unmap(jsonElement.getAsJsonObject());
-			MCREvent.event(new PasteElementEvent(mcreator,object));
+			MCREvent.event(new PasteElementEvent(mcreator, object));
 
-			JsonObject elementJson = JsonUtils.unmap(new Gson().fromJson(object.has("content") ?
-					object.get("content").getAsString() :
-					JsonUtils.getContent(object), JsonObject.class));
+			JsonObject elementJson = JsonUtils.unmap(new Gson().fromJson(
+					object.has("content") ? object.get("content").getAsString() : JsonUtils.getContent(object),
+					JsonObject.class));
 
 			if (!JsonUtils.isDeepCopyData(object)) {
 				LOG.warn("{}: {}", L10N.t("dialog.error.invalidelement"), object);
@@ -77,27 +76,27 @@ public class TransferAPI {
 				return;
 			}
 
-			if (mcreator.getWorkspacePanel() instanceof WorkspacePanel workspacePanel){
+			if (mcreator.getContentPane() instanceof WorkspacePanel workspacePanel) {
 				modElement.setParentFolder(workspacePanel.currentFolder);
 			}
 
-			if (mcreator.getWorkspace().getWorkspaceInfo().hasModElement(name)){
-				showError(mcreator,name+" existed, ignored.");
+			if (mcreator.getWorkspace().getModElements().stream()
+					.anyMatch(modElement1 -> modElement1.getName().equals(name))) {
+				showError(mcreator, name + " existed, ignored.");
 			} else {
 				mcreator.getWorkspace().addModElement(modElement);
 				generatableElement.setModElement(modElement);
 				manager.storeModElement(generatableElement);
 
-
-				if (mcreator instanceof ModMaker modMaker) {
-					modMaker.getWorkspacePanel()
-							.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
+				if (true) {
+					mcreator.mv
+							.editCurrentlySelectedModElement(modElement, mcreator.mv.list, 0, 0);
 				}
 			}
 
 		}
 
-		mcreator.reloadWorkspaceTabContents();
+		mcreator.mv.updateMods();
 		if (regenerate)
 			RegenerateCodeAction.regenerateCode(mcreator, false, false);
 	}
