@@ -31,13 +31,18 @@ tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
     archiveFileName.set("convenientTransfer.zip")
 
     doLast {
-        copy {
-            from archiveFile.get()
-            into mcreator_plugins_path
-        }
+//        copy {
+//            from archiveFile.get()
+//            into mcreator_plugins_path
+//        }
     }
 }
 
 test {
     useJUnitPlatform()
+}
+
+// Add more tasks if needed, such as compileTestJava
+configure([tasks.compileJava]) {
+    sourceCompatibility = 17 // for the IDE support
 }

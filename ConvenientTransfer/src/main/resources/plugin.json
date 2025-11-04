@@ -1,13 +1,8 @@
 {
   "id": "convenienttransfer",
   "supportedversions": [
-    "2025003",
-    "2025002",
-    "2025001",
-    "2024004",
-    "2024003",
-    "2024002",
-    "20240029999"
+    "2023.3",
+    "2023.2"
   ],
   "weight": 0,
   "javaplugin": "org.liquid.convenient.TransferMain",
