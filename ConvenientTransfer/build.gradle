@@ -16,15 +16,15 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    api project(':MCreator')
+    compileOnly project(':MCreator')
 
     project(':MCreator').afterEvaluate(() ->
             project(":MCreator").configurations.named("implementation").get().dependencies.each {
                 //noinspection ForeignDelegate
-                api it
+                compileOnly it
             }
     )
-    implementation fileTree("lib")
+    compileOnly fileTree("lib")
 }
 
 tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {

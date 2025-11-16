@@ -1,0 +1,1 @@
+(new ArrayList<>(${input$list}.stream().filter(a -> Number.class.isAssignableFrom(a.getClass())).sorted(Comparator.comparingDouble(a->((Number)a).doubleValue())).toList()))

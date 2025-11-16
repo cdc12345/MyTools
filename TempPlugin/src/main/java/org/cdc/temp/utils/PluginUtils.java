@@ -4,19 +4,19 @@ import net.mcreator.java.JavaConventions;
 import net.mcreator.util.StringUtils;
 import org.cdc.framework.builder.DataListBuilder;
 import org.cdc.temp.TempPluginMain;
-import org.cdc.temp.element.TempAchievement;
-import org.cdc.temp.element.TempBiome;
-import org.cdc.temp.element.TempItem;
-import org.cdc.temp.element.TempStructure;
+import org.cdc.temp.element.*;
 
 import java.util.List;
 
 public class PluginUtils {
 
-	private static DataListBuilder blocksitems;
+	private static DataListBuilder blocksItems;
 	private static DataListBuilder achievements;
 	private static DataListBuilder structures;
 	private static DataListBuilder biomes;
+	private static DataListBuilder potions;
+	private static DataListBuilder potionEffects;
+	private static DataListBuilder particles;
 
 	public static Runnable doCreateItem(TempItem generatableElement) {
 		String readableName = generatableElement.readableName;
@@ -27,8 +27,8 @@ public class PluginUtils {
 			return () -> {};
 		}
 
-		if (blocksitems == null) {
-			blocksitems = TempPluginMain.getInstance().getmCreatorPluginFactory().createDataList()
+		if (blocksItems == null) {
+			blocksItems = TempPluginMain.getInstance().getmCreatorPluginFactory().createDataList()
 					.setName("blocksitems");
 		}
 
@@ -41,9 +41,8 @@ public class PluginUtils {
 				code = "Null";
 			}
 		}
-		var arr = registryName.split(":");
-		code = String.format(code, arr[0], arr[1]);
-		var bui = blocksitems.appendElement(String.format("""
+		code = String.format(code, registryName);
+		var bui = blocksItems.appendElement(String.format("""
 						%s: 
 						  readable_name: "%s"
 						  type: %s
@@ -114,6 +113,72 @@ public class PluginUtils {
 
 		var path1 = PathUtils.getPath(path);
 		var bui = biomes.appendElement(path1, readable_name, List.of(path)).initGenerator();
+		bui.buildAndOutput();
+		return () -> bui.redo.accept(null);
+	}
+
+	public static Runnable doCreatePotion(TempPotion tempElement) {
+		String readable_name = tempElement.readable_name();
+		String path = tempElement.registry_name();
+		String code = tempElement.code();
+		if (path == null || readable_name == null || code == null) {
+			return () -> {};
+		}
+
+		if (readable_name.isEmpty()) {
+			readable_name = null;
+		}
+
+		if (potions == null) {
+			potions = TempPluginMain.getInstance().getmCreatorPluginFactory().createDataList("potions");
+		}
+
+		var path1 = PathUtils.getPath(path);
+		var bui = potions.appendElement(path1, readable_name, List.of(String.format(code,path))).initGenerator();
+		bui.buildAndOutput();
+		return () -> bui.redo.accept(null);
+	}
+
+	public static Runnable doCreatePotionEffect(TempPotionEffect tempElement) {
+		String readable_name = tempElement.readable_name();
+		String path = tempElement.registry_name();
+		String code = tempElement.code();
+		if (path == null || readable_name == null || code == null) {
+			return () -> {};
+		}
+
+		if (readable_name.isEmpty()) {
+			readable_name = null;
+		}
+
+		if (potionEffects == null) {
+			potionEffects = TempPluginMain.getInstance().getmCreatorPluginFactory().createDataList("effects");
+		}
+
+		var path1 = PathUtils.getPath(path);
+		var bui = potionEffects.appendElement(path1, readable_name, List.of(String.format(code, path))).initGenerator();
+		bui.buildAndOutput();
+		return () -> bui.redo.accept(null);
+	}
+
+	public static Runnable doCreateParticle(TempParticle tempElement) {
+		String readable_name = tempElement.readable_name();
+		String path = tempElement.registry_name();
+		String code = tempElement.code();
+		if (path == null || readable_name == null || code == null) {
+			return () -> {};
+		}
+
+		if (readable_name.isEmpty()) {
+			readable_name = null;
+		}
+
+		if (particles == null) {
+			particles = TempPluginMain.getInstance().getmCreatorPluginFactory().createDataList("particles");
+		}
+
+		var path1 = PathUtils.getPath(path);
+		var bui = particles.appendElement(path1, readable_name, List.of(String.format(code, path))).initGenerator();
 		bui.buildAndOutput();
 		return () -> bui.redo.accept(null);
 	}

@@ -47,6 +47,7 @@ public class MyToolBoxMain extends JavaPlugin {
 			PreferencesManager.initNonCore();
 		});
 
+
 		addListener(ModElementGUIEvent.WhenSaving.class, event -> {
 			SwingUtilities.invokeLater(() -> {
 
@@ -67,8 +68,8 @@ public class MyToolBoxMain extends JavaPlugin {
 						getTabs(mcreator).showTab(mcreator.consoleTab);
 						mcreator.getGradleConsole().exec("classes", result -> {
 							var PACKAGE_PATH = new File(mcreator.getWorkspaceFolder(), "build/classes/java/main");
+							// Java works only run in debug mod
 							if (needJava && needVirtualMachine()) {
-
 								VirtualMachine virtualMachine = mcreator.getDebugPanel().getDebugClient()
 										.getVirtualMachine();
 								if (virtualMachine != null) {
@@ -86,7 +87,7 @@ public class MyToolBoxMain extends JavaPlugin {
 										} catch (Exception e) {
 											LOG.info(e);
 										}
-									} else if (redefineMethod.get().equals("Redefine")) {
+									} else if (redefineMethod.get().equals("Redefine") && mcreator.getDebugPanel().getDebugClient() != null) {
 										var map = new HashMap<ReferenceType, byte[]>();
 										virtualMachine.allClasses().forEach(classReference -> {
 											String name = classReference.name().replace('.', '/');
@@ -119,6 +120,8 @@ public class MyToolBoxMain extends JavaPlugin {
 									}
 								}
 							}
+
+							//Resources can run in common mode
 							if (redefineMethod.get().equals("Retransfer") && needReloadResource) {
 								try {
 									if (AttachUtils.attachToResourcesLoaded(mcreator.getWorkspaceFolder().toString(),

@@ -1,0 +1,1 @@
+${input$origin}.addAll(${input$target});

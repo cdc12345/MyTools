@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.mcreator.Launcher;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.element.ModElementTypeLoader;
 import net.mcreator.generator.GeneratorTemplate;
@@ -12,17 +13,20 @@ import net.mcreator.plugin.MCREvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.action.impl.workspace.RegenerateCodeAction;
 import net.mcreator.ui.init.L10N;
-import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.ModElementManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.liquid.convenient.events.PasteElementEvent;
 import org.liquid.convenient.utils.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.liquid.convenient.utils.Providers;
 
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -32,7 +36,11 @@ import static org.liquid.convenient.TransferMain.showError;
 
 public class TransferAPI {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TransferAPI.class);
+	public static boolean isCompatibleMod(){
+		return Launcher.version.majorlong < 2024004;
+	}
+
+	private static final Logger LOG = LogManager.getLogger("TransferMain");
 
 	public static void processMultipleElementsCreation(MCreator mcreator, JsonArray jsonElements,boolean regenerate) {
 		var manager = mcreator.getModElementManager();
@@ -77,7 +85,7 @@ public class TransferAPI {
 				return;
 			}
 
-			if (mcreator.getWorkspacePanel() instanceof WorkspacePanel workspacePanel){
+			if (Providers.tryFindWorkspacePanel(mcreator) instanceof WorkspacePanel workspacePanel){
 				modElement.setParentFolder(workspacePanel.currentFolder);
 			}
 
@@ -89,7 +97,8 @@ public class TransferAPI {
 				manager.storeModElement(generatableElement);
 
 
-				if (mcreator instanceof ModMaker modMaker) {
+				if (mcreator.getClass().getSimpleName().equals("ModMaker")) {
+					net.mcreator.ui.variants.modmaker.ModMaker modMaker = (net.mcreator.ui.variants.modmaker.ModMaker) mcreator;
 					modMaker.getWorkspacePanel()
 							.editCurrentlySelectedModElement(modElement, modMaker.getWorkspacePanel().list, 0, 0);
 				}
@@ -97,7 +106,8 @@ public class TransferAPI {
 
 		}
 
-		mcreator.reloadWorkspaceTabContents();
+		if (!isCompatibleMod())
+			mcreator.reloadWorkspaceTabContents();
 		if (regenerate)
 			RegenerateCodeAction.regenerateCode(mcreator, false, false);
 	}
@@ -144,5 +154,13 @@ public class TransferAPI {
 		} catch (IOException ex) {
 			LOG.error("Failed to write code file", ex);
 		}
+	}
+
+	static void handleError(Component parent, Exception ex) {
+		ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(byteArrayStream);
+		ex.printStackTrace(printStream);
+		showError(parent, "Processing error: " + byteArrayStream);
+		LOG.error(byteArrayStream);
 	}
 }

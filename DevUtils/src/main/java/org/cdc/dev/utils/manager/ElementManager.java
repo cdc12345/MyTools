@@ -40,6 +40,7 @@ import org.cdc.interfaces.IMCreator;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -56,9 +57,17 @@ public class ElementManager {
 	public static void openElementTypeDefinition(IMCreator mcreator, ModElement modElement) {
 		var map = mcreator.getGeneratorConfiguration().getDefinitionsProvider()
 				.getModElementDefinition(modElement.getType());
-		mcreator.getTabs().addTab(new MCreatorTabs.Tab(new CodeEditorView(mcreator.getOrigin(),
-				new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(map),
-				"Type" + modElement.getTypeString() + ".json", null, true)));
+		try {
+			File cacheFile = File.createTempFile("temp", ".json");
+			var code = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(map);
+			Files.write(code.getBytes(), cacheFile);
+			mcreator.getTabs().addTab(new MCreatorTabs.Tab(
+					new CodeEditorView(mcreator.getOrigin(), code, "Type" + modElement.getTypeString() + ".json",
+							cacheFile, true)));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	public static void openElementDefinition(IMCreator mCreator, ModElement modElement) {
@@ -126,11 +135,12 @@ public class ElementManager {
 		if (generatable != null) {
 			gen.addAll(generatable.getModElement().getGenerator().generateElement(generatable, false, false));
 		}
-		gen.addAll(generateBase(new GeneratorImpl(workspace.getGenerator())));
+		gen.addAll(generateBase(new GeneratorImpl(workspace.getGenerator()), null));
 		var parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
 		var sourceParser = new JavaParser(parserConfiguration);
 		var templateParser = new JavaParser(parserConfiguration);
+		var caches = new JsonArray();
 		gen.forEach(a -> {
 			if (Files.getFileExtension(a.getFile().getName()).equals("java") && (limit.isEmpty() || limit.contains(
 					a.getFile().getName()))) {
@@ -203,25 +213,27 @@ public class ElementManager {
 									constructor.addProperty("signature", sourceConstructor.getSignature().asString());
 									constructor.addProperty("originalBody",
 											Objects.toString(targetConstructor.get().getBody()));
-									var head = sourceConstructor.getBody().getStatement(0);
-									head.getComment().ifPresent(comment -> {
-										if (comment.getContent().equalsIgnoreCase("Head")) {
-											if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
-													.isMethodCallExpr() && head.asExpressionStmt().getExpression()
-													.asMethodCallExpr().getScope().isEmpty())
-												constructor.addProperty("head", head.toString());
-										}
-									});
-									var tail = sourceConstructor.getBody().getStatements().getLast()
-											.orElseThrow(() -> new NoSuchElementException("No Last Element"));
-									tail.getComment().ifPresent(comment -> {
-										if (comment.getContent().equalsIgnoreCase("Tail")) {
-											if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
-													.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
-													.asMethodCallExpr().getScope().isEmpty())
-												constructor.addProperty("tail", tail.toString());
-										}
-									});
+									var body = sourceConstructor.getBody();
+									if (!body.isEmpty()) {
+										var head = body.getStatement(0);
+										head.getComment().ifPresent(comment -> {
+											if (comment.getContent().equalsIgnoreCase("Head")) {
+												if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
+														.isMethodCallExpr() && head.asExpressionStmt().getExpression()
+														.asMethodCallExpr().getScope().isEmpty())
+													constructor.addProperty("head", head.toString());
+											}
+										});
+										var tail = body.getStatements().getLast().orElse(new EmptyStmt());
+										tail.getComment().ifPresent(comment -> {
+											if (comment.getContent().equalsIgnoreCase("Tail")) {
+												if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
+														.isMethodCallExpr() && tail.asExpressionStmt().getExpression()
+														.asMethodCallExpr().getScope().isEmpty())
+													constructor.addProperty("tail", tail.toString());
+											}
+										});
+									}
 									constructor.addProperty("body", Objects.toString(sourceConstructor));
 									constructors.add(constructor);
 								}
@@ -258,9 +270,10 @@ public class ElementManager {
 									method.addProperty("originalBody",
 											Objects.toString(generatedMethod.getBody().orElseThrow()));
 									var statements = sourceMethod.getBody()
-											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatements();
-									if (statements.isNonEmpty()) {
-										var head = statements.getFirst().orElse(new EmptyStmt());
+											.orElseThrow(() -> new NoSuchElementException("No Body")).getStatements()
+											.stream().filter(statement -> !statement.isReturnStmt()).toList();
+									if (!statements.isEmpty()) {
+										var head = statements.getFirst();
 										head.getComment().ifPresent(comment -> {
 											if (comment.getContent().equalsIgnoreCase("Head")) {
 												if (head.isExpressionStmt() && head.asExpressionStmt().getExpression()
@@ -272,8 +285,8 @@ public class ElementManager {
 											}
 										});
 
-										var tail = statements.stream().filter(statement -> !statement.isReturnStmt())
-												.toList().getLast();
+										var tail = statements.getLast();
+
 										tail.getComment().ifPresent(comment -> {
 											if (comment.getContent().equalsIgnoreCase("Tail")) {
 												if (tail.isExpressionStmt() && tail.asExpressionStmt().getExpression()
@@ -301,6 +314,7 @@ public class ElementManager {
 							java.nio.file.Files.copy(new ByteArrayInputStream(
 											modifierContent.toString().getBytes(StandardCharsets.UTF_8)), modifier.toPath(),
 									StandardCopyOption.REPLACE_EXISTING);
+							caches.add(a.source().getTemplateDefinition().get("template").toString());
 						} else {
 							modifier.delete();
 						}
@@ -311,16 +325,29 @@ public class ElementManager {
 				}
 			}
 		});
+		try {
+			Files.write(caches.toString().getBytes(), new File(parentModifier, "caches"));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static boolean applyPatchesToElement(Workspace workspace, @Nullable GeneratableElement generatable)
 			throws TemplateGeneratorException {
 		File parentModifier = FileUtils.getModifiersPath(workspace);
+		if (Objects.requireNonNullElse(parentModifier.listFiles(), new File[0]).length == 0) {
+			return false;
+		}
 		var gen = new ArrayList<GeneratorFile>();
 		if (generatable != null) {
 			gen.addAll(generatable.getModElement().getGenerator().generateElement(generatable, false, false));
 		} else {
-			gen.addAll(generateBase(new GeneratorImpl(workspace.getGenerator())));
+			var cache = new File(parentModifier, "caches");
+			var cachJsonArray = new JsonArray();
+			if (cache.isFile()) {
+				cachJsonArray = new Gson().fromJson(FileIO.readFileToString(cache), JsonArray.class);
+			}
+			gen.addAll(generateBase(new GeneratorImpl(workspace.getGenerator()), cachJsonArray));
 		}
 		var parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
@@ -328,6 +355,7 @@ public class ElementManager {
 		var sourceParser = new JavaParser(parserConfiguration);
 		AtomicBoolean modifierApplied = new AtomicBoolean(false);
 		gen.forEach(generatorFile -> {
+
 			if (Files.getFileExtension(generatorFile.getFile().getName()).equals("java")) {
 				try {
 					var parse = sourceParser.parse(generatorFile.getFile());
@@ -340,6 +368,7 @@ public class ElementManager {
 							modifierApplied.set(true);
 							var modifierContent = new Gson().fromJson(java.nio.file.Files.readString(modifier.toPath()),
 									JsonObject.class);
+							LOGGER.info("Applied {}", modifier.getPath());
 							var imports = modifierContent.getAsJsonArray("imports");
 							imports.forEach(anImport -> {
 								resul.addImport(anImport.getAsString());
@@ -543,7 +572,7 @@ public class ElementManager {
 		return modifierApplied.get();
 	}
 
-	private static List<GeneratorFile> generateBase(IGenerator generator) {
+	private static List<GeneratorFile> generateBase(IGenerator generator, JsonArray cache) {
 		if (!DevUtilsSection.getInstance().getRecordBase().get()) {
 			return new ArrayList<>();
 		}
@@ -551,11 +580,21 @@ public class ElementManager {
 
 		return generator.getModBaseGeneratorTemplatesList().stream().map(generatorTemplate -> {
 			try {
-				String code = templateGenerator.generateBaseFromTemplate(
-						(String) generatorTemplate.getTemplateDefinition().get("template"),
-						generatorTemplate.getDataModel(),
-						(String) generatorTemplate.getTemplateDefinition().get("variables"));
-				return generatorTemplate.toGeneratorFile(code);
+				String templateName = (String) generatorTemplate.getTemplateDefinition().get("template");
+				//only support java
+				if (templateName.endsWith("java.ftl")) {
+					if (cache != null) {
+						if (!cache.contains(new JsonPrimitive(templateName))) {
+							return null;
+						}
+					}
+					String code = templateGenerator.generateBaseFromTemplate(templateName,
+							generatorTemplate.getDataModel(),
+							(String) generatorTemplate.getTemplateDefinition().get("variables"));
+					return generatorTemplate.toGeneratorFile(code);
+				} else {
+					return null;
+				}
 			} catch (TemplateGeneratorException e) {
 				return null;
 			}

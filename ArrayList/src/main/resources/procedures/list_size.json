@@ -11,6 +11,9 @@
   "colour": "%{BKY_MATH_HUE}",
   "mcreator": {
     "group": "name",
+    "toolbox_init": [
+      "<value name=\"list\"><block type=\"variables_get_objectlist\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>"
+    ],
     "toolbox_id": "list",
     "inputs": [
       "list"

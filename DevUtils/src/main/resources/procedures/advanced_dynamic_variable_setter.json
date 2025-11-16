@@ -1,0 +1,35 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "variable"
+    },
+    {
+      "type": "input_value",
+      "name": "value"
+    },
+    {
+      "type": "field_checkbox",
+      "name": "init",
+      "checked": true
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "colour": "#b28c00",
+  "mcreator": {
+    "group": "name",
+    "toolbox_init": [
+      "<value name=\"variable\"><block type=\"advanced_dynamic_variable_value\"></block></value>"
+    ],
+    "toolbox_id": "advanced",
+    "inputs": [
+      "variable",
+      "value"
+    ],
+    "fields": [
+      "init"
+    ]
+  }
+}

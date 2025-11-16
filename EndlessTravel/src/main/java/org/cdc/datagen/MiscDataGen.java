@@ -45,11 +45,11 @@ import java.util.Map;
 				.setLanguage(en, "BuildCreativeTab").buildAndOutput();
 
 		//creativeTab
+		var blueDarker = Color.BLUE.darker();
 		factory.createProcedure().setName("creativetab").setParentCategory(BuiltInToolBoxId.Procedure.ITEM_PROCEDURES)
-				.markType().setColor(Color.BLUE.darker()).setLanguage(en, "CreativeTab").initGenerator()
-				.buildAndOutput();
+				.markType().setColor(blueDarker).setLanguage(en, "CreativeTab").initGenerator().buildAndOutput();
 		factory.createProcedure("creativetab_inserbefore").setPreviousStatement(null).setNextStatement(null)
-				.setColor(Color.BLUE).appendArgs0InputValue("before", BuiltInTypes.ItemStack)
+				.setColor(blueDarker).appendArgs0InputValue("before", BuiltInTypes.ItemStack)
 				.appendArgs0InputValue("item", BuiltInTypes.ItemStack)
 				.appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
 						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS"))
@@ -60,7 +60,7 @@ import java.util.Map;
 				.setToolBoxId("creativetab").initGenerator()
 				.setLanguage(en, "creativeTab insert %2 before %1,Visible: %3").buildAndOutput();
 		factory.createProcedure("creativetab_insertafter").setPreviousStatement(null).setNextStatement(null)
-				.setColor(Color.BLUE).appendArgs0InputValue("after", BuiltInTypes.ItemStack)
+				.setColor(blueDarker).appendArgs0InputValue("after", BuiltInTypes.ItemStack)
 				.appendArgs0InputValue("item", BuiltInTypes.ItemStack)
 				.appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
 						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS"))
@@ -70,6 +70,11 @@ import java.util.Map;
 						"<value name=\"item\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
 				.setToolBoxId("creativetab").initGenerator()
 				.setLanguage(en, "creativeTab insert %2 after %1,Visible: %3").buildAndOutput();
+		factory.getToolKit().createInputProcedure("creativetab_remove").setToolBoxId("creativetab").setColor(blueDarker)
+				.appendArgs0InputValue("item", BuiltInTypes.ItemStack).toolBoxInitBuilder().setName("item")
+				.appendDefaultItem().buildAndReturn().appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
+						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS")).setLanguage(en, "remove %1 from creativeTab visible: %2")
+				.setLanguage(zh, "移除物品%1从创造物品栏,可视化 %2").initGenerator().buildAndOutput();
 
 		//lambda
 		factory.getToolKit().createOutputProcedure("lambda_do", "_lambda")

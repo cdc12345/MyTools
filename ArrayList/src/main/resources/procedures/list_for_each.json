@@ -26,6 +26,7 @@
     "group": "name",
     "toolbox_id": "list",
     "toolbox_init": [
+      "<value name=\"for_list\"><block type=\"variables_get_objectlist\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>",
       "<value name=\"_placeholder\"><block type=\"index_of_list\"></block></value>"
     ],
     "inputs": [

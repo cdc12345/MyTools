@@ -1,0 +1,18 @@
+{
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "name"
+    }
+  ],
+  "output": null,
+  "inputsInline": true,
+  "colour": "#b28c00",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "advanced",
+    "fields": [
+      "name"
+    ]
+  }
+}

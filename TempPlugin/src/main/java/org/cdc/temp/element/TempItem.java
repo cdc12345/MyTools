@@ -8,8 +8,8 @@ public class TempItem {
     public String registryName;
 
     public enum CodeConstants{
-        NEOFORGE("BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(%s,%s))"),NEOFORGEITEM("BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(%s,%s))");
-        private String code;
+        NEOFORGE("BuiltInRegistries.BLOCK.get(ResourceLocation.parse(\"%s\")).get().value()"),NEOFORGEITEM("BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(\"%s\")).get().value()");
+        private final String code;
         CodeConstants(String code){
             this.code = code;
         }

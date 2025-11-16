@@ -47,6 +47,9 @@ public abstract class TempElementGUI<G> extends ViewBase {
 
 	abstract G getElementFromGUI();
 
+	public void fillGUIFromElement(G tempElement){
+	}
+
 	public Runnable getRedo() {
 		return redo;
 	}

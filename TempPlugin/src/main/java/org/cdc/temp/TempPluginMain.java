@@ -4,6 +4,7 @@ import net.mcreator.io.FileIO;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
+import net.mcreator.ui.MCreator;
 import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
@@ -12,6 +13,7 @@ import net.mcreator.util.image.IconUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.framework.MCreatorPluginFactory;
+import org.cdc.framework.utils.MCreatorVersions;
 import org.cdc.temp.ui.*;
 import org.cdc.temp.utils.PluginUtils;
 
@@ -28,6 +30,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class TempPluginMain extends JavaPlugin {
 	private static TempPluginMain INSTANCE;
@@ -45,6 +48,7 @@ public class TempPluginMain extends JavaPlugin {
 		String uuid = String.valueOf(System.currentTimeMillis());
 		File pluginFolder = new File(System.getProperty("user.dir"), "plugins/tempplugin" + uuid);
 		mCreatorPluginFactory = new MCreatorPluginFactory(pluginFolder);
+		mCreatorPluginFactory.setVersion(MCreatorVersions.V_2025_3);
 
 		this.addListener(MCreatorLoadedEvent.class, a -> {
 			var mcreator = a.getMCreator();
@@ -69,66 +73,28 @@ public class TempPluginMain extends JavaPlugin {
 
 			JMenu createTempElements = L10N.menu("menubar.item.createelement");
 
-			JMenuItem addTempItem = new JMenuItem(L10N.t("menubar.item.addtempitem"));
-			addTempItem.setIcon(UIRES.get("mod_types.item"));
-			addTempItem.addActionListener(b -> {
-				var gui = new TempItemGUI(mcreator);
-				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(c -> {
-					gui.getRedo().run();
-					gui.setRedo(PluginUtils.doCreateItem(c));
-					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
-					tempElementHistory.add(gui);
-				});
-				mcreator.getTabs().addTab(tab);
-
-			});
+			JMenuItem addTempItem = createTempItem("item", TempItemGUI::new, mcreator, PluginUtils::doCreateItem);
 			createTempElements.add(addTempItem);
 
-			JMenuItem addTempAchievement = new JMenuItem(L10N.t("menubar.item.addtempachievement"));
-			addTempAchievement.setIcon(UIRES.get("mod_types.achievement"));
-			addTempAchievement.addActionListener(c -> {
-				var gui = new TempAchievementGUI(mcreator);
-				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(d -> {
-					gui.getRedo().run();
-					gui.setRedo(PluginUtils.doCreateAchievement(d));
-					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
-					tempElementHistory.add(gui);
-				});
-				mcreator.getTabs().addTab(tab);
-			});
+			JMenuItem addTempAchievement = createTempItem("achievement", TempAchievementGUI::new, mcreator,
+					PluginUtils::doCreateAchievement);
 			createTempElements.add(addTempAchievement);
 
-			JMenuItem addTempStructure = new JMenuItem(L10N.t("menubar.item.addtempstructure"));
-			addTempStructure.setIcon(UIRES.get("mod_types.structure"));
-			addTempStructure.addActionListener(c -> {
-				var gui = new TempStructureGUI(mcreator);
-				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(d -> {
-					gui.getRedo().run();
-					gui.setRedo(PluginUtils.doCreateStructure(d));
-					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
-					tempElementHistory.add(gui);
-				});
-				mcreator.getTabs().addTab(tab);
-			});
+			JMenuItem addTempStructure = createTempItem("structure", TempStructureGUI::new, mcreator,
+					PluginUtils::doCreateStructure);
 			createTempElements.add(addTempStructure);
 
-			JMenuItem addTempBiome = new JMenuItem(L10N.t("menubar.item.addtempbiome"));
-			addTempBiome.setIcon(UIRES.get("mod_types.biome"));
-			addTempBiome.addActionListener(c -> {
-				var gui = new TempBiomeGUI(mcreator);
-				var tab = new MCreatorTabs.Tab(gui);
-				gui.setOnSaved(d -> {
-					gui.getRedo().run();
-					gui.setRedo(PluginUtils.doCreateBiome(d));
-					mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
-					tempElementHistory.add(gui);
-				});
-				mcreator.getTabs().addTab(tab);
-			});
+			JMenuItem addTempBiome = createTempItem("biome", TempBiomeGUI::new, mcreator, PluginUtils::doCreateBiome);
 			createTempElements.add(addTempBiome);
+
+			JMenuItem addTempPotion = createTempItem("potion",TempPotionGUI::new,mcreator,PluginUtils::doCreatePotion);
+			createTempElements.add(addTempPotion);
+
+			JMenuItem addTempPotionEffect = createTempItem("potioneffect",TempPotionEffectGUI::new,mcreator,PluginUtils::doCreatePotionEffect);
+			createTempElements.add(addTempPotionEffect);
+
+			JMenuItem addTempParticle = createTempItem("particle",TempParticleGUI::new,mcreator,PluginUtils::doCreateParticle);
+			createTempElements.add(addTempParticle);
 
 			temp.add(createTempElements);
 
@@ -195,5 +161,23 @@ public class TempPluginMain extends JavaPlugin {
 
 	public static TempPluginMain getInstance() {
 		return INSTANCE;
+	}
+
+	private <F, T extends TempElementGUI<F>> JMenuItem createTempItem(String type, Function<MCreator, T> function,
+			MCreator mcreator, Function<F, Runnable> consumer) {
+		var item = new JMenuItem(L10N.t("menubar.item.addtemp", L10N.t("modelement." + type)));
+		item.setIcon(UIRES.get("mod_types." + type));
+		item.addActionListener(e -> {
+			T gui = function.apply(mcreator);
+			var tab = new MCreatorTabs.Tab(gui);
+			gui.setOnSaved(d -> {
+				gui.getRedo().run();
+				gui.setRedo(consumer.apply(d));
+				mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
+				tempElementHistory.add(gui);
+			});
+			mcreator.getTabs().addTab(tab);
+		});
+		return item;
 	}
 }

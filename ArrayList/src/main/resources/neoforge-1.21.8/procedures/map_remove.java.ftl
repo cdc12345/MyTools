@@ -1,0 +1,1 @@
+${input$map}.remove(${input$map_key});

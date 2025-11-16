@@ -1,0 +1,2 @@
+objectlist: ArrayList<Object>
+objectmap: HashMap<String,Object>

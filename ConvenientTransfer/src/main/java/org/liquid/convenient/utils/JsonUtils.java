@@ -187,6 +187,9 @@ public abstract class JsonUtils {
 
 	public static String getContent(JsonObject object) {
 		var content = object.get(CONTENT);
+		if (content == null){
+			return "";
+		}
 		if (content.isJsonPrimitive()) {
 			return content.getAsString();
 		} else {

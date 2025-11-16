@@ -18,7 +18,6 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.modgui.ProcedureGUI;
-import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.FolderElement;
@@ -29,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.liquid.convenient.render.TilesModListRender;
 import org.liquid.convenient.utils.JsonUtils;
+import org.liquid.convenient.utils.Providers;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -49,6 +49,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.liquid.convenient.TransferAPI.*;
 import static org.liquid.convenient.utils.JsonUtils.GSON;
@@ -64,18 +65,29 @@ public class TransferMain extends JavaPlugin {
 
 	public TransferMain(Plugin plugin) {
 		super(plugin);
+
+		LOG.info("CompatibleMode: {}", TransferAPI.isCompatibleMod());
+
 		initializeMenu();
-		initializeComments();
+		if (!TransferAPI.isCompatibleMod()) {
+			initializeComments();
+		}
 	}
 
 	private void initializeMenu() {
 		this.addListener(MCreatorLoadedEvent.class, event -> {
 			MCreator mcreator = event.getMCreator();
-			if (mcreator instanceof ModMaker) {
-				JMenuBar bar = mcreator.getMainMenuBar();
+			if (mcreator.getClass().getSimpleName().equals("ModMaker") || TransferAPI.isCompatibleMod()) {
+
+				Consumer<JMenu> bar = item -> {
+					JMenuBar bar1 = mcreator.getMainMenuBar();
+					bar1.add(item);
+				};
 
 				transfer = new JMenu(L10N.t("common.menubar.transfer"));
 				var procedure = new JMenu("Procedure Utils");
+				bar.accept(transfer);
+				bar.accept(procedure);
 
 				// Copy operations
 				transfer.add(buildShallowCopyMenu(mcreator));
@@ -146,19 +158,18 @@ public class TransferMain extends JavaPlugin {
 				procedure.add(pasteProcedure);
 
 				// Comment and language operations
-				transfer.add(buildAddCommentMenu(mcreator));
+				if (Launcher.version.versionlong < 2024004) {
+					transfer.add(buildAddCommentMenu(mcreator));
+				}
 				transfer.add(buildLanguageMenu(mcreator, false));
 				transfer.add(buildLanguageMenu(mcreator, true));
 
-				mcreator.getTabs().addTabShownListener(tab -> {
+				Providers.getTabs(mcreator).addTabShownListener(tab -> {
 					var procedureTab = tab.getContent() instanceof ProcedureGUI;
 					procedure.setVisible(procedureTab);
 					var workspaceTab = tab == mcreator.workspaceTab;
 					transfer.setVisible(workspaceTab);
 				});
-
-				bar.add(transfer);
-				bar.add(procedure);
 
 				procedure.setVisible(false);
 			}
@@ -219,8 +230,7 @@ public class TransferMain extends JavaPlugin {
 		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.pastereplace"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
-
+			if (Providers.tryFindWorkspacePanel(mcreator) instanceof WorkspacePanel workspacePanel) {
 				ModElement element = getSelectedModElement(workspacePanel);
 				if (element == null) {
 					showError(mcreator, L10N.t("common.tip.notselected"));
@@ -240,7 +250,7 @@ public class TransferMain extends JavaPlugin {
 
 					processElementReplacement(mcreator, element, JsonUtils.unmap(elements.get(0).getAsJsonObject()));
 				} catch (Exception ex) {
-					handleProcessingError(workspacePanel, ex);
+					handleError(workspacePanel, ex);
 				}
 			} else {
 				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
@@ -255,8 +265,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
-
+			if (Providers.tryFindWorkspacePanel(mcreator) instanceof WorkspacePanel workspacePanel) {
 				try {
 					String input = getBase64Input();
 					if (input == null)
@@ -271,7 +280,7 @@ public class TransferMain extends JavaPlugin {
 					processMultipleElementsCreation(mcreator, elements, false);
 					showPreview(workspacePanel, elements.toString());
 				} catch (Exception ex) {
-					handleProcessingError(workspacePanel, ex);
+					handleError(workspacePanel, ex);
 				}
 			} else {
 				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
@@ -286,7 +295,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (Providers.tryFindWorkspacePanel(mcreator) instanceof WorkspacePanel workspacePanel) {
 				ModElement element = getSelectedModElement(workspacePanel);
 				if (element == null) {
 					showError(workspacePanel, L10N.t("common.tip.notselected"));
@@ -310,7 +319,7 @@ public class TransferMain extends JavaPlugin {
 					copyToClipboard(compressToBase64(result.toString()));
 					LOG.info("{}:{}", element.getName(), result);
 				} catch (Exception ex) {
-					handleProcessingError(workspacePanel, ex);
+					handleError(workspacePanel, ex);
 				}
 			} else {
 				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
@@ -325,7 +334,7 @@ public class TransferMain extends JavaPlugin {
 		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
 
 		menuItem.addActionListener(e -> {
-			if (mcreator.getTabs().getCurrentTab().getContent() instanceof WorkspacePanel workspacePanel) {
+			if (Providers.tryFindWorkspacePanel(mcreator) instanceof WorkspacePanel workspacePanel) {
 				List<IElement> elements = workspacePanel.list.getSelectedValuesList();
 				if (elements == null || elements.isEmpty()) {
 					showError(mcreator, L10N.t("common.tip.notselected"));
@@ -338,7 +347,7 @@ public class TransferMain extends JavaPlugin {
 					copyToClipboard(compressToBase64(jsonElements.toString()));
 					LOG.info(jsonElements.toString());
 				} catch (Exception ex) {
-					handleProcessingError(workspacePanel, ex);
+					handleError(workspacePanel, ex);
 				}
 			} else {
 				showError(mcreator.workspaceTab.getContent(), L10N.t("dialog.error.workspacetab"));
@@ -348,11 +357,12 @@ public class TransferMain extends JavaPlugin {
 		return menuItem;
 	}
 
+	//only support 2024004 and upper
 	private JMenuItem buildAddCommentMenu(MCreator mcreator) {
 		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.addcomment"));
 
 		menuItem.addActionListener(e -> {
-			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
+			if (!(Providers.tryFindWorkspacePanel(mcreator) instanceof WorkspacePanel workspacePanel)) {
 				return;
 			}
 
@@ -367,9 +377,7 @@ public class TransferMain extends JavaPlugin {
 			}
 
 			descMap.add(modElement.getName(), new JsonPrimitive(comment));
-			if (Launcher.version.majorlong > 2025000) {
-				workspacePanel.list.setCellRenderer(new TilesModListRender(this));
-			}
+			workspacePanel.list.setCellRenderer(new TilesModListRender(this));
 
 			try {
 				Files.writeString(new File(mcreator.getWorkspaceFolder(), "comments.json").toPath(), descMap.toString(),
@@ -489,11 +497,6 @@ public class TransferMain extends JavaPlugin {
 	public static void showError(Component parent, String message) {
 		JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
 		LOG.error("[ErrorMessageShow] {}", message);
-	}
-
-	private void handleProcessingError(Component parent, Exception ex) {
-		showError(parent, "Processing error: " + ex.getMessage());
-		LOG.error("Processing error", ex);
 	}
 
 	public String getOrDefault(String key, String defaultValue) {

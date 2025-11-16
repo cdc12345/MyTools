@@ -1,5 +1,6 @@
 package org.cdc.dev.utils;
 
+import net.mcreator.Launcher;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.generator.template.TemplateGeneratorException;
 import net.mcreator.plugin.DynamicURLClassLoader;
@@ -7,6 +8,7 @@ import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
 import net.mcreator.plugin.events.WorkspaceBuildStartedEvent;
+import net.mcreator.plugin.events.ui.BlocklyPanelRegisterJSObjects;
 import net.mcreator.plugin.events.ui.ModElementGUIEvent;
 import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
@@ -25,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.cdc.dev.Constants;
 import org.cdc.dev.DevAPIS;
 import org.cdc.dev.FileWatcher;
+import org.cdc.dev.js.JavaScriptBridge;
 import org.cdc.dev.sections.DevUtilsSection;
 import org.cdc.dev.utils.manager.ElementManager;
 import org.cdc.dev.utils.manager.WorkspaceManager;
@@ -60,9 +63,11 @@ public class PluginMain extends JavaPlugin {
 	private List<Field> fieldList = Collections.emptyList();
 
 	private FileWatcher fileWatcher;
+	private JavaScriptBridge bridge;
 
 	public PluginMain(Plugin plugin) throws IOException, URISyntaxException {
 		super(plugin);
+		this.bridge = new JavaScriptBridge();
 		initializePlugin();
 	}
 
@@ -92,6 +97,11 @@ public class PluginMain extends JavaPlugin {
 
 		// Mod element saving event
 		this.addListener(ModElementGUIEvent.WhenSaving.class, event -> {
+			if (DevUtilsSection.getInstance().isAutoGenerateModifier() && DevUtilsSection.getInstance()
+					.isWatchedFileChanged()) {
+				fileWatcher = new FileWatcher();
+				resetWatcher(new MCreatorImpl(event.getMCreator()));
+			}
 			applyElementPatches(event.getModElementGUI());
 		});
 
@@ -106,19 +116,13 @@ public class PluginMain extends JavaPlugin {
 			}
 		});
 
-		this.addListener(ModElementGUIEvent.WhenSaving.class, even -> {
-			if (DevUtilsSection.getInstance().isAutoGenerateModifier() && DevUtilsSection.getInstance()
-					.isWatchedFileChanged()) {
-				fileWatcher = new FileWatcher();
-				resetWatcher(new MCreatorImpl(even.getMCreator()));
-			}
-		});
-
 		this.addListener(WorkspaceBuildStartedEvent.class, event -> {
 			try {
 				ElementManager.applyPatchesToElement(event.getMCreator().getWorkspace(), null);
 			} catch (TemplateGeneratorException e) {
 				throw new RuntimeException(e);
+			} catch (Exception ignored) {
+
 			}
 		});
 
@@ -163,6 +167,15 @@ public class PluginMain extends JavaPlugin {
 				}
 			}
 		});
+
+		this.addListener(BlocklyPanelRegisterJSObjects.class, event -> {
+			event.getDOMWindow().put("devUtils", bridge);
+		});
+
+		if (Launcher.version.majorlong >= 2025003) {
+			LOGGER.info("Registered plus_self");
+			UtilsSan.registerPlusSelf(this);
+		}
 	}
 
 	private void resetWatcher(IMCreator mcreator) {
@@ -192,11 +205,13 @@ public class PluginMain extends JavaPlugin {
 				if (first.isPresent()) {
 					var file = first.get().file();
 					LOGGER.info("Tracked file {}", file);
+					mcreator.getStatusBar().setMessage("Tracked file " + file.getPath());
 					var modElement = mcreator.getWorkspace().getModElements().stream()
 							.filter(modElement1 -> ElementManager.getAssociatedFiles(modElement1).contains(file))
 							.findFirst();
 					modElement.ifPresent(a -> {
 						LOGGER.info("Tracked element: {}", modElement.get().getName());
+						mcreator.getStatusBar().setMessage("Tracked element: " + modElement.get().getName());
 						try {
 							ElementManager.createModifiers(mcreator.getWorkspace(), a.getGeneratableElement(),
 									Collections.singletonList(file.getName()));

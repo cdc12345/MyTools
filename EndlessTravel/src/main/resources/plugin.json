@@ -2,7 +2,8 @@
   "id": "endlesstravel",
   "supportedversions": [
     "2025001",
-    "2025002"
+    "2025002",
+    "2025003"
   ],
   "weight": 0,
   "info": {

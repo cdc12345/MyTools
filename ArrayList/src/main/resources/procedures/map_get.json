@@ -17,12 +17,16 @@
       "testValue": "String"
     }
   ],
+  "extensions": [
+    "type_color_extension"
+  ],
   "output": null,
   "inputsInline": true,
   "colour": "45",
   "mcreator": {
     "group": "name",
     "toolbox_init": [
+      "<block type=\"variables_get_objectmap\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block>",
       "<value name=\"map_key\"><block type=\"text\"><field name=\"TEXT\">Map key</field></block></value>"
     ],
     "toolbox_id": "maps",

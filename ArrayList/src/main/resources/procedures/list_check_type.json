@@ -23,6 +23,7 @@
   "mcreator": {
     "group": "name",
     "toolbox_init": [
+      "<value name=\"list\"><block type=\"variables_get_objectlist\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>",
       "<value name=\"index\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value>"
     ],
     "toolbox_id": "list",

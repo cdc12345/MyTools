@@ -23,6 +23,7 @@
     "group": "name",
     "toolbox_id": "maps",
     "toolbox_init": [
+      "<value name=\"map\"><block type=\"variables_get_objectmap\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>",
       "<value name=\"map_key\"><block type=\"text\"><field name=\"TEXT\">Map key</field></block></value>",
       "<value name=\"map_value\"><block type=\"text\"><field name=\"TEXT\">Map value</field></block></value>"
     ],

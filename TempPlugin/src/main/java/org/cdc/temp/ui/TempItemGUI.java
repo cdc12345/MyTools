@@ -19,8 +19,6 @@ public class TempItemGUI extends TempElementGUI<TempItem> {
     private VComboBox<String> code;
     private VTextField registryName;
 
-    private int profession;
-
     public TempItemGUI(MCreator mcreator) {
         super(mcreator);
 
@@ -29,20 +27,21 @@ public class TempItemGUI extends TempElementGUI<TempItem> {
     }
 
     protected void initGUI() {
-        JPanel config = new JPanel(new GridLayout(4,2));
+        JPanel config = new JPanel(new GridLayout(4,1));
         config.setOpaque(false);
 
         readableName = new VTextField();
+        readableName.setPreferredSize(new Dimension(480,readableName.getFontMetrics(readableName.getFont()).getHeight() + 20));
         readableName.setOpaque(false);
-        config.add(new JLabel(L10N.t("gui.item.readablename")));
-        config.add(readableName);
+        config.add(PanelUtils.centerAndEastElement(L10N.label("gui.item.readablename"),readableName));
 
         type = new VComboBox<>(new String[]{"block","item"});
+        type.setPreferredSize(readableName.getPreferredSize());
         type.setOpaque(false);
-        config.add(L10N.label("gui.item.type"));
-        config.add(type);
+        config.add(PanelUtils.centerAndEastElement(L10N.label("gui.item.type"),type));
 
         code = new VComboBox<>(Arrays.stream(TempItem.CodeConstants.values()).map(Object::toString).toList().toArray(new String[0]));
+        code.setPreferredSize(readableName.getPreferredSize());
         code.setEditable(true);
         code.setSelectedItem("Blocks.AIR");
         type.addItemListener(e -> {
@@ -52,13 +51,12 @@ public class TempItemGUI extends TempElementGUI<TempItem> {
                 code.setSelectedItem("Blocks.AIR");
             }
         });
-        config.add(new JLabel("Code: "));
-        config.add(code);
+        config.add(PanelUtils.centerAndEastElement(new JLabel("Code: "),code));
 
         registryName = new VTextField();
+        registryName.setPreferredSize(readableName.getPreferredSize());
         registryName.setOpaque(false);
-        config.add(L10N.label("gui.item.registryname"));
-        config.add(registryName);
+        config.add(PanelUtils.centerAndEastElement(L10N.label("gui.item.registryname"),registryName));
 
         JPanel tip = new JPanel(new FlowLayout(FlowLayout.CENTER));
         tip.setOpaque(false);
@@ -72,7 +70,7 @@ public class TempItemGUI extends TempElementGUI<TempItem> {
     public TempItem getElementFromGUI() {
         TempItem tempItem = new TempItem();
         tempItem.readableName = readableName.getText();
-        tempItem.type = Objects.requireNonNull(type.getSelectedItem()).toString();
+        tempItem.type = Objects.requireNonNull(type.getSelectedItem());
         tempItem.code = Objects.toString(code.getSelectedItem());
         tempItem.registryName = registryName.getText();
         return tempItem;
@@ -88,5 +86,12 @@ public class TempItemGUI extends TempElementGUI<TempItem> {
 
     @Override public ImageIcon getViewIcon() {
         return UIRES.get("mod_types.item");
+    }
+
+    @Override public void fillGUIFromElement(TempItem tempElement) {
+        this.readableName.setText(tempElement.readableName);
+        this.type.setSelectedItem(tempElement.type);
+        this.code.setSelectedItem(tempElement.code);
+        this.registryName.setText(tempElement.registryName);
     }
 }

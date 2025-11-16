@@ -18,6 +18,10 @@
   "mcreator": {
     "group": "name",
     "toolbox_id": "maps",
+    "toolbox_init": [
+      "<value name=\"receiver\"><block type=\"variables_get_objectmap\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>",
+      "<value name=\"source\"><block type=\"variables_get_objectmap\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>"
+    ],
     "inputs": [
       "receiver",
       "source"

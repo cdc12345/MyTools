@@ -27,11 +27,7 @@ public class MCreatorImpl implements IMCreator{
 			try {
 				method = origin.getClass().getMethod("getMCreatorTabs");
 				return (MCreatorTabs) method.invoke(origin);
-			} catch (NoSuchMethodException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
+			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 
@@ -79,4 +75,6 @@ public class MCreatorImpl implements IMCreator{
 	@Override public WorkspaceFileBrowser getProjectBrowser() {
 		return origin.getProjectBrowser();
 	}
+
+
 }
