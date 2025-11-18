@@ -2,12 +2,16 @@ package org.cdc.temp.ui;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.UIRES;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cdc.temp.element.TempPotion;
 
 import javax.swing.*;
 import java.util.Arrays;
 
 public class TempPotionGUI extends ReadableNameAndPathGUI<TempPotion> {
+
+	private static final Logger log = LogManager.getLogger(TempPotionGUI.class);
 
 	public TempPotionGUI(MCreator mcreator) {
 		super(mcreator);
@@ -21,6 +25,13 @@ public class TempPotionGUI extends ReadableNameAndPathGUI<TempPotion> {
 		this.code.setModel(new DefaultComboBoxModel<>(
 				Arrays.stream(TempPotion.CodeConstants.values()).map(TempPotion.CodeConstants::toString)
 						.toArray(String[]::new)));
+		try {
+			this.code.setSelectedItem(TempPotion.CodeConstants.valueOf(
+					generator.getGeneratorConfiguration().getGeneratorFlavor().name()).toString());
+			log.info(this.code.getSelectedItem());
+		} catch (Exception ignored){
+			log.info("Missing {}",generator.getGeneratorName());
+		}
 		this.code.setEditable(true);
 	}
 

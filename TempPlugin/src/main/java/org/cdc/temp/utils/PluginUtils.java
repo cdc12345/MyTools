@@ -3,9 +3,11 @@ package org.cdc.temp.utils;
 import net.mcreator.java.JavaConventions;
 import net.mcreator.util.StringUtils;
 import org.cdc.framework.builder.DataListBuilder;
+import org.cdc.framework.utils.yaml.YamlDataUtils;
 import org.cdc.temp.TempPluginMain;
 import org.cdc.temp.element.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PluginUtils {
@@ -50,11 +52,15 @@ public class PluginUtils {
 						readableName), readableName, type),
 
 				List.of(code, registryName)).initGenerator();
-		bui.buildAndOutput();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 
-	public static Runnable doCreateAchievement(TempAchievement tempAchievement) {
+	public static Runnable doCreateAchievement(TempAchievement tempAchievement){
 		String readable_name = tempAchievement.readable_name();
 		String path = tempAchievement.registry_name();
 		if (path == null || readable_name == null) {
@@ -71,11 +77,15 @@ public class PluginUtils {
 
 		var path1 = PathUtils.getPath(path);
 		var bui = achievements.appendElement(path1, readable_name, List.of(path)).initGenerator();
-		bui.buildAndOutput();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 
-	public static Runnable doCreateStructure(TempStructure tempStructure) {
+	public static Runnable doCreateStructure(TempStructure tempStructure){
 		String readable_name = tempStructure.readable_name();
 		String path = tempStructure.registry_name();
 		if (path == null || readable_name == null) {
@@ -92,11 +102,15 @@ public class PluginUtils {
 
 		var path1 = PathUtils.getPath(path);
 		var bui = structures.appendElement(path1, readable_name, List.of(path)).initGenerator();
-		bui.buildAndOutput();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 
-	public static Runnable doCreateBiome(TempBiome tempElement) {
+	public static Runnable doCreateBiome(TempBiome tempElement){
 		String readable_name = tempElement.readable_name();
 		String path = tempElement.registry_name();
 		if (path == null || readable_name == null) {
@@ -113,11 +127,15 @@ public class PluginUtils {
 
 		var path1 = PathUtils.getPath(path);
 		var bui = biomes.appendElement(path1, readable_name, List.of(path)).initGenerator();
-		bui.buildAndOutput();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 
-	public static Runnable doCreatePotion(TempPotion tempElement) {
+	public static Runnable doCreatePotion(TempPotion tempElement){
 		String readable_name = tempElement.readable_name();
 		String path = tempElement.registry_name();
 		String code = tempElement.code();
@@ -135,11 +153,15 @@ public class PluginUtils {
 
 		var path1 = PathUtils.getPath(path);
 		var bui = potions.appendElement(path1, readable_name, List.of(String.format(code,path))).initGenerator();
-		bui.buildAndOutput();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 
-	public static Runnable doCreatePotionEffect(TempPotionEffect tempElement) {
+	public static Runnable doCreatePotionEffect(TempPotionEffect tempElement){
 		String readable_name = tempElement.readable_name();
 		String path = tempElement.registry_name();
 		String code = tempElement.code();
@@ -156,12 +178,16 @@ public class PluginUtils {
 		}
 
 		var path1 = PathUtils.getPath(path);
-		var bui = potionEffects.appendElement(path1, readable_name, List.of(String.format(code, path))).initGenerator();
-		bui.buildAndOutput();
+		var bui = potionEffects.appendElement(path1, readable_name, List.of(String.format(code, path),YamlDataUtils.str(path))).initGenerator();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 
-	public static Runnable doCreateParticle(TempParticle tempElement) {
+	public static Runnable doCreateParticle(TempParticle tempElement){
 		String readable_name = tempElement.readable_name();
 		String path = tempElement.registry_name();
 		String code = tempElement.code();
@@ -178,8 +204,12 @@ public class PluginUtils {
 		}
 
 		var path1 = PathUtils.getPath(path);
-		var bui = particles.appendElement(path1, readable_name, List.of(String.format(code, path))).initGenerator();
-		bui.buildAndOutput();
+		var bui = particles.appendElement(path1, readable_name, List.of(String.format(code, path), YamlDataUtils.str(path))).initGenerator();
+		try {
+			bui.buildAndOutput();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return () -> bui.redo.accept(null);
 	}
 }

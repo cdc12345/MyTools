@@ -21,9 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -172,7 +170,14 @@ public class TempPluginMain extends JavaPlugin {
 			var tab = new MCreatorTabs.Tab(gui);
 			gui.setOnSaved(d -> {
 				gui.getRedo().run();
-				gui.setRedo(consumer.apply(d));
+				try {
+					gui.setRedo(consumer.apply(d));
+				} catch (RuntimeException runtimeException){
+					ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+					PrintStream printStream = new PrintStream(byteArrayOutputStream);
+					runtimeException.printStackTrace(printStream);
+					JOptionPane.showMessageDialog(null,byteArrayOutputStream.toString(),"Error",JOptionPane.WARNING_MESSAGE);
+				}
 				mcreator.getTabs().closeTab(mcreator.getTabs().getCurrentTab());
 				tempElementHistory.add(gui);
 			});
