@@ -1,3 +1,4 @@
+<#include "mcitems.ftl">
 <#if input_id$element?starts_with("mcitem_all")>
 ${input$map}.put(${input$map_key},${mappedMCItemToItemStackCode(input$map_value,1)})
 <#else>
