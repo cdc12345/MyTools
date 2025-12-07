@@ -7,19 +7,46 @@ import org.cdc.framework.MCreatorPluginFactory;
 import org.cdc.framework.interfaces.IFountainMain;
 import org.cdc.framework.interfaces.annotation.DefaultPluginFolder;
 import org.cdc.framework.utils.*;
+import org.cdc.framework.utils.parser.DefaultParameterConvertor;
+import org.cdc.framework.utils.parser.MethodParser;
 
 import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 @DefaultPluginFolder public class MiscDataGen implements IFountainMain {
 
-	// 我是人
 	private static final String PLUS_SELF = "<block type=\"math_plus_self\"><value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block>";
 
-	public void generatePlugin(MCreatorPluginFactory factory) {
+	public void generatePlugin(MCreatorPluginFactory factory) throws IOException {
+		MethodParser methodParser = new MethodParser();
+		methodParser.setParameterStringFunction(new DefaultParameterConvertor());
+		methodParser.parseClass(this.getClass().getResourceAsStream("/org/cdc/sources/MCSource.java"));
+
 		var en = factory.createDefaultLanguage();
 		var zh = factory.createLanguage(Locale.CHINA);
+
+		Function<Path, Boolean> generatorCode = path -> {
+			//only support neoforge 1.21.8
+			if (path.toString().contains("neoforge-1.21.8")) {
+				try {
+					methodParser.parseMethod(path.getFileName().toString().split("\\.")[0]);
+					Files.copy(new ByteArrayInputStream(methodParser.toFTLContent().getBytes()),path, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				} catch (NoSuchElementException e){
+					e.printStackTrace();
+				}
+			}
+			return false;
+		};
 
 		factory.createTrigger("on_gui_layer_render").appendDependency("namespace", BuiltInTypes.String)
 				.appendDependency("path", BuiltInTypes.String).setLanguage(en, "On layer render").setCancelable(true)
@@ -68,12 +95,14 @@ import java.util.Map;
 						"<value name=\"after\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
 				.appendToolBoxInit(
 						"<value name=\"item\"><block type=\"mcitem_all\"><field name=\"value\"></field></block></value>")
-				.setToolBoxId("creativetab").initGenerator()
+				.setToolBoxId("creativetab").setGeneratorListener(generatorCode).initGenerator()
 				.setLanguage(en, "creativeTab insert %2 after %1,Visible: %3").buildAndOutput();
 		factory.getToolKit().createInputProcedure("creativetab_remove").setToolBoxId("creativetab").setColor(blueDarker)
 				.appendArgs0InputValue("item", BuiltInTypes.ItemStack).toolBoxInitBuilder().setName("item")
-				.appendDefaultItem().buildAndReturn().appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
-						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS")).setLanguage(en, "remove %1 from creativeTab visible: %2")
+				.appendDefaultItem().buildAndReturn()
+				.appendArgs0FieldDropDown("tabvisible", new JsonPrimitive("PARENT_TAB_ONLY"),
+						new JsonPrimitive("SEARCH_TAB_ONLY"), new JsonPrimitive("PARENT_AND_SEARCH_TABS"))
+				.setLanguage(en, "remove %1 from creativeTab visible: %2")
 				.setLanguage(zh, "移除物品%1从创造物品栏,可视化 %2").initGenerator().buildAndOutput();
 
 		//lambda
@@ -304,6 +333,8 @@ import java.util.Map;
 		factory.initGenerator(Generators.NEOFORGE1214);
 		factory.getToolKit().clearGenerator();
 		factory.initGenerator(Generators.NEOFORGE1211);
+		factory.getToolKit().clearGenerator();
+		factory.initGenerator(Generators.NEOFORGE1218);
 		factory.getToolKit().clearGenerator();
 	}
 }

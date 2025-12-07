@@ -10,12 +10,14 @@ import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.util.image.IconUtils;
+import net.mcreator.workspace.Workspace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.framework.MCreatorPluginFactory;
 import org.cdc.framework.utils.MCreatorVersions;
 import org.cdc.temp.ui.*;
 import org.cdc.temp.utils.PluginUtils;
+import org.cdc.temp.utils.WorkspaceClassLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +39,7 @@ public class TempPluginMain extends JavaPlugin {
 	private final MCreatorPluginFactory mCreatorPluginFactory;
 
 	private final ArrayList<TempElementGUI<?>> tempElementHistory = new ArrayList<>();
+	private WorkspaceClassLoader workspaceClassLoader;
 
 	public TempPluginMain(Plugin plugin) {
 		super(plugin);
@@ -153,8 +156,21 @@ public class TempPluginMain extends JavaPlugin {
 		});
 	}
 
+	private void reloadWorkspaceClassLoader(Workspace workspace){
+		if (workspaceClassLoader != null){
+			if (workspaceClassLoader.getWorkspace().equals(workspace)){
+				return;
+			}
+		}
+		workspaceClassLoader = new WorkspaceClassLoader(workspace);
+	}
+
 	public MCreatorPluginFactory getmCreatorPluginFactory() {
 		return mCreatorPluginFactory;
+	}
+
+	public WorkspaceClassLoader getWorkspaceClassLoader() {
+		return workspaceClassLoader;
 	}
 
 	public static TempPluginMain getInstance() {
@@ -166,6 +182,7 @@ public class TempPluginMain extends JavaPlugin {
 		var item = new JMenuItem(L10N.t("menubar.item.addtemp", L10N.t("modelement." + type)));
 		item.setIcon(UIRES.get("mod_types." + type));
 		item.addActionListener(e -> {
+			reloadWorkspaceClassLoader(mcreator.getWorkspace());
 			T gui = function.apply(mcreator);
 			var tab = new MCreatorTabs.Tab(gui);
 			gui.setOnSaved(d -> {

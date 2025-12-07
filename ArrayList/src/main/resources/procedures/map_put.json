@@ -20,7 +20,7 @@
   "inputsInline": true,
   "colour": 45,
   "mcreator": {
-    "group": "name",
+    "group": "manager",
     "toolbox_id": "maps",
     "toolbox_init": [
       "<value name=\"map\"><block type=\"variables_get_objectmap\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>",

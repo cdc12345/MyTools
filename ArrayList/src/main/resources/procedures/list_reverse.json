@@ -11,7 +11,7 @@
   "inputsInline": true,
   "colour": "40",
   "mcreator": {
-    "group": "name",
+    "group": "manager",
     "toolbox_init": [
       "<value name=\"list\"><block type=\"variables_get_objectlist\"><mutation is_player_var=\"false\" has_entity=\"false\"></mutation><field name=\"VAR\"/></block></value>"
     ],

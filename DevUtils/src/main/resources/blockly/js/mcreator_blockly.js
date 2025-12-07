@@ -303,8 +303,6 @@ function replaceVariableBlock(oldBlock, newType) {
     newBlock.nextConnection.connect(nextBlock.previousConnection);
   }
 }
-
-// -------------------- 注册 get → set --------------------
 Blockly.ContextMenuRegistry.registry.register({
   id: 'variables_get_to_set',
   weight: 210,
@@ -333,8 +331,6 @@ Blockly.ContextMenuRegistry.registry.register({
   },
   scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
 });
-
-// -------------------- 注册 set → get --------------------
 Blockly.ContextMenuRegistry.registry.register({
   id: 'variables_set_to_get',
   weight: 209,

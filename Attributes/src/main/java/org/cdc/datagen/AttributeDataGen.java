@@ -10,18 +10,19 @@ import org.cdc.framework.utils.BuiltInTypes;
 import org.cdc.framework.utils.Generators;
 import org.cdc.framework.utils.MCreatorVersions;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
 @DefaultPluginFolder public class AttributeDataGen implements IFountainMain {
 
-	@Override public void generatePluginInfo(PluginInfoBuilder infoBuilder) {
+	@Override public void generatePluginInfo(PluginInfoBuilder infoBuilder) throws IOException {
 		infoBuilder.setAuthor("cdc12345").setName("attributes").setId("attributes").setWeight(0)
 				.addSupportedVersion(MCreatorVersions.V_2025_2).addSupportedVersion(MCreatorVersions.V_2025_1)
 				.addSupportedVersion(MCreatorVersions.V_2024_4).buildAndOutput();
 	}
 
-	@Override public void generatePlugin(MCreatorPluginFactory plugin) {
+	@Override public void generatePlugin(MCreatorPluginFactory plugin) throws IOException {
 		var en = plugin.createDefaultLanguage();
 		var zh = plugin.createLanguage(Locale.CHINA);
 

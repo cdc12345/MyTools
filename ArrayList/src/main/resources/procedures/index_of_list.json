@@ -10,7 +10,7 @@
   "inputsInline": true,
   "colour": "%{BKY_MATH_HUE}",
   "mcreator": {
-    "group": "name",
+    "group": "zadvanced",
     "toolbox_id": "list",
     "fields": [
       "mark"
