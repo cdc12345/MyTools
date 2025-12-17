@@ -10,7 +10,7 @@ public class Mixin extends GeneratableElement {
     public boolean isClient = false;
     public String mixinClass = getModElement().getName();
 
-	public String mixinBody;
+	public String mixinBody = "";
 
     public Mixin(ModElement element) {
         super(element);

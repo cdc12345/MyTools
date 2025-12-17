@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.${modid}.refmap.json",
   "mixins": [
-    <#list w.getWorkspace().getModElements() as element>
+    <#list w.getElementsOfType("newmixin") as element>
         <#assign elem=element.getGeneratableElement()>
         <#if elem.isClient??>
             <#if elem.isClient == false>
@@ -17,7 +17,7 @@
 
   ],
   "client": [
-    <#list w.getWorkspace().getModElements() as element>
+    <#list w.getElementsOfType("newmixin") as element>
         <#assign elem=element.getGeneratableElement()>
         <#if elem.isClient??>
             <#if elem.isClient == true>

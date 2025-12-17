@@ -1,11 +1,20 @@
 mixin {
-    add sourceSets.main, 'mixins.${modid}.refmap.json'
+    if (file("src/main/resources/usermixins.${modid}.json").exists()) {
+        add sourceSets.main, 'usermixins.${modid}.refmap.json'
 
-    config 'mixins.${modid}.json'
+        config 'usermixins.${modid}.json'
+    }
 }
 
 jar {
+    String mixins = ""
+    if (file("src/main/resources/${modid}.mixins.json").exists()) {
+        mixins += "${modid}.mixins.json"
+    }
+    if (file("src/main/resources/usermixins.${modid}.json").exists()) {
+        mixins += "usermixins.${modid}.json"
+    }
     manifest.attributes([
-            "MixinConfigs": "mixins.mymod.json"
+            "MixinConfigs": mixins
     ])
 }

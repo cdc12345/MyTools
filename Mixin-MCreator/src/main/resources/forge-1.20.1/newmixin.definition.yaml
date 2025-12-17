@@ -6,4 +6,4 @@ templates:
 global_templates:
   - template: modbase/mixins.json.ftl
     writer: json
-    name: "@RESROOT/mixins.@modid.json"
+    name: "@RESROOT/usermixins.@modid.json"
