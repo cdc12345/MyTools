@@ -127,7 +127,7 @@ public class ElementManager {
 
 	public static void createModifiers(Workspace workspace, @Nullable GeneratableElement generatable,
 			List<String> limit) throws TemplateGeneratorException {
-		if (generatable != null && generatable.getModElement().getType() == ModElementType.CODE) {
+		if (generatable != null && generatable.getModElement().getType() == ModElementType.CODE && generatable.getModElement().isCodeLocked()) {
 			return;
 		}
 		File parentModifier = FileUtils.getModifiersPath(workspace);
@@ -200,6 +200,7 @@ public class ElementManager {
 						}
 
 						modifierContent.add("fields", fields);
+						// Constructor detect
 						var constructors = new JsonArray();
 						sourceClass.getConstructors().forEach(sourceConstructor -> {
 							var targetConstructor = templateClass.getConstructorByParameterTypes(
