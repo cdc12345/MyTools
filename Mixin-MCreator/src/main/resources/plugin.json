@@ -1,6 +1,7 @@
 {
   "id": "mixin",
   "supportedversions": [
+    2025003,
     2025002,
     2025001
   ],

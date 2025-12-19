@@ -2,7 +2,7 @@
   "required": true,
   "package": "${package}.mixins",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "mixins.${modid}.refmap.json",
+  "refmap": "${modid}.refmap.json",
   "mixins": [
     <#list w.getElementsOfType("newmixin") as element>
         <#assign elem=element.getGeneratableElement()>
@@ -29,5 +29,5 @@
     </#list>
 
   ],
-  "minVersion": "0.8"
+  "minVersion": "0.8.4"
 }

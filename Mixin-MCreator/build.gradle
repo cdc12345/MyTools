@@ -22,10 +22,10 @@ dependencies {
 }
 
 tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
-    archiveFileName.set("mixin.zip")
+    archiveFileName.set("newmixin.zip")
     doLast {
         copy {
-            from 'build/libs/mixin.zip'
+            from 'build/libs/newmixin.zip'
             into mcreator_plugins_path
         }
     }

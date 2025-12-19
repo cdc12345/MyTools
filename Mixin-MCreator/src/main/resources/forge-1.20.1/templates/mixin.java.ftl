@@ -52,7 +52,7 @@ public abstract class ${name}Mixin extends Screen{
 <#elseif "Minecraft" == mixinclass >
 public abstract class ${name}Mixin {
     @Unique
-	//禁用原版的标题更新
+	//${data.t("comment.disableTitleUpdate")}
     private final boolean $disableTitleUpdate = false;
 
 
